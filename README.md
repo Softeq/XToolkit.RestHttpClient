@@ -6,9 +6,9 @@ An easy to use library providing some advanced api to use http client for your m
   - [Components](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Components)
     - [Executor](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Executor)
     - [Mapper](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Mapper)
-    - [Uri Builder](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#UriBuilder)
-    - [Json Serializer](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#JsonConverter)
-    - [Http Service](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#HttpServiceGate)
+    - [Uri builder](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#UriBuilder)
+    - [Json Converter](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#JsonConverter)
+    - [Http client](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#HttpServiceGate)
 - [License](https://github.com/Hexworks/zircon#license)
 - [Credits](https://github.com/Hexworks/zircon#credits)
 
