@@ -4,7 +4,7 @@ An easy to use library providing some advanced api to use http client for your m
 
 - [Getting Started](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#getting-started)
   - [Components](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Components)
-    - [Executor](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Executor)
+    - [Executor](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#executor)
     - [Mapper](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#mapper)
     - [Uri Builder](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#uribuilder)
     - [Json Converter](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#jsonConverter)
@@ -20,7 +20,7 @@ If you want to work with library you can add it to your project as a nuget packa
 Install-Package Softeq.XToolkit.RestHttpClient
 ```
 
-### Components
+#### Components
 
 Library supports a bunch of Components out of the box:
 
@@ -30,7 +30,7 @@ Library supports a bunch of Components out of the box:
 - 'Json Converter' : basic json converter. This is wrpapper on NewtonSoft Json Converter.
 - 'HttpClient' : is base implementation of http client which every mobile project has. We trying to incapsulate base logic to one http client to cover most popular cases of usings.
 
-#### Executor
+### Executor
 You can register class as singlton and then use it as following example:
 
 Usage:
@@ -94,7 +94,7 @@ var data = new SettingsData{MyCustomToken = "test"}
 //get application model
 var settingsModel = mapper.Map<SettingsModel>(data);
 ```
-#### Uri Builder
+### Uri Builder
 
 This class helped to build up and manage your api uri
 
@@ -125,7 +125,7 @@ This class helped to build up and manage your api uri
     var removeItemUri = SaveItem(new ItemQueryParams{ItemId="myItemId"});
 ```
 
-#### Json Converter
+### Json Converter
 
 Current implementation acceptable for most mobile clients. Also used to serialize data. You can register it as singlton and then reuse in application.
 
@@ -164,7 +164,7 @@ public static class JsonConverter
     }
 ```
 
-#### Http Client
+### Http Client
 
 Http client used to make http requests. Http client has few configuration properties.
 
