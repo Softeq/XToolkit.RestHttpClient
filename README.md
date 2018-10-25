@@ -1,3 +1,6 @@
+
+![alt text](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient/blob/master/clientServer.png?raw=true)
+
 An easy to use library providing some advanced api to use http client for your mobile projects.
 
 ## Table of Contents
