@@ -9,8 +9,8 @@ An easy to use library providing some advanced api to use http client for your m
     - [Uri Builder](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#uribuilder)
     - [Json Converter](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#jsonConverter)
     - [Http Client](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#httpclient)
-- [License](https://github.com/Hexworks/zircon#license)
-- [Credits](https://github.com/Hexworks/zircon#credits)
+- [License](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#license)
+- [Credits](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#credits)
 
 ## Getting Started
 
@@ -94,7 +94,7 @@ var data = new SettingsData{MyCustomToken = "test"}
 //get application model
 var settingsModel = mapper.Map<SettingsModel>(data);
 ```
-#### Uri builder
+#### Uri Builder
 
 This class helped to build up and manage your api uri
 
@@ -164,7 +164,7 @@ public static class JsonConverter
     }
 ```
 
-#### Http client
+#### Http Client
 
 Http client used to make http requests. Http client has few configuration properties.
 
