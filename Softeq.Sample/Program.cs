@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Softeq.Sample
@@ -14,19 +13,12 @@ namespace Softeq.Sample
 
         public async Task Create()
         {
-            try
-            {
-                var customService = new CustomService();
+            var exampleService = new ExampleService();
 
-                await customService.LoginAsync();
-                await customService.TestMethodHighPriority();
-                await customService.RestoreTokenAsync();
-                await customService.TestMethodHighPriority();
-            }
-            catch (Exception ex)
-            {
-
-            }
+            await exampleService.LoginAsync();
+            await exampleService.TestMethodHighPriority();
+            await exampleService.RestoreTokenAsync();
+            await exampleService.TestMethodHighPriority();
             Console.WriteLine("FINISHED");
         }
     }
