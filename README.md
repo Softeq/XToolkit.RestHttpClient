@@ -5,15 +5,15 @@ An easy to use library providing some advanced api to use http client for your m
 
 ## Table of Contents
 
-- [Getting Started](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#getting-started)
-  - [Components](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Components)
-    - [Executor](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#executor)
-    - [Mapper](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#mapper)
-    - [Uri Builder](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Uri-Builder)
-    - [Json Converter](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Json-Converter)
-    - [Http Client](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#Http-Client)
-- [License](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#license)
-- [Credits](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient#credits)
+- [Getting Started](#getting-started)
+  - [Components](#components)
+    - [Executor](#executor)
+    - [Mapper](#mapper)
+    - [Uri Builder](#uri-builder)
+    - [Json Converter](#json-converter)
+    - [Http Client](#http-client)
+- [License](#license)
+- [Credits](#credits)
 
 ## Getting Started
 
@@ -41,10 +41,11 @@ Usage:
 ```csharp
 var _executor = new Executor();
 var allowAttempts = 10;
- await _executor.ExecuteWithRetryAsync(async executionContext =>
-                {
-                  //make your http request call, if it fail executor handle it
-                }, allowAttempts);
+
+await _executor.ExecuteWithRetryAsync(async executionContext =>
+{
+    //make your http request call, if it fail executor handle it
+}, allowAttempts);
 ```
 
 Also support next methods:
@@ -67,60 +68,62 @@ Usage:
 //Data transfer model
 public class SettingsData
 {
-    public string MyCustomToken{get;set;}
+    public string MyCustomToken { get; set; }
 }
 
 //our application model
 public class SettingsModel
 {
-    public string AccessToken{get;set;}
+    public string AccessToken { get; set; }
 }
 
 //Method that map data transfer model to application model
 public SettingsModel Map(SettingsData data)
 {
-  return data == null ? null : new SettingsModel{AccessToken = data.MyCustomToken}
+    return data == null ? null : new SettingsModel{AccessToken = data.MyCustomToken}
 }
 
 //create and register mapping
 var mapper = new Mapper();
-mapper.RegisterMapping<SettingsData, SettingsModel>(Map)
+mapper.RegisterMapping<SettingsData, SettingsModel>(Map);
 
 //create dto(or recieve it from http request)
-var data = new SettingsData{MyCustomToken = "test"}
+var data = new SettingsData { MyCustomToken = "test" };
 
 //get application model
 var settingsModel = mapper.Map<SettingsModel>(data);
 ```
 ### Uri Builder
 
-This class helped to build up and manage your api uri
+This class helped to build up and manage your api uri:
 
 ```csharp
-  [DataContract]
-	public class ItemQueryParams
-	{
-		[DataMember(Name = "itemId")]
-		public string ItemId { get; set; }
-	}
-    
-    public Uri SaveItem(ItemQueryParams queryParams)
-	{
-		return _uriMaker.BuildUp(queryParams, baseUrl,"/item" );
-	}
+[DataContract]
+public class ItemQueryParams
+{
+    [DataMember(Name = "itemId")]
+    public string ItemId { get; set; }
+}
 
-    public Uri RemoveItem(string itemId)
-	{
-		return _uriMaker.Combine(baseUrl,"/item",itemId );
-	}
-    
-    baseUrl = https://example.com;
-    
-    //https://example.com/item/myItemId
-    var removeItemUri = RemoveItem("myItemId");
-    
-    //https://example.com/item?itemId=myItemId
-    var removeItemUri = SaveItem(new ItemQueryParams{ItemId="myItemId"});
+public Uri SaveItem(ItemQueryParams queryParams)
+{
+    return _uriMaker.BuildUp(queryParams, baseUrl, "/item");
+}
+
+public Uri RemoveItem(string itemId)
+{
+    return _uriMaker.Combine(baseUrl, "/item", itemId);
+}
+```
+
+```csharp
+var baseUrl = "https://example.com";
+
+// https://example.com/item/myItemId
+var removeItemUri = RemoveItem("myItemId");
+
+// https://example.com/item?itemId=myItemId
+var removeItemUri = SaveItem(new ItemQueryParams { ItemId = "myItemId" });
 ```
 
 ### Json Converter
@@ -166,7 +169,7 @@ public static class JsonConverter
 
 Http client used to make http requests. Http client has few configuration properties.
 
-To create HttpClient you need to provide
+To create HttpClient you need to provide:
 
 ```csharp
     public class HttpServiceGateConfig
@@ -179,20 +182,19 @@ To create HttpClient you need to provide
     }
 ```
 
-To create http client use next line
+To create http client use next line:
 
 ```csharp
 var httpConfig = new HttpServiceGateConfig
-            {
-                Proxy = new WebProxy("10.55.1.191", 8888),
-                DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
-            };
+{
+    Proxy = new WebProxy("10.55.1.191", 8888),
+    DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
+};
 
 var httpServiceGate = new HttpServiceGate(httpConfig);
-
 ```
 
-Then you are ready to make http requests.
+Then you are ready to make http requests:
 
 ```csharp
 var request = new HttpRequest()
@@ -214,10 +216,10 @@ Full example with http request:
 
 ```csharp
 var httpConfig = new HttpServiceGateConfig
-    {
-        Proxy = new WebProxy(yourIpAdress, yourPort),
-        DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
-    };
+{
+    Proxy = new WebProxy(yourIpAdress, yourPort),
+    DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
+};
 var httpServiceGate = new HttpServiceGate(httpConfig);
 
 var executionResult = new ExecutionResult<string>();
@@ -226,9 +228,9 @@ await _executor.ExecuteWithRetryAsync(
      async executionContext =>
      {
          var request = new HttpRequest()
-         .SetUri(new Uri("example.com"))
-         .SetMethod(HttpMethods.Post)
-         .WithData(JsonConverter.Serialize(new { Id = "MyId" }));
+             .SetUri(new Uri("example.com"))
+             .SetMethod(HttpMethods.Post)
+             .WithData(JsonConverter.Serialize(new { Id = "MyId" }));
 
          var response = await executionResult.ExecuteApiCallAsync(HttpRequestPriority.High, request);
 
