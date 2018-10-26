@@ -28,10 +28,10 @@ Install-Package Softeq.XToolkit.RestHttpClient
 Library supports a bunch of Components out of the box:
 
 - `Executor`: is special wrapper wich can be used to wrap async action and execute it multiply times if it fails.
-- 'Mapper' : is helper which register your own mapping and then can be used to map one object to another. Also support Collection mapping.
-- 'UriBuilder' : is helper which can be used to build your api url's
-- 'Json Converter' : basic json converter. This is wrpapper on NewtonSoft Json Converter.
-- 'HttpClient' : is base implementation of http client which every mobile project has. We trying to incapsulate base logic to one http client to cover most popular cases of usings.
+- `Mapper` : is helper which register your own mapping and then can be used to map one object to another. Also support Collection mapping.
+- `UriBuilder` : is helper which can be used to build your api url's
+- `Json Converter` : basic json converter. This is wrpapper on NewtonSoft Json Converter.
+- `HttpClient` : is base implementation of http client which every mobile project has. We trying to incapsulate base logic to one http client to cover most popular cases of usings.
 
 ### Executor
 You can register class as singlton and then use it as following example:
@@ -41,8 +41,7 @@ Usage:
 ```csharp
 var _executor = new Executor();
 var allowAttempts = 10;
- await _executor.ExecuteWithRetryAsync(
-                async executionContext =>
+ await _executor.ExecuteWithRetryAsync(async executionContext =>
                 {
                   //make your http request call, if it fail executor handle it
                 }, allowAttempts);
@@ -80,11 +79,7 @@ public class SettingsModel
 //Method that map data transfer model to application model
 public SettingsModel Map(SettingsData data)
 {
-  return data==null?null:
-  new SettingsModel()
-  {
-    AccessToken=data.MyCustomToken
-  }
+  return data == null ? null : new SettingsModel{AccessToken = data.MyCustomToken}
 }
 
 //create and register mapping
@@ -108,16 +103,16 @@ This class helped to build up and manage your api uri
 		[DataMember(Name = "itemId")]
 		public string ItemId { get; set; }
 	}
-  
-		public Uri SaveItem(ItemQueryParams queryParams)
-		{
-			return _uriMaker.BuildUp(queryParams, baseUrl,"/item" );
-		}
+    
+    public Uri SaveItem(ItemQueryParams queryParams)
+	{
+		return _uriMaker.BuildUp(queryParams, baseUrl,"/item" );
+	}
 
     public Uri RemoveItem(string itemId)
-		{
-			return _uriMaker.Combine(baseUrl,"/item",itemId );
-		}
+	{
+		return _uriMaker.Combine(baseUrl,"/item",itemId );
+	}
     
     baseUrl = https://example.com;
     
@@ -134,37 +129,37 @@ Current implementation acceptable for most mobile clients. Also used to serializ
 
 ```csharp
 public static class JsonConverter
+{
+    public static T Deserialize<T>(string jsonString)
     {
-        public static T Deserialize<T>(string jsonString)
-        {
-            return JsonConvert.DeserializeObject<T>(jsonString);
-        }
+        return JsonConvert.DeserializeObject<T>(jsonString);
+    }
 
-        public static bool TryDeserialize<T>(string jsonString, out T result)
+    public static bool TryDeserialize<T>(string jsonString, out T result)
+    {
+        try
         {
-            try
-            {
-                result = Deserialize<T>(jsonString);
-                return true;
-            }
-            catch (Exception)
-            {
-                result = default(T);
-                return false;
-            }
+            result = Deserialize<T>(jsonString);
+            return true;
         }
-
-        public static string Serialize(object obj, bool shouldIgnoreNullValue = false)
+        catch (Exception)
         {
-            return JsonConvert.SerializeObject(
-                obj,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = shouldIgnoreNullValue ? NullValueHandling.Ignore : NullValueHandling.Include
-                });
+            result = default(T);
+            return false;
         }
     }
+
+    public static string Serialize(object obj, bool shouldIgnoreNullValue = false)
+    {
+        return JsonConvert.SerializeObject(
+            obj,
+            Formatting.None,
+            new JsonSerializerSettings
+            {
+                NullValueHandling = shouldIgnoreNullValue ? NullValueHandling.Ignore : NullValueHandling.Include
+            });
+    }
+}
 ```
 
 ### Http Client
@@ -192,6 +187,7 @@ var httpConfig = new HttpServiceGateConfig
                 Proxy = new WebProxy("10.55.1.191", 8888),
                 DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
             };
+
 var httpServiceGate = new HttpServiceGate(httpConfig);
 
 ```
@@ -217,37 +213,37 @@ As you can see, we can configure http request. First of all you can specify Uri,
 Full example with http request:
 
 ```csharp
- var httpConfig = new HttpServiceGateConfig
-            {
-                Proxy = new WebProxy(yourIpAdress, yourPort),
-                DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
-            };
+var httpConfig = new HttpServiceGateConfig
+    {
+        Proxy = new WebProxy(yourIpAdress, yourPort),
+        DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
+    };
 var httpServiceGate = new HttpServiceGate(httpConfig);
 
 var executionResult = new ExecutionResult<string>();
 
-            await _executor.ExecuteWithRetryAsync(
-                async executionContext =>
-                {
-                    var request = new HttpRequest()
-                    .SetUri(new Uri("example.com"))
-                    .SetMethod(HttpMethods.Post)
-                    .WithData(JsonConverter.Serialize(new { Id = "MyId" }));
+await _executor.ExecuteWithRetryAsync(
+     async executionContext =>
+     {
+         var request = new HttpRequest()
+         .SetUri(new Uri("example.com"))
+         .SetMethod(HttpMethods.Post)
+         .WithData(JsonConverter.Serialize(new { Id = "MyId" }));
 
-                    var response = await executionResult.ExecuteApiCallAsync(HttpRequestPriority.High, request);
+         var response = await executionResult.ExecuteApiCallAsync(HttpRequestPriority.High, request);
 
-                    if (response.IsSuccessful)
-                    {
-                        executionResult.Report(response.Content, ExecutionStatus.Completed);
-                    }
-                });
+         if (response.IsSuccessful)
+         {
+             executionResult.Report(response.Content, ExecutionStatus.Completed);
+         }
+     });
 
-            if (executionResult.Status == ExecutionStatus.NotCompleted)
-            {
-                executionResult.Report(null, ExecutionStatus.Failed);
-            }
+if (executionResult.Status == ExecutionStatus.NotCompleted)
+{
+    executionResult.Report(null, ExecutionStatus.Failed);
+}
 
-            return executionResult;
+return executionResult;
 ```
 
 ## License
@@ -255,4 +251,3 @@ Library is made available under the [MIT License](http://www.opensource.org/lice
 
 ## Credits
 We're open to suggestions, feel free to open an issue. Pull requests are also welcome!
-
