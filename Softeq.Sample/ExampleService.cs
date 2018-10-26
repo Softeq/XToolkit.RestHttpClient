@@ -2,7 +2,6 @@
 //
 
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using Softeq.XToolkit.DefaultAuthorization;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
@@ -14,19 +13,19 @@ using Softeq.XToolkit.HttpClient.Infrastructure;
 
 namespace Softeq.Sample
 {
-    public class CustomService
+    public class ExampleService
     {
         readonly IExecutor _executor;
         private readonly IMembershipService _membershipService;
         private readonly SessionApiService _sessionApiService;
         private readonly SecuredHttpServiceGate _http;
 
-        public CustomService()
+        public ExampleService()
         {
             _executor = new Executor();
 
-            var authConfig = new AuthConfig("http://lilbytes-softeq-test.azurewebsites.net", "ro.client", "secret");
-            var httpConfig = new HttpServiceGateConfig { Proxy = new WebProxy("10.55.1.191", 8888), DeadRequestTimeoutInMilliseconds = 10000000 };
+            var authConfig = new AuthConfig("yourBaseUrl", "yourclient", "yoursecret");
+            var httpConfig = new HttpServiceGateConfig {};
 
             _membershipService = new MembershipService(new SecureStorage());
 
@@ -38,7 +37,7 @@ namespace Softeq.Sample
 
         public async Task LoginAsync()
         {
-            await _sessionApiService.LoginAsync("user@test.com", "123QWqw1");
+            await _sessionApiService.LoginAsync("username", "password");
         }
 
         public async Task RestoreTokenAsync()
@@ -54,10 +53,10 @@ namespace Softeq.Sample
                 async executionContext =>
                 {
                     var request = new HttpRequest()
-                    .SetUri(new Uri("http://lilbytes-softeq-test.azurewebsites.net/api/user"))
+                    .SetUri(new Uri("example.com"))
                     .SetMethod(HttpMethods.Get)
                     .WithCredentials(_membershipService);
-                    
+
                     var response = await _http.ExecuteApiCallAsync(HttpRequestPriority.High, request);
 
                     if (response.IsSuccessful)
