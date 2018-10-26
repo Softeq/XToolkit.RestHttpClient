@@ -219,7 +219,7 @@ Full example with http request:
 ```csharp
  var httpConfig = new HttpServiceGateConfig
             {
-                Proxy = new WebProxy("10.55.1.191", 8888),
+                Proxy = new WebProxy(yourIpAdress, yourPort),
                 DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
             };
 var httpServiceGate = new HttpServiceGate(httpConfig);
