@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+    <metadata>
+    <id>Softeq.XToolkit.HttpClient</id>
+    <version>1.0.0</version>
+    <title>Custom Http client</title>
+    <authors>Softeq Development Corp.</authors>
+    <owners>Softeq Development Corp.</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Http infrastructure for mobile applications</description>
+    <copyright>Copyright 2018 (c) Softeq Development Corp. Corporation. All rights reserved.</copyright>
+    <licenseUrl>https://github.com/Softeq/XToolkit.RestHttpClient/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Softeq/XToolkit.RestHttpClient</projectUrl>
+    <tags>http client softeq xtoolkit XToolkit</tags>
+    </metadata>
+</package>

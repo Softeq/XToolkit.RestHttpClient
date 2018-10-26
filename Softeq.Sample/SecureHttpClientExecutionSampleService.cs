@@ -13,39 +13,31 @@ using Softeq.XToolkit.HttpClient.Infrastructure;
 
 namespace Softeq.Sample
 {
-    public class ExampleService
+    public class SecureHttpClientExecutionSampleService
     {
         readonly IExecutor _executor;
         private readonly IMembershipService _membershipService;
         private readonly SessionApiService _sessionApiService;
         private readonly SecuredHttpServiceGate _http;
 
-        public ExampleService()
+        public SecureHttpClientExecutionSampleService()
         {
-            _executor = new Executor();
-
             var authConfig = new AuthConfig("yourBaseUrl", "yourclient", "yoursecret");
             var httpConfig = new HttpServiceGateConfig {};
-
-            _membershipService = new MembershipService(new SecureStorage());
-
             var httpServiceGate = new HttpServiceGate(httpConfig);
+
+            _executor = new Executor();
+            _membershipService = new MembershipService(new SecureStorage());
             _sessionApiService = new SessionApiService(authConfig, httpServiceGate, _membershipService, _executor);
             _http = new SecuredHttpServiceGate(_sessionApiService, httpConfig, _membershipService);
         }
-
 
         public async Task LoginAsync()
         {
             await _sessionApiService.LoginAsync("username", "password");
         }
 
-        public async Task RestoreTokenAsync()
-        {
-            await _sessionApiService.RefreshTokenAsync();
-        }
-
-        public async Task<ExecutionResult<string>> TestMethodHighPriority()
+        public async Task<ExecutionResult<string>> MakeRequestWithCredentials()
         {
             var executionResult = new ExecutionResult<string>();
 
@@ -53,7 +45,7 @@ namespace Softeq.Sample
                 async executionContext =>
                 {
                     var request = new HttpRequest()
-                    .SetUri(new Uri("example.com"))
+                    .SetUri(new Uri("yourApiUrl"))
                     .SetMethod(HttpMethods.Get)
                     .WithCredentials(_membershipService);
 
@@ -69,8 +61,6 @@ namespace Softeq.Sample
             {
                 executionResult.Report(null, ExecutionStatus.Failed);
             }
-
-            Console.WriteLine(executionResult.Result != null);
 
             return executionResult;
         }

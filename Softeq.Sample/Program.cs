@@ -7,19 +7,24 @@ namespace Softeq.Sample
     {
         static void Main(string[] args)
         {
-            Task.Run(() => new Program().Create());
+            Task.Run(() => new Program().UseSecureHttpClient());
+            Task.Run(() => new Program().UseSimpleHttpClient());
             Console.ReadLine();
         }
 
-        public async Task Create()
+        public async Task UseSecureHttpClient()
         {
-            var exampleService = new ExampleService();
+            var exampleService = new SecureHttpClientExecutionSampleService();
 
             await exampleService.LoginAsync();
-            await exampleService.TestMethodHighPriority();
-            await exampleService.RestoreTokenAsync();
-            await exampleService.TestMethodHighPriority();
-            Console.WriteLine("FINISHED");
+            await exampleService.MakeRequestWithCredentials();
+        }
+
+        public async Task UseSimpleHttpClient()
+        {
+            var exampleService = new SimpleHttpClientSampleService();
+
+            await exampleService.MakeRequest();
         }
     }
 }
