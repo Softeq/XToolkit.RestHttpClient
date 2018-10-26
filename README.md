@@ -30,7 +30,7 @@ Library supports a bunch of Components out of the box:
 - `Executor`: is special wrapper wich can be used to wrap async action and execute it multiply times if it fails.
 - `Mapper` : is helper which register your own mapping and then can be used to map one object to another. Also support Collection mapping.
 - `UriBuilder` : is helper which can be used to build your api url's
-- `Json Converter` : basic json converter. This is wrpapper on NewtonSoft Json Converter.
+- `JsonConverter` : basic json converter. This is wrpapper on NewtonSoft Json Converter.
 - `HttpClient` : is base implementation of http client which every mobile project has. We trying to incapsulate base logic to one http client to cover most popular cases of usings.
 
 ### Executor
