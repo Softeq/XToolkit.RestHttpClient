@@ -273,9 +273,9 @@ namespace Softeq.XToolkit.HttpClient.Network
                 await Executor.ExecuteSilentlyAsync(
                     async () =>
                     {
-                        if (task is CompleteHttpRequestScheduledTask)
+                        if (task is CompleteHttpRequestScheduledTask scheduledTask)
                         {
-                            await ExecuteAsync(task as CompleteHttpRequestScheduledTask).ConfigureAwait(false);
+                            await ExecuteAsync(scheduledTask).ConfigureAwait(false);
                         }
                         else
                         {
@@ -389,7 +389,7 @@ namespace Softeq.XToolkit.HttpClient.Network
         {
             await httpContent.ReadAsStreamAsync().ConfigureAwait(false);
 
-            return await httpContent?.ReadAsByteArrayAsync().ConfigureAwait(false);
+            return await httpContent.ReadAsByteArrayAsync().ConfigureAwait(false);
         }
 
         private async Task<string> GetStringContent(HttpContent httpContent)
