@@ -40,7 +40,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.Login())
-                    .WithData(await LoginContent(login, password));
+                    .WithData(await LoginContent(login, password).ConfigureAwait(false));
 
                 request.ContentType = ContentType;
 
@@ -50,7 +50,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     var tokens = JsonConverter.Deserialize<LoginResultDto>(response.Content);
 
-                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
+                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken).ConfigureAwait(false);
 
                     result = ExecutionStatus.Completed;
                 }
@@ -70,7 +70,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.RefreshToken())
-                    .WithData(await GetRefreshTokenRequestDataAsync());
+                    .WithData(await GetRefreshTokenRequestDataAsync().ConfigureAwait(false));
 
                 request.ContentType = ContentType;
 
@@ -80,7 +80,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     var tokens = JsonConverter.Deserialize<LoginResultDto>(response.Content);
 
-                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
+                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken).ConfigureAwait(false);
                     result = ExecutionStatus.Completed;
                 }
             }, 3);

@@ -26,7 +26,7 @@ namespace Softeq.Sample
                     .SetUri(new Uri("https://www.google.com/"))
                     .SetMethod(HttpMethods.Get);
 
-                    var response = await _http.ExecuteApiCallAsync(HttpRequestPriority.High, request);
+                    var response = await _http.ExecuteApiCallAsync(HttpRequestPriority.High, request).ConfigureAwait(false);
 
                     if (response.IsSuccessful)
                     {

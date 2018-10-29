@@ -33,7 +33,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority, HttpRequest request, int timeout = 0, params HttpStatusCode[] ignoreErrorCodes)
         {
-            var response = await _client.ExecuteAsStringResponseAsync(priority, request, timeout);
+            var response = await _client.ExecuteAsStringResponseAsync(priority, request, timeout).ConfigureAwait(false);
 
             if (ValidateResponse(response, true, ignoreErrorCodes))
             {
@@ -44,23 +44,23 @@ namespace Softeq.XToolkit.DefaultAuthorization
             if (!IsSessionValid(response))
             {
                 //if session request is already in progress, then await it
-                var shouldRetrieveSession = await EnsureNoSessionRetrievalIsRunningAsync();
+                var shouldRetrieveSession = await EnsureNoSessionRetrievalIsRunningAsync().ConfigureAwait(false);
 
                 if (shouldRetrieveSession)
                 {
-                    var executionStatus = await RetrieveSessionAsync();
+                    var executionStatus = await RetrieveSessionAsync().ConfigureAwait(false);
 
                     if (executionStatus == ExecutionStatus.Completed)
                     {
                         request.WithCredentials(_membershipService);
-                        response = await _client.ExecuteAsStringResponseAsync(priority, request);
+                        response = await _client.ExecuteAsStringResponseAsync(priority, request).ConfigureAwait(false);
                     }
                 }
                 else
                 {
                     request.WithCredentials(_membershipService);
 
-                    response = await _client.ExecuteAsStringResponseAsync(priority, request);
+                    response = await _client.ExecuteAsStringResponseAsync(priority, request).ConfigureAwait(false);
                 }
 
                 //if session issue is still not resolved, redirect to first install login screen, because we can't perform activities without session
@@ -97,7 +97,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public async Task<T> ExecuteApiCallAndParseAsync<T>(HttpRequestPriority priority, HttpRequest request)
         {
-            var response = await ExecuteApiCallAsync(priority, request);
+            var response = await ExecuteApiCallAsync(priority, request).ConfigureAwait(false);
 
             return response.ParseContentAsJson<T>();
         }

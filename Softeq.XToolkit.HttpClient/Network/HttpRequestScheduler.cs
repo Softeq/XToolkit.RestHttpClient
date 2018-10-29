@@ -389,7 +389,7 @@ namespace Softeq.XToolkit.HttpClient.Network
         {
             await httpContent.ReadAsStreamAsync().ConfigureAwait(false);
 
-            return await httpContent?.ReadAsByteArrayAsync();
+            return await httpContent?.ReadAsByteArrayAsync().ConfigureAwait(false);
         }
 
         private async Task<string> GetStringContent(HttpContent httpContent)
