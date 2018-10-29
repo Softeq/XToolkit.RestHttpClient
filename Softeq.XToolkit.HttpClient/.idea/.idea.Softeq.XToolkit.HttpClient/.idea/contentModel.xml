@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="$USER_HOME$/Library/Caches/Rider2018.2/extResources" t="IncludeRecursive" />
+    <e p="$USER_HOME$/Library/Caches/Rider2018.2/resharper-host/local/Transient/ReSharperHost/v182/SolutionCaches/_Softeq.XToolkit.1351501282.00" t="ExcludeRecursive" />
+    <e p="$PROJECT_DIR$" t="IncludeRecursive">
+      <e p="Abstract" t="Include">
+        <e p="IHttpRequestsScheduler.cs" t="Include" />
+      </e>
+      <e p="bin" t="ExcludeRecursive" />
+      <e p="Enums" t="Include" />
+      <e p="Extensions" t="Include">
+        <e p="EnumExtensions.cs" t="Include" />
+        <e p="IntExtensions.cs" t="Include" />
+      </e>
+      <e p="HttpServiceGate.cs" t="Include" />
+      <e p="Infrastructure" t="Include">
+        <e p="CompleteHttpRequestScheduledTask.cs" t="Include" />
+        <e p="RedirectHttpRequestScheduledTask.cs" t="Include" />
+      </e>
+      <e p="Network" t="Include">
+        <e p="HttpRequestScheduledTaskBase.cs" t="Include" />
+        <e p="HttpRequestScheduler.cs" t="Include" />
+        <e p="HttpStatusCodes.cs" t="Include" />
+        <e p="ModifiedHttpClient.cs" t="Include" />
+      </e>
+      <e p="obj" t="ExcludeRecursive">
+        <e p="Debug" t="Include">
+          <e p="netstandard2.0" t="Include">
+            <e p="Softeq.XToolkit.HttpClient.AssemblyInfo.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Softeq.XToolkit.HttpClient.csproj" t="IncludeRecursive" />
+      <e p="Softeq.XToolkit.HttpClient.nuspec" t="Include" />
+    </e>
+  </component>
+</project>
