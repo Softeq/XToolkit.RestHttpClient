@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Softeq.XToolkit.HttpClient.Infrastructure
+namespace Softeq.HttpClient.Common
 {
     public class ForegroundTaskDeferral
     {
@@ -39,7 +39,7 @@ namespace Softeq.XToolkit.HttpClient.Infrastructure
             _isCancelRequested.Set(true);
             _cancellationToken.Cancel();
 
-            TaskCancelationRequested?.Invoke(this, System.EventArgs.Empty);
+            TaskCancelationRequested?.Invoke(this, EventArgs.Empty);
         }
 
         public void Begin()

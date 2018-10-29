@@ -1,16 +1,18 @@
 ﻿// Developed for LilBytes by Softeq Development Corporation
 //
 
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
+    [DataContract]
     public class LoginResultDto
     {
-        [JsonProperty(PropertyName = "access_token")]
+        [DataMember(Name = "access_token")]
         public string AccessToken { get; set; }
 
-        [JsonProperty(PropertyName = "refresh_token")]
+        [DataMember(Name = "refresh_token")]
         public string RefreshToken { get; set; }
     }
 }

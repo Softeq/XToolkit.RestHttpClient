@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace Softeq.XToolkit.HttpClient.Abstract
+namespace Softeq.HttpClient.Common.Executor
 {
     public interface IAsyncExecutionContext
     {

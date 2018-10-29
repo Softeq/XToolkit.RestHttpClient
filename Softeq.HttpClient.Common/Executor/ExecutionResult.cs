@@ -1,9 +1,7 @@
 ﻿// Developed for LilBytes by Softeq Development Corporation
 //
 
-using Softeq.XToolkit.HttpClient.Enums;
-
-namespace Softeq.XToolkit.HttpClient.Infrastructure
+namespace Softeq.HttpClient.Common.Executor
 {
     public class ExecutionResult<T>
     {

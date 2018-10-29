@@ -2,7 +2,7 @@
 //
 
 using System;
-using Softeq.XToolkit.HttpClient;
+using Softeq.HttpClient.Common;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {

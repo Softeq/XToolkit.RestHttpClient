@@ -1,6 +1,6 @@
 ﻿// Developed for LilBytes by Softeq Development Corporation
 //
-namespace Softeq.XToolkit.HttpClient.Enums
+namespace Softeq.HttpClient.Common
 {
     public enum HttpRequestPriority
     {

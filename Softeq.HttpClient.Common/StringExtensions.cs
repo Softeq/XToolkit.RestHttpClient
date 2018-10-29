@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Softeq.XToolkit.HttpClient.Extensions
+namespace Softeq.HttpClient.Common
 {
     public static class StringExtensions
     {

@@ -4,10 +4,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Softeq.XToolkit.HttpClient.Abstract;
-using Softeq.XToolkit.HttpClient.Enums;
 
-namespace Softeq.XToolkit.HttpClient.Infrastructure
+namespace Softeq.HttpClient.Common.Executor
 {
     internal class AsyncExecutionContext : IAsyncExecutionContext
     {

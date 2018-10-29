@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Softeq.XToolkit.HttpClient.Exceptions
+namespace Softeq.HttpClient.Common.Exceptions
 {
     public class HttpException : Exception
     {

@@ -4,7 +4,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Softeq.XToolkit.HttpClient.Infrastructure
+namespace Softeq.HttpClient.Common
 {
     public static class JsonConverter
     {

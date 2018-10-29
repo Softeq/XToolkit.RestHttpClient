@@ -3,9 +3,9 @@
 
 using System.Threading;
 
-namespace Softeq.XToolkit.HttpClient.Infrastructure
+namespace Softeq.HttpClient.Common
 {
-    internal class ThreadSafe<T>
+    public class ThreadSafe<T>
     {
         private readonly ReaderWriterLockSlim _lock;
 

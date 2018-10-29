@@ -4,8 +4,8 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Softeq.XToolkit.HttpClient.Enums;
-using Softeq.XToolkit.HttpClient.Exceptions;
+using Softeq.HttpClient.Common;
+using Softeq.HttpClient.Common.Exceptions;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.HttpClient
@@ -42,7 +42,7 @@ namespace Softeq.XToolkit.HttpClient
 
         public HttpServiceGate(HttpServiceGateConfig config)
         {
-            var httpRequestsScheduler = new HttpRequestsScheduler(config, new Executor());
+            var httpRequestsScheduler = new HttpRequestsScheduler(config);
 
             _client = new ModifiedHttpClient(httpRequestsScheduler);
         }

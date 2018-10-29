@@ -3,7 +3,7 @@
 
 using System.Net;
 
-namespace Softeq.XToolkit.HttpClient
+namespace Softeq.HttpClient.Common
 {
     public class HttpServiceGateConfig
     {

@@ -3,8 +3,7 @@
 
 using System;
 using System.Threading;
-using Softeq.XToolkit.HttpClient.Enums;
-using Softeq.XToolkit.HttpClient.Infrastructure;
+using Softeq.HttpClient.Common;
 
 namespace Softeq.XToolkit.HttpClient.Network
 {

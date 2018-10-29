@@ -7,8 +7,11 @@ namespace Softeq.Sample
     {
         static void Main(string[] args)
         {
-            Task.Run(() => new Program().UseSecureHttpClient());
-            Task.Run(() => new Program().UseSimpleHttpClient());
+            var root = new Program();
+
+            root.UseSecureHttpClient();
+            root.UseSimpleHttpClient();
+
             Console.ReadLine();
         }
 

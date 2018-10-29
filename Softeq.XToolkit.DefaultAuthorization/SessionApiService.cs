@@ -4,11 +4,10 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Softeq.HttpClient.Common;
+using Softeq.HttpClient.Common.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.HttpClient;
-using Softeq.XToolkit.HttpClient.Abstract;
-using Softeq.XToolkit.HttpClient.Enums;
-using Softeq.XToolkit.HttpClient.Infrastructure;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
@@ -20,18 +19,17 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private const string ClientSecretKey = "client_secret";
         private const string UsernameKey = "username";
         private const string RefreshTokenKey = "refresh_token";
+        private const string ContentType = "application/x-www-form-urlencoded";
 
         private readonly AuthConfig _authConfig;
-        private readonly IExecutor _executor;
         private readonly HttpServiceGate _httpClient;
         private readonly IMembershipService _membershipService;
         private readonly ApiEndpoints _apiEndpoints;
 
-        public SessionApiService(AuthConfig authConfig, HttpServiceGate httpServiceGate, IMembershipService membershipService, IExecutor executor)
+        public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig, IMembershipService membershipService)
         {
-            _executor = executor;
             _authConfig = authConfig;
-            _httpClient = httpServiceGate;
+            _httpClient = new HttpServiceGate(httpConfig);
             _membershipService = membershipService;
             _apiEndpoints = new ApiEndpoints(authConfig.BaseUrl);
         }
@@ -40,14 +38,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             ExecutionStatus result = ExecutionStatus.Failed;
 
-            await _executor.ExecuteWithRetryAsync(async executionContext =>
+            await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.Login())
                     .WithData(await LoginContent(login, password));
 
-                request.ContentType = "application/x-www-form-urlencoded";
+                request.ContentType = ContentType;
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request).ConfigureAwait(false);
 
@@ -70,14 +68,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
             _membershipService.ResetTokens();
 
-            await _executor.ExecuteWithRetryAsync(async executionContext =>
+            await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.RefreshToken())
                     .WithData(await GetRefreshTokenRequestDataAsync());
 
-                request.ContentType = "application/x-www-form-urlencoded";
+                request.ContentType = ContentType;
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request).ConfigureAwait(false);
 

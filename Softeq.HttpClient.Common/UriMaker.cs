@@ -10,9 +10,8 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
-using Softeq.XToolkit.HttpClient.Extensions;
 
-namespace Softeq.XToolkit.HttpClient
+namespace Softeq.HttpClient.Common
 {
     public class UriMaker
     {

@@ -1,22 +1,20 @@
 ﻿// Developed for LilBytes by Softeq Development Corporation
 //
+
 using System;
 using System.Threading.Tasks;
+using Softeq.HttpClient.Common;
+using Softeq.HttpClient.Common.Executor;
 using Softeq.XToolkit.HttpClient;
-using Softeq.XToolkit.HttpClient.Abstract;
-using Softeq.XToolkit.HttpClient.Enums;
-using Softeq.XToolkit.HttpClient.Infrastructure;
 
 namespace Softeq.Sample
 {
     public class SimpleHttpClientSampleService
     {
-        readonly IExecutor _executor;
         private readonly HttpServiceGate _http;
 
         public SimpleHttpClientSampleService()
         {
-            _executor = new Executor();
             _http = new HttpServiceGate(new HttpServiceGateConfig());
         }
 
@@ -24,7 +22,7 @@ namespace Softeq.Sample
         {
             var executionResult = new ExecutionResult<string>();
 
-            await _executor.ExecuteWithRetryAsync(
+            await Executor.ExecuteWithRetryAsync(
                 async executionContext =>
                 {
                     var request = new HttpRequest()

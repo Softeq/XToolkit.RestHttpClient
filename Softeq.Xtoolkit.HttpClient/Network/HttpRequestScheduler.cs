@@ -12,8 +12,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Priority_Queue;
+using Softeq.HttpClient.Common;
+using Softeq.HttpClient.Common.Executor;
 using Softeq.XToolkit.HttpClient.Abstract;
-using Softeq.XToolkit.HttpClient.Enums;
 using Softeq.XToolkit.HttpClient.Extensions;
 using Softeq.XToolkit.HttpClient.Infrastructure;
 
@@ -32,7 +33,6 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         private readonly HttpRequestPriority _highestPriority;
         private readonly HttpServiceGateConfig _config;
-        private readonly IExecutor _executor;
 
         private System.Net.Http.HttpClient _simpleHttpClient;
 
@@ -42,11 +42,10 @@ namespace Softeq.XToolkit.HttpClient.Network
         private ConcurrentDictionary<Guid, HttpRequestScheduledTaskBase> _taskIdToTaskMap;
         private Dictionary<HttpRequestPriority, SimplePriorityQueue<HttpRequestScheduledTaskBase>> _perPriorityQueue;
 
-        public HttpRequestsScheduler(HttpServiceGateConfig config, IExecutor executor)
+        public HttpRequestsScheduler(HttpServiceGateConfig config)
         {
             _config = config;
 
-            _executor = executor;
             _supportedStatusCodes = Enum.GetValues(typeof(HttpStatusCode)).Cast<int>().ToImmutableHashSet();
             _tasksQueue = new SimplePriorityQueue<HttpRequestScheduledTaskBase>();
             _highestPriority = EnumExtensions.GetValues<HttpRequestPriority>().First();
@@ -230,7 +229,7 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         private void StartTasksExecutionWorker(int workerIndex, CancellationToken cancellationToken)
         {
-            _executor.InBackgroundThread(
+            Executor.InBackgroundThread(
                 async () => { await PerformTaskExecutionWorkerIterationAsync(workerIndex, cancellationToken).ConfigureAwait(false); });
         }
 
@@ -274,7 +273,7 @@ namespace Softeq.XToolkit.HttpClient.Network
 
                 _priorityToTasksCountMap.AddOrUpdate(task.Priority, 0, (key, value) => value - 1);
 
-                await _executor.ExecuteSilentlyAsync(
+                await Executor.ExecuteSilentlyAsync(
                     async () =>
                     {
                         if (task is CompleteHttpRequestScheduledTask)
@@ -365,7 +364,7 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         private async Task ExecuteAsync(RedirectHttpRequestScheduledTask task)
         {
-            await _executor.ExecuteSilentlyAsync(
+            await Executor.ExecuteSilentlyAsync(
                 async () =>
                 {
                     var client = GetSimpleHttpClient();
@@ -400,7 +399,7 @@ namespace Softeq.XToolkit.HttpClient.Network
         {
             var result = String.Empty;
 
-            await _executor.ExecuteWithRetryAsync(
+            await Executor.ExecuteWithRetryAsync(
                 async executionContext =>
                 {
                     if (httpContent.Headers?.ContentType == null)

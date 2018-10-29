@@ -4,7 +4,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Softeq.XToolkit.HttpClient.Enums;
+using Softeq.HttpClient.Common;
 
 namespace Softeq.XToolkit.HttpClient.Abstract
 {

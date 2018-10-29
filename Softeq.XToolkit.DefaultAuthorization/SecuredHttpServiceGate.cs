@@ -4,12 +4,12 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Softeq.HttpClient.Common;
+using Softeq.HttpClient.Common.Exceptions;
+using Softeq.HttpClient.Common.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
 using Softeq.XToolkit.HttpClient;
-using Softeq.XToolkit.HttpClient.Enums;
-using Softeq.XToolkit.HttpClient.Exceptions;
-using Softeq.XToolkit.HttpClient.Infrastructure;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.DefaultAuthorization
@@ -23,10 +23,12 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig config, IMembershipService membershipService)
         {
-            var httpRequestsScheduler = new HttpRequestsScheduler(config, new Executor());
+            var httpRequestsScheduler = new HttpRequestsScheduler(config);
+
             _client = new ModifiedHttpClient(httpRequestsScheduler);
 
             _sessionApiService = sessionApiService;
+
             _membershipService = membershipService;
 
             _sessionRetrievalDeferral = new ForegroundTaskDeferral();

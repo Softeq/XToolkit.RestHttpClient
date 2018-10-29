@@ -7,23 +7,37 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.HttpClient"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.DefaultAuthorization", "Softeq.XToolkit.DefaultAuthorization\Softeq.XToolkit.DefaultAuthorization.csproj", "{D606F7C0-D475-4BEC-9B1A-44AB71F0C789}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.HttpClient.Common", "Softeq.HttpClient.Common\Softeq.HttpClient.Common.csproj", "{52BFBD07-330F-40DB-AAEB-28B3F2F47F24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		nuget|Any CPU = nuget|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{32FDD017-2AF4-43BA-BFAC-E0E155C20A73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32FDD017-2AF4-43BA-BFAC-E0E155C20A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32FDD017-2AF4-43BA-BFAC-E0E155C20A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32FDD017-2AF4-43BA-BFAC-E0E155C20A73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32FDD017-2AF4-43BA-BFAC-E0E155C20A73}.nuget|Any CPU.ActiveCfg = Debug|Any CPU
 		{A50B5BCD-AC12-4CCF-82AE-5F70773ADA58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A50B5BCD-AC12-4CCF-82AE-5F70773ADA58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A50B5BCD-AC12-4CCF-82AE-5F70773ADA58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A50B5BCD-AC12-4CCF-82AE-5F70773ADA58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A50B5BCD-AC12-4CCF-82AE-5F70773ADA58}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{A50B5BCD-AC12-4CCF-82AE-5F70773ADA58}.nuget|Any CPU.Build.0 = Release|Any CPU
 		{D606F7C0-D475-4BEC-9B1A-44AB71F0C789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D606F7C0-D475-4BEC-9B1A-44AB71F0C789}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D606F7C0-D475-4BEC-9B1A-44AB71F0C789}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D606F7C0-D475-4BEC-9B1A-44AB71F0C789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D606F7C0-D475-4BEC-9B1A-44AB71F0C789}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{D606F7C0-D475-4BEC-9B1A-44AB71F0C789}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{52BFBD07-330F-40DB-AAEB-28B3F2F47F24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52BFBD07-330F-40DB-AAEB-28B3F2F47F24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52BFBD07-330F-40DB-AAEB-28B3F2F47F24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52BFBD07-330F-40DB-AAEB-28B3F2F47F24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52BFBD07-330F-40DB-AAEB-28B3F2F47F24}.nuget|Any CPU.ActiveCfg = Debug|Any CPU
+		{52BFBD07-330F-40DB-AAEB-28B3F2F47F24}.nuget|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

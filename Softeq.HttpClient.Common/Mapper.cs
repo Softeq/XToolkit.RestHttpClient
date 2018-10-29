@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Softeq.XToolkit.HttpClient
+namespace Softeq.HttpClient.Common
 {
     public class Mapper
     {

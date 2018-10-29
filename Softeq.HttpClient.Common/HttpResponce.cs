@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using Softeq.XToolkit.HttpClient.Infrastructure;
 
-namespace Softeq.XToolkit.HttpClient
+namespace Softeq.HttpClient.Common
 {
     public class HttpResponse
     {

@@ -10,5 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj" />
+    <ProjectReference Include="..\Softeq.HttpClient.Common\Softeq.HttpClient.Common.csproj" />
   </ItemGroup>
 </Project>

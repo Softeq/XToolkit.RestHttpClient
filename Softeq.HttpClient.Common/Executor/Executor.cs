@@ -5,17 +5,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
-using Softeq.XToolkit.HttpClient.Abstract;
-using Softeq.XToolkit.HttpClient.Enums;
-using Softeq.XToolkit.HttpClient.Infrastructure;
 
-namespace Softeq.XToolkit.HttpClient
+namespace Softeq.HttpClient.Common.Executor
 {
-    public class Executor : IExecutor
+    public static class Executor
     {
-        private readonly ConcurrentDictionary<string, ExecutionGroup<WorkflowWrappedExecutionContext>> _groupedAsyncExecutions;
+        private static readonly ConcurrentDictionary<string, ExecutionGroup<WorkflowWrappedExecutionContext>> _groupedAsyncExecutions;
 
-        public Executor()
+        static Executor()
         {
             _groupedAsyncExecutions = new ConcurrentDictionary<string, ExecutionGroup<WorkflowWrappedExecutionContext>>();
         }
@@ -28,7 +25,7 @@ namespace Softeq.XToolkit.HttpClient
         /// <param name="allowedAttempts">Show how many times action will be executed again in case of exception</param>
         /// <param name="executionGroup">Indicates the group of actions to which current execution belongs. If something fails in group then notification will appear only once for all actions in group. Use null if action is group independent</param>
         /// <returns></returns>
-        public async Task ExecuteWithRetryAsync(Func<IAsyncExecutionContext, Task> asyncAction, int allowedAttempts = 1, string executionGroup = null)
+        public static async Task ExecuteWithRetryAsync(Func<IAsyncExecutionContext, Task> asyncAction, int allowedAttempts = 1, string executionGroup = null)
         {
             if (allowedAttempts < 1)
             {
@@ -59,7 +56,7 @@ namespace Softeq.XToolkit.HttpClient
             await PerformExecutionWorkflowAsync(workflow).ConfigureAwait(false);
         }
 
-        public async Task ExecuteSilentlyAsync(Func<Task> asyncAction, Action<Exception> exceptionCallback = null)
+        public static async Task ExecuteSilentlyAsync(Func<Task> asyncAction, Action<Exception> exceptionCallback = null)
         {
             try
             {
@@ -71,7 +68,7 @@ namespace Softeq.XToolkit.HttpClient
             }
         }
 
-        public void InBackgroundThread(Func<Task> asyncAction)
+        public static void InBackgroundThread(Func<Task> asyncAction)
         {
             Task.Run(() =>
                 ExecuteWithRetryAsync(
@@ -81,7 +78,7 @@ namespace Softeq.XToolkit.HttpClient
                     }));
         }
 
-        public void InBackgroundThread(Action action)
+        public static void InBackgroundThread(Action action)
         {
             Task.Run(() =>
                 ExecuteWithRetryAsync(
@@ -91,7 +88,7 @@ namespace Softeq.XToolkit.HttpClient
                     }));
         }
 
-        public async Task ExecuteActionAsync(OncePerIntervalAction oncePerIntervalAction)
+        public static async Task ExecuteActionAsync(OncePerIntervalAction oncePerIntervalAction)
         {
             if (oncePerIntervalAction == null)
             {
@@ -107,7 +104,7 @@ namespace Softeq.XToolkit.HttpClient
             }
         }
 
-        private async Task PerformExecutionWorkflowAsync(WorkflowWrappedExecutionContext workflow)
+        private static async Task PerformExecutionWorkflowAsync(WorkflowWrappedExecutionContext workflow)
         {
             workflow.Context.ExecutionsCount = 0;
 
@@ -125,7 +122,7 @@ namespace Softeq.XToolkit.HttpClient
             DeleteContextFromGroupIfExists(workflow);
         }
 
-        private async Task PerformExecutionWorkflowAsync(ExecutionGroup<WorkflowWrappedExecutionContext> group)
+        private static async Task PerformExecutionWorkflowAsync(ExecutionGroup<WorkflowWrappedExecutionContext> group)
         {
             foreach (var context in group.Workflows.Values.Where(cnt => cnt.Context.Status != ExecutionContextStatus.Running))
             {
@@ -133,7 +130,7 @@ namespace Softeq.XToolkit.HttpClient
             }
         }
 
-        private void DeleteContextFromGroupIfExists(WorkflowWrappedExecutionContext workflow)
+        private static void DeleteContextFromGroupIfExists(WorkflowWrappedExecutionContext workflow)
         {
             var group = GetGroupForContext(workflow);
 
@@ -152,14 +149,14 @@ namespace Softeq.XToolkit.HttpClient
             _groupedAsyncExecutions.TryRemove(group.Name, out _);
         }
 
-        private ExecutionGroup<WorkflowWrappedExecutionContext> GetGroupForContext(WorkflowWrappedExecutionContext workflow)
+        private static ExecutionGroup<WorkflowWrappedExecutionContext> GetGroupForContext(WorkflowWrappedExecutionContext workflow)
         {
             return !string.IsNullOrEmpty(workflow.ExecutionGroup) && _groupedAsyncExecutions.ContainsKey(workflow.ExecutionGroup)
                 ? _groupedAsyncExecutions[workflow.ExecutionGroup]
                 : null;
         }
 
-        private async Task<Exception> ExecuteMultipleTimesAsync(WorkflowWrappedExecutionContext workflow)
+        private static async Task<Exception> ExecuteMultipleTimesAsync(WorkflowWrappedExecutionContext workflow)
         {
             try
             {
