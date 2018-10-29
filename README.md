@@ -39,10 +39,9 @@ You can register class as singlton and then use it as following example:
 Usage:
 
 ```csharp
-var _executor = new Executor();
 var allowAttempts = 10;
 
-await _executor.ExecuteWithRetryAsync(async executionContext =>
+await Executor.ExecuteWithRetryAsync(async executionContext =>
 {
     //make your http request call, if it fail executor handle it
 }, allowAttempts);
@@ -224,7 +223,7 @@ var httpServiceGate = new HttpServiceGate(httpConfig);
 
 var executionResult = new ExecutionResult<string>();
 
-await _executor.ExecuteWithRetryAsync(
+await Executor.ExecuteWithRetryAsync(
      async executionContext =>
      {
          var request = new HttpRequest()
