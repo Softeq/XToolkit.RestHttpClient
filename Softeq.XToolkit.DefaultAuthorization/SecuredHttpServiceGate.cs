@@ -1,7 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
-
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Softeq.HttpClient.Common;

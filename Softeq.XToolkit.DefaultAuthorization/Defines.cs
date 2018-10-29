@@ -1,5 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
+﻿
 namespace Softeq.XToolkit.DefaultAuthorization
 {
     public static class Defines

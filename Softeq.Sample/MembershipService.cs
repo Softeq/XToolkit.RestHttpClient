@@ -1,7 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
-
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
 namespace Softeq.Sample

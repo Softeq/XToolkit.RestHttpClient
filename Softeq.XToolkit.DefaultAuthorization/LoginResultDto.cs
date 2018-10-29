@@ -1,7 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
-
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace Softeq.XToolkit.DefaultAuthorization

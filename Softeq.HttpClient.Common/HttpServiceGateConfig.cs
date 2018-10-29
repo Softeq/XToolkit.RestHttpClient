@@ -1,7 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
-
-using System.Net;
+﻿using System.Net;
 
 namespace Softeq.HttpClient.Common
 {

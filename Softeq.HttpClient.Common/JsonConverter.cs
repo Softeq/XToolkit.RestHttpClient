@@ -1,7 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
-
-using System;
+﻿using System;
 using Newtonsoft.Json;
 
 namespace Softeq.HttpClient.Common

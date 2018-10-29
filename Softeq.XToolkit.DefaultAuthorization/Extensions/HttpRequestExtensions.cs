@@ -1,7 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
-
-using Softeq.HttpClient.Common;
+﻿using Softeq.HttpClient.Common;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
 namespace Softeq.XToolkit.DefaultAuthorization.Extensions

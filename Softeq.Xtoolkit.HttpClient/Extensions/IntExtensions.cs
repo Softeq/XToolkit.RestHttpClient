@@ -1,5 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
+﻿
 namespace Softeq.XToolkit.HttpClient.Extensions
 {
     internal static class IntExtensions

@@ -1,7 +1,4 @@
-﻿// Developed for LilBytes by Softeq Development Corporation
-//
-
-using Softeq.XToolkit.HttpClient.Network;
+﻿using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.HttpClient.Infrastructure
 {
