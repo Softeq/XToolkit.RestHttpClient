@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Softeq.XToolkit.DefaultAuthorization" Version="1.0.0" />
+    <ProjectReference Include="..\Softeq.XToolkit.DefaultAuthorization\Softeq.XToolkit.DefaultAuthorization.csproj" />
   </ItemGroup>
 </Project>
