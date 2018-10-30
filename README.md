@@ -24,7 +24,7 @@ Install-Package Softeq.XToolkit.DefaultAuthorization
 Install-Package Softeq.XToolkit.HttpClient
 ```
 
-ALso you can manually download nugets
+Also you can manually download nugets
 
 [HttpClient](https://www.nuget.org/packages/Softeq.XToolkit.HttpClient/)
 
