@@ -20,8 +20,15 @@ An easy to use library providing some advanced api to use http client for your m
 If you want to work with library you can add it to your project as a nuget package.
 
 ```
-Install-Package Softeq.XToolkit.RestHttpClient
+Install-Package Softeq.XToolkit.DefaultAuthorization
+Install-Package Softeq.XToolkit.HttpClient
 ```
+
+ALso you can manually download nugets
+
+[HttpClient](https://www.nuget.org/packages/Softeq.XToolkit.HttpClient/)
+
+[DefaultAuthorization](https://www.nuget.org/packages/Softeq.XToolkit.DefaultAuthorization/)
 
 #### Components
 
