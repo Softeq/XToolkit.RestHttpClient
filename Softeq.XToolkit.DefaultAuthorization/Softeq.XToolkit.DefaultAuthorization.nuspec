@@ -2,7 +2,7 @@
 <package >
     <metadata>
     <id>Softeq.XToolkit.DefaultAuthorization</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <title>Custom Http client</title>
     <authors>Softeq Development Corp.</authors>
     <owners>Softeq Development Corp.</owners>

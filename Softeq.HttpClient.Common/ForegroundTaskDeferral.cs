@@ -26,7 +26,7 @@ namespace Softeq.HttpClient.Common
             _isCancelRequested = new ThreadSafe<bool>(false);
             _isInProgress = new ThreadSafe<bool>(false);
 
-            _taskCompletition = new TaskCompletionSource<bool>();
+            _taskCompletition = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _cancellationToken = new CancellationTokenSource();
         }
