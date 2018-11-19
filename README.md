@@ -12,6 +12,7 @@ An easy to use library providing some advanced api to use http client for your m
     - [Uri Builder](#uri-builder)
     - [Json Converter](#json-converter)
     - [Http Client](#http-client)
+    - [Message Hub](#message-hub)
 - [License](#license)
 - [Credits](#credits)
 
@@ -253,6 +254,36 @@ if (executionResult.Status == ExecutionStatus.NotCompleted)
 
 return executionResult;
 ```
+
+### Message Hub
+
+This is type based message hub.
+
+```csharp
+public class MyMessage
+{
+    public string Name {get;} = "Kain";
+}
+
+public class MyClass : IMessageHandler<MyMessage>
+{
+    void MyClass(IMessageRoot messageRoot)
+    {
+       messageRoot.Subscribe<MyMessage>(this);
+    }
+
+    public void Handle(MyMessage message)
+    {
+        Console.WriteLine(message.Name);
+    }
+}
+
+IMessageRoot messageRoot = new TypeBasedMessageRoot();
+var myClass = new MyClass(messageRoot);
+messageRoot.Raise(new MyMessage());
+```
+also supported async version.
+
 
 ## License
 Library is made available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
