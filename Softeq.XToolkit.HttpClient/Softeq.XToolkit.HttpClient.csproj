@@ -4,8 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Abstract\" />
-    <Folder Include="Enums" />
-    <Folder Include="Enums\" />
     <Folder Include="Extensions\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Network\" />
