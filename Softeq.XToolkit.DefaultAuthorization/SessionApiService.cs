@@ -101,7 +101,38 @@ namespace Softeq.XToolkit.DefaultAuthorization
             {
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
-                    .SetUri(_apiEndpoints.Register());
+                    .SetUri(_apiEndpoints.Register())
+                    .WithData(JsonConverter.Serialize(new
+                    {
+                        email = login,
+                        password = password,
+                        isAcceptedTermsOfService = true
+                    }));
+
+                request.ContentType = ContentType;
+
+                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
+                    .ConfigureAwait(false);
+
+                if (response.IsSuccessful)
+                {
+                    result = ExecutionStatus.Completed;
+                }
+            }, 3);
+
+            return result;
+        }
+
+        public async Task<ExecutionStatus> ForgotPassword(string login)
+        {
+            var result = ExecutionStatus.Failed;
+
+            await Executor.ExecuteWithRetryAsync(async executionContext =>
+            {
+                var request = new HttpRequest()
+                    .SetMethod(HttpMethods.Post)
+                    .SetUri(_apiEndpoints.Register())
+                    .WithData(JsonConverter.Serialize(new {email = login}));
 
                 request.ContentType = ContentType;
 

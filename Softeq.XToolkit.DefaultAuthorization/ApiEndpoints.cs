@@ -1,5 +1,6 @@
 ﻿using System;
 using Softeq.HttpClient.Common;
+using api = Softeq.XToolkit.DefaultAuthorization.Defines.Api;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
@@ -16,18 +17,22 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public Uri RefreshToken()
         {
-            return _uriMaker.Combine(_baseUrl, Defines.Api.Connect.ApiRoot, Defines.Api.Connect.Token.ApiRoot);
+            return _uriMaker.Combine(_baseUrl, api.Connect.ApiRoot, api.Connect.Token.ApiRoot);
         }
 
         public Uri Login()
         {
-            return _uriMaker.Combine(_baseUrl, Defines.Api.Connect.ApiRoot, Defines.Api.Connect.Token.ApiRoot);
+            return _uriMaker.Combine(_baseUrl, api.Connect.ApiRoot, api.Connect.Token.ApiRoot);
         }
 
         public Uri Register()
         {
-            return _uriMaker.Combine(_baseUrl, Defines.Api.ApiRoot, Defines.Api.Account.ApiRoot,
-                Defines.Api.Account.Register.ApiRoot);
+            return _uriMaker.Combine(_baseUrl, api.Account.ApiRoot, api.Account.Register.ApiRoot);
+        }
+
+        public Uri ForgotPassword()
+        {
+            return _uriMaker.Combine(_baseUrl, api.Account.ApiRoot, api.Account.ForgotPassword.ApiRoot);
         }
     }
 }

@@ -4,8 +4,6 @@
     {
         public static class Api
         {
-            public const string ApiRoot = "api";
-
             public static class Account
             {
                 public const string ApiRoot = "account";
@@ -13,6 +11,11 @@
                 public static class Register
                 {
                     public const string ApiRoot = "register";
+                }
+
+                public static class ForgotPassword
+                {
+                    public const string ApiRoot = "forgot-password";
                 }
             }
 
