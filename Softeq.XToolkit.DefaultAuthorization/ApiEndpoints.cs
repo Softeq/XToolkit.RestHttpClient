@@ -16,12 +16,18 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public Uri RefreshToken()
         {
-            return _uriMaker.Combine(_baseUrl, Defines.Api.Connect.ApiEntry, Defines.Api.Connect.Token.ApiEntry);
+            return _uriMaker.Combine(_baseUrl, Defines.Api.Connect.ApiRoot, Defines.Api.Connect.Token.ApiRoot);
         }
 
         public Uri Login()
         {
-            return _uriMaker.Combine(_baseUrl, Defines.Api.Connect.ApiEntry, Defines.Api.Connect.Token.ApiEntry);
+            return _uriMaker.Combine(_baseUrl, Defines.Api.Connect.ApiRoot, Defines.Api.Connect.Token.ApiRoot);
+        }
+
+        public Uri Register()
+        {
+            return _uriMaker.Combine(_baseUrl, Defines.Api.ApiRoot, Defines.Api.Account.ApiRoot,
+                Defines.Api.Account.Register.ApiRoot);
         }
     }
 }

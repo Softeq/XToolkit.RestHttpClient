@@ -1,10 +1,9 @@
 ﻿using System.Runtime.Serialization;
-using Newtonsoft.Json;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
     [DataContract]
-    public class LoginResultDto
+    public class LoginData
     {
         [DataMember(Name = "access_token")]
         public string AccessToken { get; set; }

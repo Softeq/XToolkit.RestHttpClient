@@ -23,7 +23,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private readonly IMembershipService _membershipService;
         private readonly ApiEndpoints _apiEndpoints;
 
-        public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig, IMembershipService membershipService)
+        public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig,
+            IMembershipService membershipService)
         {
             _authConfig = authConfig;
             _httpClient = new HttpServiceGate(httpConfig);
@@ -33,24 +34,26 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public async Task<ExecutionStatus> LoginAsync(string login, string password)
         {
-            ExecutionStatus result = ExecutionStatus.Failed;
+            var result = ExecutionStatus.Failed;
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.Login())
-                    .WithData(await LoginContent(login, password).ConfigureAwait(false));
+                    .WithData(await GetLogInContent(login, password).ConfigureAwait(false));
 
                 request.ContentType = ContentType;
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request).ConfigureAwait(false);
+                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
+                    .ConfigureAwait(false);
 
                 if (response.IsSuccessful && response.Content != null)
                 {
-                    var tokens = JsonConverter.Deserialize<LoginResultDto>(response.Content);
+                    var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken).ConfigureAwait(false);
+                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken)
+                        .ConfigureAwait(false);
 
                     result = ExecutionStatus.Completed;
                 }
@@ -61,7 +64,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public async Task<ExecutionStatus> RefreshTokenAsync()
         {
-            ExecutionStatus result = ExecutionStatus.Failed;
+            var result = ExecutionStatus.Failed;
 
             _membershipService.ResetTokens();
 
@@ -74,13 +77,15 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                 request.ContentType = ContentType;
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request).ConfigureAwait(false);
+                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
+                    .ConfigureAwait(false);
 
                 if (response.IsSuccessful && response.Content != null)
                 {
-                    var tokens = JsonConverter.Deserialize<LoginResultDto>(response.Content);
+                    var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken).ConfigureAwait(false);
+                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken)
+                        .ConfigureAwait(false);
                     result = ExecutionStatus.Completed;
                 }
             }, 3);
@@ -88,7 +93,31 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
-        private Task<string> LoginContent(string login, string password)
+        public async Task<ExecutionStatus> RegisterAccount(string login, string password)
+        {
+            var result = ExecutionStatus.Failed;
+
+            await Executor.ExecuteWithRetryAsync(async executionContext =>
+            {
+                var request = new HttpRequest()
+                    .SetMethod(HttpMethods.Post)
+                    .SetUri(_apiEndpoints.Register());
+
+                request.ContentType = ContentType;
+
+                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
+                    .ConfigureAwait(false);
+
+                if (response.IsSuccessful)
+                {
+                    result = ExecutionStatus.Completed;
+                }
+            }, 3);
+
+            return result;
+        }
+
+        private Task<string> GetLogInContent(string login, string password)
         {
             var dict = new Dictionary<string, string>
             {
