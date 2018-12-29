@@ -10,7 +10,7 @@ namespace Softeq.Sample
 {
     public class SecureHttpClientExecutionSampleService
     {
-        private readonly IMembershipService _membershipService;
+        private readonly ITokenManager _membershipService;
         private readonly SessionApiService _sessionApiService;
         private readonly SecuredHttpServiceGate _http;
 

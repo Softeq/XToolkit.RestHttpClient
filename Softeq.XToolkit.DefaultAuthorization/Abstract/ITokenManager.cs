@@ -3,7 +3,7 @@
 namespace Softeq.XToolkit.DefaultAuthorization.Abstract
 {
     //TODO: need to hide internally Token/RefreshToken
-    public interface IMembershipService
+    public interface ITokenManager
     {
         string Token { get; }
         string RefreshToken { get; }

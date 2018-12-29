@@ -3,7 +3,7 @@ using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
 namespace Softeq.Sample
 {
-    public class MembershipService : IMembershipService
+    public class MembershipService : ITokenManager
     {
         private const string AccessTokenKey = "AccessToken";
         private const string RefreshTokenKey = "RefreshToken";

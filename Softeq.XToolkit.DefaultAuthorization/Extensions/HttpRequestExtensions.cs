@@ -8,7 +8,7 @@ namespace Softeq.XToolkit.DefaultAuthorization.Extensions
         private const string AuthorizationKey = "Authorization";
         private const string BearerKey = "Bearer";
 
-        public static HttpRequest WithCredentials(this HttpRequest target, IMembershipService membershipService)
+        public static HttpRequest WithCredentials(this HttpRequest target, ITokenManager membershipService)
         {
             target.CustomHeaders.Add(AuthorizationKey, $"{BearerKey} {membershipService.Token}");
             return target;

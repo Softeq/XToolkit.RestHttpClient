@@ -20,11 +20,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         private readonly AuthConfig _authConfig;
         private readonly HttpServiceGate _httpClient;
-        private readonly IMembershipService _membershipService;
+        private readonly ITokenManager _membershipService;
         private readonly ApiEndpoints _apiEndpoints;
 
         public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig,
-            IMembershipService membershipService)
+            ITokenManager membershipService)
         {
             _authConfig = authConfig;
             _httpClient = new HttpServiceGate(httpConfig);

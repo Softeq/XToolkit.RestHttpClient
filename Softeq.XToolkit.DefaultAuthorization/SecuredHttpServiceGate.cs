@@ -6,19 +6,18 @@ using Softeq.HttpClient.Common.Exceptions;
 using Softeq.HttpClient.Common.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
-using Softeq.XToolkit.HttpClient;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
     public class SecuredHttpServiceGate
     {
-        private readonly IMembershipService _membershipService;
+        private readonly ITokenManager _membershipService;
         private readonly SessionApiService _sessionApiService;
         private ForegroundTaskDeferral _sessionRetrievalDeferral;
         private readonly ModifiedHttpClient _client;
 
-        public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig config, IMembershipService membershipService)
+        public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig config, ITokenManager membershipService)
         {
             var httpRequestsScheduler = new HttpRequestsScheduler(config);
 
