@@ -8,4 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Softeq.XToolkit.DefaultAuthorization\Softeq.XToolkit.DefaultAuthorization.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ISecureStorage.cs" />
+  </ItemGroup>
 </Project>

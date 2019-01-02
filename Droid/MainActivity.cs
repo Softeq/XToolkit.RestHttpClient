@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Widget;
 using Android.OS;
+using Softeq.Sample;
 
 namespace Sample.Droid
 {
@@ -9,7 +10,7 @@ namespace Sample.Droid
     {
         int count = 1;
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected async override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
@@ -21,6 +22,10 @@ namespace Sample.Droid
             Button button = FindViewById<Button>(Resource.Id.myButton);
 
             button.Click += delegate { button.Text = $"{count++} clicks!"; };
+
+            var test = new TestClass();
+
+            await test.StartAsync(new Softeq.XToolkit.iOS.DefaultAuthorization.SecuredTokenManager());
         }
     }
 }

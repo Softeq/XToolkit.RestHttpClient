@@ -1,60 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<!--Update with your target such as: Xamarin.iOS10 or MonoAndroid80 or Xamarin.Mac20-->
-		<TargetFrameworks>netstandard2.0;Xamarin.iOS10;MonoAndroid80;MonoAndroid81</TargetFrameworks>
-		<!--Assembly and Namespace info -->
-		<AssemblyName>Softeq.XToolkit.DefaultAuthorization</AssemblyName>
-		<RootNamespace>Softeq.XToolkit.DefaultAuthorization</RootNamespace>
-		<Product>$(AssemblyName) ($(TargetFramework))</Product>
-		<AssemblyVersion>1.0.0.0</AssemblyVersion>
-		<AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
-		<Version>1.0.0.0</Version>
-		<NeutralLanguage>en</NeutralLanguage>
-		<!--Don't auto add files for me, I will tell you -->
-		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-		<!-- Helper to add defines-->
-		<DefineConstants>$(DefineConstants);</DefineConstants>
-		<!--Assembly and Namespace info -->
-		<!--Version of C# to use -->
-		<LangVersion>default</LangVersion>
-	</PropertyGroup>
-	<!-- Define what happens on build and release -->
-	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-		<DebugType>full</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-		<GenerateDocumentationFile>false</GenerateDocumentationFile>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-		<DebugType>pdbonly</DebugType>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<!-- If we want a nuget package add this
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-     -->
-	</PropertyGroup>
-	<ItemGroup>
-		<Compile Include="Abstract\ITokenManager.cs" />
-		<Compile Include="Extensions\HttpRequestExtensions.cs" />
-		<Compile Include="ApiEndpoints.cs" />
-		<Compile Include="AuthConfig.cs" />
-		<Compile Include="Defines.cs" />
-		<Compile Include="LoginData.cs" />
-		<Compile Include="SecuredHttpServiceGate.cs" />
-		<Compile Include="SessionApiService.cs" />
-	</ItemGroup>
-	<ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-		<Compile Include="**\*.android.cs" />
-	</ItemGroup>
-	<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-		<Compile Include="**\*.ios.cs" />
-	</ItemGroup>
-	<Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
-	<ItemGroup>
-		<Folder Include="Abstract\" />
-		<Folder Include="Extensions\" />
-	</ItemGroup>
-    <ItemGroup>
-		<ProjectReference Include="..\Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj" />
-		<ProjectReference Include="..\Softeq.HttpClient.Common\Softeq.HttpClient.Common.csproj" />
-	</ItemGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Softeq.XToolkit.DefaultAuthorization</PackageId>
+    <PackageVersion>1.1</PackageVersion>
+    <Authors>Softeq Development Corp.</Authors>
+    <PackageLicenseUrl>https://github.com/Softeq/XToolkit.RestHttpClient/blob/master/LICENSE</PackageLicenseUrl>
+    <Owners>Softeq Development Corp.</Owners>
+    <PackageProjectUrl>https://github.com/Softeq/XToolkit.RestHttpClient</PackageProjectUrl>
+    <PackageTags>http client softeq xtoolkit XToolkit</PackageTags>
+    <Title>Custom Http client</Title>
+    <Description>Http infrastructure for mobile applications</Description>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Folder Include="Abstract\" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj" />
+    <ProjectReference Include="..\Softeq.HttpClient.Common\Softeq.HttpClient.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
+  </ItemGroup>
 </Project>

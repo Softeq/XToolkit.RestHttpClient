@@ -17,24 +17,26 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private const string UsernameKey = "username";
         private const string RefreshTokenKey = "refresh_token";
         private const string ContentType = "application/x-www-form-urlencoded";
+        private const int RetryNumber = 3;
 
         private readonly AuthConfig _authConfig;
         private readonly HttpServiceGate _httpClient;
-        private readonly ITokenManager _membershipService;
+        private readonly ISecuredTokenManager _tokenService;
         private readonly ApiEndpoints _apiEndpoints;
 
-        public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig,
-            ITokenManager membershipService)
+        public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig, ISecuredTokenManager tokenService)
         {
             _authConfig = authConfig;
             _httpClient = new HttpServiceGate(httpConfig);
-            _membershipService = membershipService;
+            _tokenService = tokenService;
             _apiEndpoints = new ApiEndpoints(authConfig.BaseUrl);
         }
 
         public async Task<ExecutionStatus> LoginAsync(string login, string password)
         {
             var result = ExecutionStatus.Failed;
+
+            _tokenService.ResetTokens();
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
@@ -52,12 +54,12 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken)
+                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken)
                         .ConfigureAwait(false);
 
                     result = ExecutionStatus.Completed;
                 }
-            }, 3);
+            }, RetryNumber);
 
             return result;
         }
@@ -66,7 +68,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             var result = ExecutionStatus.Failed;
 
-            _membershipService.ResetTokens();
+            _tokenService.ResetTokens();
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
@@ -84,13 +86,19 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _membershipService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken)
+                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken)
                         .ConfigureAwait(false);
                     result = ExecutionStatus.Completed;
                 }
-            }, 3);
+            }, RetryNumber);
 
             return result;
+        }
+
+        public Task LogoutAsync()
+        {
+            _tokenService.ResetTokens();
+            return Task.CompletedTask;
         }
 
         public async Task<ExecutionStatus> RegisterAccount(string login, string password)
@@ -118,7 +126,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     result = ExecutionStatus.Completed;
                 }
-            }, 3);
+            }, RetryNumber);
 
             return result;
         }
@@ -132,7 +140,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.Register())
-                    .WithData(JsonConverter.Serialize(new {email = login}));
+                    .WithData(JsonConverter.Serialize(new { email = login }));
 
                 request.ContentType = ContentType;
 
@@ -143,7 +151,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     result = ExecutionStatus.Completed;
                 }
-            }, 3);
+            }, RetryNumber);
 
             return result;
         }
@@ -167,7 +175,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 {ClientIdKey, _authConfig.ClientId},
-                {RefreshTokenKey, _membershipService.RefreshToken},
+                {RefreshTokenKey, _tokenService.RefreshToken},
                 {ClientSecretKey, _authConfig.ClientSecret},
                 {GrantTypeKey, RefreshTokenKey}
             }).ReadAsStringAsync();

@@ -13,6 +13,13 @@ namespace Softeq.XToolkit.HttpClient
 
         private readonly ModifiedHttpClient _client;
 
+        public HttpServiceGate(HttpServiceGateConfig config)
+        {
+            var httpRequestsScheduler = new HttpRequestsScheduler(config);
+
+            _client = new ModifiedHttpClient(httpRequestsScheduler);
+        }
+        
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority, HttpRequest request, int timeout = 0, params HttpStatusCode[] ignoreErrorCodes)
         {
             var response = await _client.ExecuteAsStringResponseAsync(priority, request, timeout).ConfigureAwait(false);
@@ -35,13 +42,6 @@ namespace Softeq.XToolkit.HttpClient
             var response = await ExecuteApiCallAsync(priority, request).ConfigureAwait(false);
 
             return response.ParseContentAsJson<T>();
-        }
-
-        public HttpServiceGate(HttpServiceGateConfig config)
-        {
-            var httpRequestsScheduler = new HttpRequestsScheduler(config);
-
-            _client = new ModifiedHttpClient(httpRequestsScheduler);
         }
     }
 }

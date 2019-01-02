@@ -296,7 +296,9 @@ namespace Softeq.XToolkit.HttpClient.Network
                 return;
             }
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             PerformTaskExecutionWorkerIterationAsync(workerIndex, cancellationToken);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private bool IsHighPriorityOnlyWorker(int workerIndex)
@@ -349,7 +351,7 @@ namespace Softeq.XToolkit.HttpClient.Network
                     task.Response.Content = await GetStringContent(serverResponse.Content).ConfigureAwait(false);
                 }
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 task.Response = new HttpResponse
                 {

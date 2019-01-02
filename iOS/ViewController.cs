@@ -1,5 +1,6 @@
 ﻿using System;
-
+using Softeq.Sample;
+using Softeq.XToolkit.iOS.DefaultAuthorization;
 using UIKit;
 
 namespace Sample.iOS
@@ -12,23 +13,24 @@ namespace Sample.iOS
         {
         }
 
-        public override void ViewDidLoad()
+        public async override void ViewDidLoad()
         {
             base.ViewDidLoad();
 
-            // Perform any additional setup after loading the view, typically from a nib.
             Button.AccessibilityIdentifier = "myButton";
             Button.TouchUpInside += delegate
             {
                 var title = string.Format("{0} clicks!", count++);
                 Button.SetTitle(title, UIControlState.Normal);
             };
+
+            var testClass = new TestClass();
+            await testClass.StartAsync(new SecuredTokenManager());
         }
 
         public override void DidReceiveMemoryWarning()
         {
             base.DidReceiveMemoryWarning();
-            // Release any cached data, images, etc that aren't in use.        
         }
     }
 }

@@ -12,22 +12,17 @@ namespace Softeq.XToolkit.DefaultAuthorization
 {
     public class SecuredHttpServiceGate
     {
-        private readonly ITokenManager _membershipService;
+        private readonly ISecuredTokenManager _tokenManager;
         private readonly SessionApiService _sessionApiService;
         private ForegroundTaskDeferral _sessionRetrievalDeferral;
         private readonly ModifiedHttpClient _client;
 
-        public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig config, ITokenManager membershipService)
+        public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig httpConfig, ISecuredTokenManager tokenManager = null)
         {
-            var httpRequestsScheduler = new HttpRequestsScheduler(config);
-
-            _client = new ModifiedHttpClient(httpRequestsScheduler);
-
+            _tokenManager = tokenManager;
             _sessionApiService = sessionApiService;
-
-            _membershipService = membershipService;
-
             _sessionRetrievalDeferral = new ForegroundTaskDeferral();
+            _client = new ModifiedHttpClient(new HttpRequestsScheduler(httpConfig));
         }
 
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority, HttpRequest request, int timeout = 0, params HttpStatusCode[] ignoreErrorCodes)
@@ -39,7 +34,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 return response;
             }
 
-            //try to retrive session again if token is not valid
+            //try to retrieve session again if token is not valid
             if (!IsSessionValid(response))
             {
                 //if session request is already in progress, then await it
@@ -51,13 +46,13 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                     if (executionStatus == ExecutionStatus.Completed)
                     {
-                        request.WithCredentials(_membershipService);
+                        request.WithCredentials(_tokenManager);
                         response = await _client.ExecuteAsStringResponseAsync(priority, request).ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    request.WithCredentials(_membershipService);
+                    request.WithCredentials(_tokenManager);
 
                     response = await _client.ExecuteAsStringResponseAsync(priority, request).ConfigureAwait(false);
                 }

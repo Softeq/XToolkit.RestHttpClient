@@ -1,5 +1,4 @@
-﻿
-namespace Softeq.XToolkit.DefaultAuthorization
+﻿namespace Softeq.XToolkit.DefaultAuthorization
 {
     public class AuthConfig
     {
