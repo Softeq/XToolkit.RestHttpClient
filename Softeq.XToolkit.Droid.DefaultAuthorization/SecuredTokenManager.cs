@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Plugin.SecureStorage;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
-namespace Softeq.XToolkit.iOS.DefaultAuthorization
+namespace Softeq.XToolkit.Droid.DefaultAuthorization
 {
     public class SecuredTokenManager : ISecuredTokenManager
     {

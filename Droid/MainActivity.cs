@@ -2,6 +2,7 @@
 using Android.Widget;
 using Android.OS;
 using Softeq.Sample;
+using Softeq.XToolkit.Droid.DefaultAuthorization;
 
 namespace Sample.Droid
 {
@@ -10,7 +11,7 @@ namespace Sample.Droid
     {
         int count = 1;
 
-        protected async override void OnCreate(Bundle savedInstanceState)
+        protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
@@ -24,9 +25,7 @@ namespace Sample.Droid
             button.Click += delegate { button.Text = $"{count++} clicks!"; };
 
             var test = new TestClass();
-
-            await test.StartAsync(new Softeq.XToolkit.iOS.DefaultAuthorization.SecuredTokenManager());
+            await test.StartAsync(new SecuredTokenManager());
         }
     }
 }
-
