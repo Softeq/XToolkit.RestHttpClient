@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Softeq.HttpClient.Common;
-using Softeq.HttpClient.Common.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.HttpClient;
+using System.Net;
+using Softeq.XToolkit.CrossCutting;
+using Softeq.XToolkit.CrossCutting.Executor;
+using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
@@ -17,6 +19,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private const string UsernameKey = "username";
         private const string RefreshTokenKey = "refresh_token";
         private const string ContentType = "application/x-www-form-urlencoded";
+        private const string ApplicationJsonContentType = "application/json";
         private const int RetryNumber = 3;
 
         private readonly AuthConfig _authConfig;
@@ -101,9 +104,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return Task.CompletedTask;
         }
 
-        public async Task<ExecutionStatus> RegisterAccount(string login, string password)
+        public async Task<RegistrationStatus> RegisterAccount(string login, string password)
         {
-            var result = ExecutionStatus.Failed;
+            var result = RegistrationStatus.Undefined;
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
@@ -117,14 +120,18 @@ namespace Softeq.XToolkit.DefaultAuthorization
                         isAcceptedTermsOfService = true
                     }));
 
-                request.ContentType = ContentType;
+                request.ContentType = ApplicationJsonContentType;
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
+                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request, 0, HttpStatusCode.Conflict)
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
                 {
-                    result = ExecutionStatus.Completed;
+                    result = RegistrationStatus.Succussfull;
+                }
+                else
+                {
+                    result = HandleRegistrationError(response.Content);
                 }
             }, RetryNumber);
 
@@ -142,7 +149,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     .SetUri(_apiEndpoints.Register())
                     .WithData(JsonConverter.Serialize(new { email = login }));
 
-                request.ContentType = ContentType;
+                request.ContentType = ApplicationJsonContentType;
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
                     .ConfigureAwait(false);
@@ -179,6 +186,27 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {ClientSecretKey, _authConfig.ClientSecret},
                 {GrantTypeKey, RefreshTokenKey}
             }).ReadAsStringAsync();
+        }
+
+        private RegistrationStatus HandleRegistrationError(string responseContent)
+        {
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                return RegistrationStatus.Failed;
+            }
+
+            var data = JsonConverter.Deserialize<List<ErrorData>>(responseContent);
+
+            if (data == null || data.Count == 0)
+            {
+                return RegistrationStatus.Failed;
+            }
+            if (data[0].Code == 5001)
+            {
+                return RegistrationStatus.UserAlreadyExists;
+            }
+
+            return RegistrationStatus.Failed;
         }
     }
 }

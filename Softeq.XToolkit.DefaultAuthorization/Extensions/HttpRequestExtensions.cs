@@ -1,4 +1,4 @@
-﻿using Softeq.HttpClient.Common;
+﻿using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
 namespace Softeq.XToolkit.DefaultAuthorization.Extensions

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Softeq.HttpClient.Common;
-using Softeq.HttpClient.Common.Exceptions;
+using Softeq.XToolkit.CrossCutting;
+using Softeq.XToolkit.CrossCutting.Exceptions;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.HttpClient
@@ -28,7 +28,7 @@ namespace Softeq.XToolkit.HttpClient
             {
                 return response;
             }
-
+            
             if (HttpStatusCodes.IsErrorStatus(response.StatusCode))
             {
                 throw new HttpException("Error status code received", response);

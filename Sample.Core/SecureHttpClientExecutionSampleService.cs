@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Softeq.HttpClient.Common;
-using Softeq.HttpClient.Common.Executor;
+using Softeq.XToolkit.CrossCutting;
+using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
 
-namespace Softeq.Sample
+namespace Sample.Core
 {
     public class SecureHttpClientExecutionSampleService
     {
@@ -17,7 +17,7 @@ namespace Softeq.Sample
         public SecureHttpClientExecutionSampleService(ISecuredTokenManager manager)
         {
             var testAuthConfig =
-                new AuthConfig("http://lilbytes-softeq-test.azurewebsites.net", "ro.client", "secret");
+                new AuthConfig("http://halo-auth-softeq-test-ep.azurewebsites.net", "ro.client", "secret");
             var httpConfig = new HttpServiceGateConfig();
             _tokenManager = manager;
             _sessionApiService = new SessionApiService(testAuthConfig, httpConfig, _tokenManager);
@@ -26,9 +26,12 @@ namespace Softeq.Sample
 
         public async Task LoginAsync()
         {
-            var result = await _sessionApiService.LoginAsync("user@test.com", "123QWqw1");
+            var result = await _sessionApiService.LoginAsync("user@test.test", "123QWqw!");
         }
-
+        public async Task Register()
+        {
+            var result = await _sessionApiService.RegisterAccount("yauhen.sampir@softeq.com", "123Aw@dsq");
+        }
         public async Task<ExecutionResult<string>> MakeRequestWithCredentials()
         {
             var executionResult = new ExecutionResult<string>();

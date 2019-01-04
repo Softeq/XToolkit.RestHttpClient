@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Softeq.HttpClient.Common;
+using Softeq.XToolkit.CrossCutting;
 
 namespace Softeq.XToolkit.HttpClient.Abstract
 {

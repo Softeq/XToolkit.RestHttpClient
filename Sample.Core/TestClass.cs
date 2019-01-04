@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
-namespace Softeq.Sample
+namespace Sample.Core
 {
     public class TestClass
     {
@@ -14,7 +14,7 @@ namespace Softeq.Sample
         private async Task UseSecureHttpClient(ISecuredTokenManager manager)
         {
             var exampleService = new SecureHttpClientExecutionSampleService(manager);
-
+            await exampleService.Register();
             await exampleService.LoginAsync();
             await exampleService.MakeRequestWithCredentials();
         }

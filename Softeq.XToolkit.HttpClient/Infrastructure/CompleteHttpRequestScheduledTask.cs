@@ -1,5 +1,5 @@
 ﻿using System.Net.Http;
-using Softeq.HttpClient.Common;
+using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.HttpClient.Infrastructure

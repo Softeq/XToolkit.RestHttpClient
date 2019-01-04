@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Softeq.HttpClient.Common;
-using Softeq.HttpClient.Common.Exceptions;
-using Softeq.HttpClient.Common.Executor;
+using Softeq.XToolkit.CrossCutting;
+using Softeq.XToolkit.CrossCutting.Exceptions;
+using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
 using Softeq.XToolkit.HttpClient.Network;

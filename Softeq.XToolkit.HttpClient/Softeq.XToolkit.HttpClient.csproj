@@ -14,6 +14,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Softeq.HttpClient.Common\Softeq.HttpClient.Common.csproj" />
+    <ProjectReference Include="..\Softeq.XToolkit.ProjectInfrastructure\Softeq.XToolkit.CrossCutting.csproj" />
   </ItemGroup>
 </Project>

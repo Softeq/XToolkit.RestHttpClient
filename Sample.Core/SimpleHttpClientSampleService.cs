@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Softeq.HttpClient.Common;
-using Softeq.HttpClient.Common.Executor;
+using Softeq.XToolkit.CrossCutting;
+using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.HttpClient;
 
-namespace Softeq.Sample
+namespace Sample.Core
 {
     public class SimpleHttpClientSampleService
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Softeq.HttpClient.Common;
+using Softeq.XToolkit.CrossCutting;
 
 namespace Softeq.XToolkit.HttpClient.Network
 {

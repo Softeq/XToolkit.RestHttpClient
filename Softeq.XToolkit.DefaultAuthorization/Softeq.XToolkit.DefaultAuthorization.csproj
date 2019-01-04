@@ -16,12 +16,10 @@
   <ItemGroup>
     <Folder Include="Abstract\" />
     <Folder Include="Extensions\" />
+    <Folder Include="Infrastructure\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj" />
-    <ProjectReference Include="..\Softeq.HttpClient.Common\Softeq.HttpClient.Common.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
+    <ProjectReference Include="..\Softeq.XToolkit.ProjectInfrastructure\Softeq.XToolkit.CrossCutting.csproj" />
   </ItemGroup>
 </Project>

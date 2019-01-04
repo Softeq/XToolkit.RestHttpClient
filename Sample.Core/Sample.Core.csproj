@@ -1,13 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Softeq.HttpClient.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Softeq.XToolkit.DefaultAuthorization" Version="1.1.0" />
+    <ProjectReference Include="..\Softeq.XToolkit.DefaultAuthorization\Softeq.XToolkit.DefaultAuthorization.csproj" />
+    <ProjectReference Include="..\Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj" />
   </ItemGroup>
 </Project>

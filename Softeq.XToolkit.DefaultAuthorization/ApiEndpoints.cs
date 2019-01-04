@@ -1,5 +1,5 @@
 ﻿using System;
-using Softeq.HttpClient.Common;
+using Softeq.XToolkit.CrossCutting;
 using api = Softeq.XToolkit.DefaultAuthorization.Defines.Api;
 
 namespace Softeq.XToolkit.DefaultAuthorization
