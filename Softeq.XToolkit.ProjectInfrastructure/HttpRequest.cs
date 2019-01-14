@@ -72,6 +72,13 @@ namespace Softeq.XToolkit.CrossCutting
             return this;
         }
 
+        public HttpRequest DisableCaching()
+        {
+            CustomHeaders.Add("cache-control", "no-cache");
+
+            return this;
+        }
+
         public HttpRequest WithData(string data)
         {
             ContentType = ContentTypeJson;

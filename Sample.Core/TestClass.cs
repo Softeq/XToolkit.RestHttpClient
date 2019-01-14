@@ -14,7 +14,9 @@ namespace Sample.Core
         private async Task UseSecureHttpClient(ISecuredTokenManager manager)
         {
             var exampleService = new SecureHttpClientExecutionSampleService(manager);
-            await exampleService.Register();
+
+            //await exampleService.RegisterAsync();
+            //await exampleService.ForgotPasswordAsync();
             await exampleService.LoginAsync();
             await exampleService.MakeRequestWithCredentials();
         }

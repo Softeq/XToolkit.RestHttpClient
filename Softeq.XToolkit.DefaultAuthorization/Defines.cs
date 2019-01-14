@@ -17,6 +17,11 @@
                 {
                     public const string ApiRoot = "forgot-password";
                 }
+
+                public static class ResendEmail
+                {
+                    public const string ApiRoot = "resend-email";
+                }
             }
 
             public static class Connect
