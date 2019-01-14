@@ -1,6 +1,6 @@
 ﻿using System;
 using Softeq.XToolkit.CrossCutting;
-using api = Softeq.XToolkit.DefaultAuthorization.Defines.Api;
+using Api = Softeq.XToolkit.DefaultAuthorization.Defines.Api;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
@@ -17,22 +17,27 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public Uri RefreshToken()
         {
-            return _uriMaker.Combine(_baseUrl, api.Connect.ApiRoot, api.Connect.Token.ApiRoot);
+            return _uriMaker.Combine(_baseUrl, Api.Connect.ApiRoot, Api.Connect.Token.ApiRoot);
         }
 
         public Uri Login()
         {
-            return _uriMaker.Combine(_baseUrl, api.Connect.ApiRoot, api.Connect.Token.ApiRoot);
+            return _uriMaker.Combine(_baseUrl, Api.Connect.ApiRoot, Api.Connect.Token.ApiRoot);
         }
 
         public Uri Register()
         {
-            return _uriMaker.Combine(_baseUrl, api.Account.ApiRoot, api.Account.Register.ApiRoot);
+            return _uriMaker.Combine(_baseUrl, Api.Account.ApiRoot, Api.Account.Register.ApiRoot);
         }
 
         public Uri ForgotPassword()
         {
-            return _uriMaker.Combine(_baseUrl, api.Account.ApiRoot, api.Account.ForgotPassword.ApiRoot);
+            return _uriMaker.Combine(_baseUrl, Api.Account.ApiRoot, Api.Account.ForgotPassword.ApiRoot);
+        }
+
+        public Uri ResendEmail()
+        {
+            return _uriMaker.Combine(_baseUrl, Api.Account.ApiRoot, Api.Account.ResendEmail.ApiRoot);
         }
     }
 }

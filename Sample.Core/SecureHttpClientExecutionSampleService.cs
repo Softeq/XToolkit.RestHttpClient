@@ -17,8 +17,8 @@ namespace Sample.Core
         public SecureHttpClientExecutionSampleService(ISecuredTokenManager manager)
         {
             var testAuthConfig =
-                new AuthConfig("http://halo-auth-softeq-test-ep.azurewebsites.net", "ro.client", "secret");
-            var httpConfig = new HttpServiceGateConfig();
+                new AuthConfig("http://halo-auth-dev.azurewebsites.net", "ro.client", "secret");
+            var httpConfig = new HttpServiceGateConfig {Proxy = new System.Net.WebProxy("127.0.0.1", 8888)};
             _tokenManager = manager;
             _sessionApiService = new SessionApiService(testAuthConfig, httpConfig, _tokenManager);
             _http = new SecuredHttpServiceGate(_sessionApiService, httpConfig, _tokenManager);
@@ -26,12 +26,19 @@ namespace Sample.Core
 
         public async Task LoginAsync()
         {
-            var result = await _sessionApiService.LoginAsync("user@test.test", "123QWqw!");
+            var result = await _sessionApiService.LoginAsync("20041951@gmail.com", "A1B2C#asd");
         }
-        public async Task Register()
+
+        public async Task RegisterAsync()
         {
-            var result = await _sessionApiService.RegisterAccount("yauhen.sampir@softeq.com", "123Aw@dsq");
+            var result = await _sessionApiService.RegisterAccount("2004195@gmail.com", "A1B2C#asd");
         }
+
+        public async Task ForgotPasswordAsync()
+        {
+            var result = await _sessionApiService.ForgotPassword("2004195@gmail.com");
+        }
+
         public async Task<ExecutionResult<string>> MakeRequestWithCredentials()
         {
             var executionResult = new ExecutionResult<string>();
