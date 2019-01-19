@@ -6,18 +6,20 @@ using Softeq.XToolkit.CrossCutting.Exceptions;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
+using Softeq.XToolkit.DefaultAuthorization.Infrastructure.Interfaces;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
-    public class SecuredHttpServiceGate
+    public class SecuredHttpServiceGate : ISecuredHttpServiceGate
     {
         private readonly ISecuredTokenManager _tokenManager;
         private readonly SessionApiService _sessionApiService;
         private ForegroundTaskDeferral _sessionRetrievalDeferral;
         private readonly ModifiedHttpClient _client;
 
-        public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig httpConfig, ISecuredTokenManager tokenManager = null)
+        public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig httpConfig,
+            ISecuredTokenManager tokenManager)
         {
             _tokenManager = tokenManager;
             _sessionApiService = sessionApiService;
@@ -25,8 +27,17 @@ namespace Softeq.XToolkit.DefaultAuthorization
             _client = new ModifiedHttpClient(new HttpRequestsScheduler(httpConfig));
         }
 
-        public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority, HttpRequest request, int timeout = 0, params HttpStatusCode[] ignoreErrorCodes)
+        public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequest request,
+            int timeout = 0, HttpRequestPriority priority = HttpRequestPriority.Normal,
+            bool includeDefaultCredentials = true,
+            params HttpStatusCode[] ignoreErrorCodes)
         {
+            if (includeDefaultCredentials)
+            {
+                //add credentials to every request using this approach
+                request.WithCredentials(_tokenManager);
+            }
+
             var response = await _client.ExecuteAsStringResponseAsync(priority, request, timeout).ConfigureAwait(false);
 
             if (ValidateResponse(response, true, ignoreErrorCodes))
@@ -69,7 +80,18 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return response;
         }
 
-        private bool ValidateResponse(HttpResponse response, bool shouldCheckIfForbidden = false, params HttpStatusCode[] ignoreErrorCodes)
+        public async Task<T> ExecuteApiCallAndParseAsync<T>(HttpRequest request,
+            HttpRequestPriority priority = HttpRequestPriority.Normal, bool includeDefaultCredentials = true)
+        {
+            var response =
+                await ExecuteApiCallAsync(request, priority: priority,
+                    includeDefaultCredentials: includeDefaultCredentials).ConfigureAwait(false);
+
+            return response.ParseContentAsJson<T>();
+        }
+
+        private bool ValidateResponse(HttpResponse response, bool shouldCheckIfForbidden = false,
+            params HttpStatusCode[] ignoreErrorCodes)
         {
             if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
             {
@@ -83,17 +105,10 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
             if (HttpStatusCodes.IsErrorStatus(response.StatusCode))
             {
-                throw new HttpException("Error status code recieved", response);
+                throw new HttpException("Error status code received", response);
             }
 
             return true;
-        }
-
-        public async Task<T> ExecuteApiCallAndParseAsync<T>(HttpRequestPriority priority, HttpRequest request)
-        {
-            var response = await ExecuteApiCallAsync(priority, request).ConfigureAwait(false);
-
-            return response.ParseContentAsJson<T>();
         }
 
         private async Task<ExecutionStatus> RetrieveSessionAsync()

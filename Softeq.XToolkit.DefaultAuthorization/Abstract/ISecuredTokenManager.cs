@@ -1,5 +1,4 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Softeq.XToolkit.DefaultAuthorization.Abstract
 {
@@ -8,6 +7,6 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
         string Token { get; }
         string RefreshToken { get; }
         Task SaveTokensAsync(string token, string refreshToken);
-        void ResetTokens();
+        Task ResetTokensAsync();
     }
 }

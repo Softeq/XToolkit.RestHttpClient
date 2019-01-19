@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
@@ -10,6 +12,7 @@ using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
+    [SuppressMessage("ReSharper", "RedundantAnonymousTypePropertyName")]
     public class SessionApiService
     {
         private const string GrantTypeKey = "grant_type";
@@ -40,27 +43,26 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             var result = new ExecutionResult<LoginStatus>();
 
-            _tokenService.ResetTokens();
+            await _tokenService.ResetTokensAsync();
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.Login())
-                    .WithData(await GetLogInContent(login, password).ConfigureAwait(false));
+                    .WithData(await GetLogInContentAsync(login, password).ConfigureAwait(false));
 
                 request.ContentType = ApplicationFormContentType;
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
-                        ignoreErrorCodes: new[] {HttpStatusCode.BadRequest})
+                        ignoreErrorCodes: new[] {HttpStatusCode.BadRequest, HttpStatusCode.Forbidden})
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
                 {
                     var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken)
-                        .ConfigureAwait(false);
+                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
 
                     result.Report(LoginStatus.Successful, ExecutionStatus.Completed);
                 }
@@ -76,8 +78,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
         public async Task<ExecutionStatus> RefreshTokenAsync()
         {
             var result = ExecutionStatus.Failed;
-
-            _tokenService.ResetTokens();
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
@@ -95,8 +95,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken)
-                        .ConfigureAwait(false);
+                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
                     result = ExecutionStatus.Completed;
                 }
             }, RetryNumber);
@@ -104,25 +103,28 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
-        public async Task<ExecutionResult<ResendEmailStatus>> ResendEmail(string code)
+        public async Task<ExecutionResult<ResendEmailStatus>> ResendConfirmationAsync(string email)
         {
             var result = new ExecutionResult<ResendEmailStatus>();
 
-            _tokenService.ResetTokens();
+            await _tokenService.ResetTokensAsync();
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
-                    .SetUri(_apiEndpoints.ResendEmail())
+                    .SetUri(_apiEndpoints.ResendConfirmationEmail())
                     .WithData(JsonConverter.Serialize(new
                     {
-                        code = "1212"
+                        email = email
                     }));
 
-                request.ContentType = ApplicationFormContentType;
+                request.ContentType = ApplicationJsonContentType;
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
+                var response = await _httpClient
+                    .ExecuteApiCallAsync(HttpRequestPriority.High, request,
+                        ignoreErrorCodes: new[]
+                            {HttpStatusCode.NotFound, HttpStatusCode.Conflict})
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
@@ -131,7 +133,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 }
                 else
                 {
-                    result.Report(HandleResendEmailError(response.Content), ExecutionStatus.Failed);
+                    result.Report(HandleResendConfirmationError(response.Content), ExecutionStatus.Failed);
                 }
             }, RetryNumber);
 
@@ -140,13 +142,13 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public Task LogoutAsync()
         {
-            _tokenService.ResetTokens();
+            _tokenService.ResetTokensAsync();
             return Task.CompletedTask;
         }
 
-        public async Task<RegistrationStatus> RegisterAccount(string login, string password)
+        public async Task<ExecutionResult<RegistrationStatus>> RegisterAccountAsync(string login, string password)
         {
-            var result = RegistrationStatus.Undefined;
+            var result = new ExecutionResult<RegistrationStatus>();
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
@@ -170,18 +172,18 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                 if (response.IsSuccessful)
                 {
-                    result = RegistrationStatus.Successful;
+                    result.Report(RegistrationStatus.Successful, ExecutionStatus.Completed);
                 }
                 else
                 {
-                    result = HandleRegistrationError(response.Content);
+                    result.Report(HandleRegistrationError(response.Content), ExecutionStatus.Failed);
                 }
             }, RetryNumber);
 
             return result;
         }
 
-        public async Task<ExecutionResult<ForgotPasswordStatus>> ForgotPassword(string login)
+        public async Task<ExecutionResult<ForgotPasswordStatus>> ForgotPasswordAsync(string login)
         {
             var result = new ExecutionResult<ForgotPasswordStatus>();
 
@@ -211,7 +213,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
-        private Task<string> GetLogInContent(string login, string password)
+        private Task<string> GetLogInContentAsync(string login, string password)
         {
             var dict = new Dictionary<string, string>
             {
@@ -236,7 +238,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
             }).ReadAsStringAsync();
         }
 
-        private ResendEmailStatus HandleResendEmailError(string content)
+        private ResendEmailStatus HandleResendConfirmationError(string content)
         {
             if (string.IsNullOrEmpty(content))
             {
@@ -245,12 +247,15 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
             var errorData = JsonConverter.Deserialize<ErrorData>(content);
 
-            if (errorData.ErrorCode == ErrorCodes.UserNotFound)
+            switch (errorData.ErrorCode)
             {
-                return ResendEmailStatus.Failed;
+                case ErrorCodes.UserNotFound:
+                    return ResendEmailStatus.UserNotFound;
+                case ErrorCodes.EmailAlreadyConfirmed:
+                    return ResendEmailStatus.EmailAlreadyConfirmed;
+                default:
+                    return ResendEmailStatus.Failed;
             }
-
-            return ResendEmailStatus.Failed;
         }
 
         private LoginStatus HandleLoginError(string content)
@@ -262,9 +267,21 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
             var errorData = JsonConverter.Deserialize<ErrorData>(content);
 
-            if (errorData.ErrorCode == ErrorCodes.UserNotFound)
+            if (errorData.ErrorCode == 0)
             {
-                return LoginStatus.EmailOrPasswordIncorrect;
+                var loginErrorData = JsonConverter.Deserialize<CustomLoginErrorData>(content);
+
+                if (loginErrorData == null)
+                {
+                    return LoginStatus.Undefined;
+                }
+
+                if (loginErrorData.Error == CustomLoginErrors.InvalidGrant)
+                {
+                    return LoginStatus.EmailOrPasswordIncorrect;
+                }
+
+                return LoginStatus.Failed;
             }
 
             if (errorData.ErrorCode == ErrorCodes.EmailIsNotConfirmed)
@@ -284,17 +301,15 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
             var errorData = JsonConverter.Deserialize<ErrorData>(responseContent);
 
-            if (errorData.ErrorCode == ErrorCodes.EmailIsNotConfirmed)
+            switch (errorData.ErrorCode)
             {
-                return ForgotPasswordStatus.EmailNotConfirmed;
+                case ErrorCodes.UserNotFound:
+                    return ForgotPasswordStatus.UserNotFound;
+                case ErrorCodes.UserIsInPendingState:
+                    return ForgotPasswordStatus.EmailNotConfirmed;
+                default:
+                    return ForgotPasswordStatus.Failed;
             }
-
-            if (errorData.ErrorCode == ErrorCodes.UserNotFound)
-            {
-                return ForgotPasswordStatus.UserNotFound;
-            }
-
-            return ForgotPasswordStatus.Failed;
         }
 
         private RegistrationStatus HandleRegistrationError(string responseContent)
@@ -311,17 +326,15 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 return RegistrationStatus.Failed;
             }
 
-            if (data.ErrorCode == ErrorCodes.UserWithDefinedEmailAlreadyExist)
+            switch (data.ErrorCode)
             {
-                return RegistrationStatus.EmailAlreadyTaken;
+                case ErrorCodes.UserWithDefinedEmailAlreadyExist:
+                    return RegistrationStatus.EmailAlreadyTaken;
+                case ErrorCodes.RequestModelValidationFailed:
+                    return RegistrationStatus.Failed;
+                default:
+                    return RegistrationStatus.Failed;
             }
-
-            if (data.ErrorCode == ErrorCodes.RequestModelValidationFailed)
-            {
-                return RegistrationStatus.Failed;
-            }
-
-            return RegistrationStatus.Failed;
         }
     }
 }

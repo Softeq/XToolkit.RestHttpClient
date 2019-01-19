@@ -35,9 +35,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return _uriMaker.Combine(_baseUrl, Api.Account.ApiRoot, Api.Account.ForgotPassword.ApiRoot);
         }
 
-        public Uri ResendEmail()
+        public Uri ResendConfirmationEmail()
         {
-            return _uriMaker.Combine(_baseUrl, Api.Account.ApiRoot, Api.Account.ResendEmail.ApiRoot);
+            return _uriMaker.Combine(_baseUrl, Api.Account.ApiRoot, Api.Account.ResendConfirmationEmail.ApiRoot);
         }
     }
 }

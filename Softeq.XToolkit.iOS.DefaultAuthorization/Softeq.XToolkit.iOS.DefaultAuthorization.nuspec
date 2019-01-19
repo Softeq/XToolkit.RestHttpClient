@@ -2,7 +2,7 @@
 <package >
     <metadata>
     <id>Softeq.XToolkit.iOS.DefaultAuthorization</id>
-    <version>1.1.2</version>
+    <version>1.1.4</version>
     <title>Custom Http client</title>
     <authors>Softeq Development Corp.</authors>
     <owners>Softeq Development Corp.</owners>
@@ -17,7 +17,7 @@
         <dependency id="OptimizedPriorityQueue" version="4.1.1" />
         <dependency id="Newtonsoft.Json" version="11.0.2" />
         <dependency id="sameerIOTApps.Plugin.SecureStorage" version="2.5.0" />
-        <dependency id="Softeq.XToolkit.CrossCutting" version="1.1.2" />
+        <dependency id="Softeq.XToolkit.CrossCutting" version="1.1.4" />
     </dependencies>
     </metadata>
 </package>

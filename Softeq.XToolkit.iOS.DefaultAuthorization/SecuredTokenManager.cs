@@ -18,13 +18,15 @@ namespace Softeq.iOS.DefaultAuthorization
             RestoreTokens();
         }
 
-        public void ResetTokens()
+        public Task ResetTokensAsync()
         {
             Token = null;
             RefreshToken = null;
 
             CrossSecureStorage.Current.DeleteKey(SESSION_TOKEN_KEY);
             CrossSecureStorage.Current.DeleteKey(REFRESH_TOKEN_KEY);
+
+            return Task.CompletedTask;
         }
 
         public Task SaveTokensAsync(string token, string refreshToken)
@@ -44,12 +46,10 @@ namespace Softeq.iOS.DefaultAuthorization
             return Task.CompletedTask;
         }
 
-        public Task RestoreTokens()
+        private void RestoreTokens()
         {
             Token = CrossSecureStorage.Current.GetValue(SESSION_TOKEN_KEY);
             RefreshToken = CrossSecureStorage.Current.GetValue(REFRESH_TOKEN_KEY);
-
-            return Task.CompletedTask;
         }
     }
 }

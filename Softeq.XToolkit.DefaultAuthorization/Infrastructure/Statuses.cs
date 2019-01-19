@@ -2,36 +2,36 @@ namespace Softeq.XToolkit.DefaultAuthorization.Infrastructure
 {
     public enum RegistrationStatus
     {
+        Failed,
         Undefined,
         Successful,
-        Failed,
         EmailAlreadyTaken
     }
 
     public enum ForgotPasswordStatus
     {
+        Failed,
         Successful,
         UserNotFound,
         EmailNotConfirmed,
-        Failed,
         Undefined
     }
 
     public enum LoginStatus
     {
+        Failed,
         Successful,
         EmailOrPasswordIncorrect,
         EmailNotConfirmed,
         Undefined,
-        Failed
     }
 
     public enum ResendEmailStatus
     {
-        Successful,
         Failed,
+        Successful,
+        EmailAlreadyConfirmed,
         UserNotFound,
-
         Undefined
     }
 }

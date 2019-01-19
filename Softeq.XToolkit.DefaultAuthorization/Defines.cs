@@ -18,9 +18,9 @@
                     public const string ApiRoot = "forgot-password";
                 }
 
-                public static class ResendEmail
+                public static class ResendConfirmationEmail
                 {
-                    public const string ApiRoot = "resend-email";
+                    public const string ApiRoot = "resend-confirmation-email";
                 }
             }
 

@@ -2,7 +2,7 @@
 <package >
     <metadata>
     <id>Softeq.XToolkit.CrossCutting</id>
-    <version>1.1.2</version>
+    <version>1.1.4</version>
     <title>Custom Http client</title>
     <authors>Softeq Development Corp.</authors>
     <owners>Softeq Development Corp.</owners>

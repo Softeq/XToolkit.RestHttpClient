@@ -17,6 +17,7 @@ namespace Sample.Core
 
             //await exampleService.RegisterAsync();
             //await exampleService.ForgotPasswordAsync();
+            //await exampleService.ResendConfirmationAsync();
             await exampleService.LoginAsync();
             await exampleService.MakeRequestWithCredentials();
         }
