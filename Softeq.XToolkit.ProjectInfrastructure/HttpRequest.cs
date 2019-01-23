@@ -72,6 +72,13 @@ namespace Softeq.XToolkit.CrossCutting
             return this;
         }
 
+        public HttpRequest SetUri(string newUri)
+        {
+            Uri = new Uri(newUri);
+
+            return this;
+        }
+
         public HttpRequest DisableCaching()
         {
             CustomHeaders.Add("cache-control", "no-cache");
