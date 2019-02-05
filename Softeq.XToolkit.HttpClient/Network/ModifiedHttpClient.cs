@@ -18,12 +18,14 @@ namespace Softeq.XToolkit.HttpClient.Network
             _httpRequestsScheduler = httpRequestsScheduler;
         }
 
-        public async Task<HttpResponse> ExecuteAsStringResponseAsync(HttpRequestPriority priority, HttpRequest request, int timeout = 0)
+        public async Task<HttpResponse> ExecuteAsStringResponseAsync(HttpRequestPriority priority, HttpRequest request,
+            int timeout = 0)
         {
             return await ExecuteHttpRequestInternal(priority, request, timeout: timeout).ConfigureAwait(false);
         }
 
-        public async Task<HttpResponse> ExecuteAsBinaryResponseAsync(HttpRequestPriority priority, HttpRequest request, int timeout = 0)
+        public async Task<HttpResponse> ExecuteAsBinaryResponseAsync(HttpRequestPriority priority, HttpRequest request,
+            int timeout = 0)
         {
             return await ExecuteHttpRequestInternal(priority, request, true, timeout).ConfigureAwait(false);
         }
@@ -51,6 +53,10 @@ namespace Softeq.XToolkit.HttpClient.Network
                 message.Content = new StringContent(request.Data ?? string.Empty);
                 message.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
             }
+            else if (request.FormDataContent != null)
+            {
+                message.Content = request.FormDataContent;
+            }
 
             return await _httpRequestsScheduler.ExecuteAsync(
                 priority,
@@ -61,7 +67,8 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         public async Task<string> GetRedirectedUrlAsync(HttpRequestPriority priority, string urlWithRedirect)
         {
-            return await _httpRequestsScheduler.ExecuteRedirectOnlyAsync(priority, urlWithRedirect).ConfigureAwait(false);
+            return await _httpRequestsScheduler.ExecuteRedirectOnlyAsync(priority, urlWithRedirect)
+                .ConfigureAwait(false);
         }
 
         private void ApplyHeader(HttpRequestMessage message, KeyValuePair<HttpRequestHeader, object> header)
@@ -69,10 +76,11 @@ namespace Softeq.XToolkit.HttpClient.Network
             switch (header.Key)
             {
                 case HttpRequestHeader.IfModifiedSince:
-                    message.Headers.IfModifiedSince = (DateTime)header.Value;
+                    message.Headers.IfModifiedSince = (DateTime) header.Value;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(header), "Header cannot be applied using our HttpClient implementation");
+                    throw new ArgumentOutOfRangeException(nameof(header),
+                        "Header cannot be applied using our HttpClient implementation");
             }
         }
     }

@@ -194,8 +194,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     .SetUri(_apiEndpoints.ForgotPassword())
                     .WithData(JsonConverter.Serialize(new {email = login}));
 
-                request.ContentType = ApplicationJsonContentType;
-
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
                         ignoreErrorCodes: new[] {HttpStatusCode.Conflict, HttpStatusCode.NotFound})
                     .ConfigureAwait(false);

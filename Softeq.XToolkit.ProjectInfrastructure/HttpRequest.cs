@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 
 namespace Softeq.XToolkit.CrossCutting
 {
     public class HttpRequest
     {
         public const string ContentTypeJson = "application/json";
+        public const string FormDataContentType = "multipart/form-data";
 
         public string ContentType { get; set; }
         public string Data { get; set; }
@@ -14,6 +16,7 @@ namespace Softeq.XToolkit.CrossCutting
         public Dictionary<HttpRequestHeader, object> Headers { get; }
         public string Method { get; set; }
         public Uri Uri { get; set; }
+        public MultipartFormDataContent FormDataContent { get; set; }
 
         public HttpRequest()
         {
@@ -91,6 +94,15 @@ namespace Softeq.XToolkit.CrossCutting
             ContentType = ContentTypeJson;
 
             Data = data;
+
+            return this;
+        }
+
+        public HttpRequest WithFormData(MultipartFormDataContent data)
+        {
+            ContentType = FormDataContentType;
+
+            FormDataContent = data;
 
             return this;
         }
