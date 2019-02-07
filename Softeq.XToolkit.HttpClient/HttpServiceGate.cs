@@ -11,24 +11,25 @@ namespace Softeq.XToolkit.HttpClient
     {
         private const int DeadRequestTimeoutInMilliseconds = 10000;
 
-        private readonly ModifiedHttpClient _client;
+        private readonly Network.ModifiedHttpClient _client;
 
         public HttpServiceGate(HttpServiceGateConfig config)
         {
             var httpRequestsScheduler = new HttpRequestsScheduler(config);
 
-            _client = new ModifiedHttpClient(httpRequestsScheduler);
+            _client = new Network.ModifiedHttpClient(httpRequestsScheduler);
         }
-        
-        public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority, HttpRequest request, int timeout = 0, params HttpStatusCode[] ignoreErrorCodes)
+
+        public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority, HttpRequest request,
+            int timeout = 0, params HttpStatusCode[] ignoreErrorCodes)
         {
-            var response = await _client.ExecuteAsStringResponseAsync(priority, request, timeout).ConfigureAwait(false);
+            var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
 
             if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
             {
                 return response;
             }
-            
+
             if (HttpStatusCodes.IsErrorStatus(response.StatusCode))
             {
                 throw new HttpException("Error status code received", response);

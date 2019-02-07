@@ -6,10 +6,11 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.HttpClient.Abstract;
+using Softeq.XToolkit.HttpClient.Infrastructure;
 
 namespace Softeq.XToolkit.HttpClient.Network
 {
-    public class ModifiedHttpClient
+    public class ModifiedHttpClient : IHttpClient
     {
         private readonly IHttpRequestsScheduler _httpRequestsScheduler;
 
@@ -18,13 +19,15 @@ namespace Softeq.XToolkit.HttpClient.Network
             _httpRequestsScheduler = httpRequestsScheduler;
         }
 
-        public async Task<HttpResponse> ExecuteAsStringResponseAsync(HttpRequestPriority priority, HttpRequest request,
+        public async Task<HttpResponse> ExecuteAsStringResponseAsync(HttpRequest request,
+            HttpRequestPriority priority = HttpRequestPriority.Normal,
             int timeout = 0)
         {
             return await ExecuteHttpRequestInternal(priority, request, timeout: timeout).ConfigureAwait(false);
         }
 
-        public async Task<HttpResponse> ExecuteAsBinaryResponseAsync(HttpRequestPriority priority, HttpRequest request,
+        public async Task<HttpResponse> ExecuteAsBinaryResponseAsync(HttpRequest request,
+            HttpRequestPriority priority = HttpRequestPriority.Normal,
             int timeout = 0)
         {
             return await ExecuteHttpRequestInternal(priority, request, true, timeout).ConfigureAwait(false);
@@ -65,7 +68,8 @@ namespace Softeq.XToolkit.HttpClient.Network
                 isBinaryContent).ConfigureAwait(false);
         }
 
-        public async Task<string> GetRedirectedUrlAsync(HttpRequestPriority priority, string urlWithRedirect)
+        public async Task<string> GetRedirectedUrlAsync(string urlWithRedirect,
+            HttpRequestPriority priority = HttpRequestPriority.Normal)
         {
             return await _httpRequestsScheduler.ExecuteRedirectOnlyAsync(priority, urlWithRedirect)
                 .ConfigureAwait(false);

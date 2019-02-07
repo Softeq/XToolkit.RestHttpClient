@@ -7,6 +7,7 @@ using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
 using Softeq.XToolkit.DefaultAuthorization.Infrastructure.Interfaces;
+using Softeq.XToolkit.HttpClient.Infrastructure;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.DefaultAuthorization
@@ -16,7 +17,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private readonly ISecuredTokenManager _tokenManager;
         private readonly SessionApiService _sessionApiService;
         private ForegroundTaskDeferral _sessionRetrievalDeferral;
-        private readonly ModifiedHttpClient _client;
+        private readonly IHttpClient _client;
 
         public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig httpConfig,
             ISecuredTokenManager tokenManager)
@@ -38,7 +39,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 request.WithCredentials(_tokenManager);
             }
 
-            var response = await _client.ExecuteAsStringResponseAsync(priority, request, timeout).ConfigureAwait(false);
+            var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
 
             if (ValidateResponse(response, true, ignoreErrorCodes))
             {
@@ -58,14 +59,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     if (executionStatus == ExecutionStatus.Completed)
                     {
                         request.WithCredentials(_tokenManager);
-                        response = await _client.ExecuteAsStringResponseAsync(priority, request).ConfigureAwait(false);
+                        response = await _client.ExecuteAsStringResponseAsync(request, priority).ConfigureAwait(false);
                     }
                 }
                 else
                 {
                     request.WithCredentials(_tokenManager);
 
-                    response = await _client.ExecuteAsStringResponseAsync(priority, request).ConfigureAwait(false);
+                    response = await _client.ExecuteAsStringResponseAsync(request, priority).ConfigureAwait(false);
                 }
 
                 //if session issue is still not resolved, redirect to first install login screen, because we can't perform activities without session
