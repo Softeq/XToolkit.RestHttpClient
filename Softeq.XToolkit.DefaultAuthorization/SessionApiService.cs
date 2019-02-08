@@ -140,6 +140,28 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
+        public async Task<bool> IsAccountAlreadyRegistered(string email)
+        {
+            var result = false;
+            await Executor.ExecuteWithRetryAsync(async executionContext =>
+            {
+                var request = new HttpRequest()
+                    .SetUri(_apiEndpoints.IsAccountFreeToUse(new {email = email}))
+                    .SetMethod(HttpMethods.Get);
+
+                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
+                        ignoreErrorCodes: HttpStatusCode.Conflict)
+                    .ConfigureAwait(false);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    result = true;
+                }
+            }, 3);
+
+            return result;
+        }
+
         public Task LogoutAsync()
         {
             _tokenService.ResetTokensAsync();

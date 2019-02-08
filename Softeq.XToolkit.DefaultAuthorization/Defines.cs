@@ -22,6 +22,11 @@
                 {
                     public const string ApiRoot = "resend-confirmation-email";
                 }
+                
+                public static class IsAccountFreeToUse
+                {
+                    public const string ApiRoot = "check-registration";
+                }
             }
 
             public static class Connect

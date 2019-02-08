@@ -39,5 +39,10 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             return _uriMaker.Combine(_baseUrl, Api.Account.ApiRoot, Api.Account.ResendConfirmationEmail.ApiRoot);
         }
+
+        public Uri IsAccountFreeToUse(object queryParams)
+        {
+            return _uriMaker.BuildUp(queryParams, _baseUrl, Api.Account.ApiRoot, Api.Account.IsAccountFreeToUse.ApiRoot);
+        }
     }
 }
