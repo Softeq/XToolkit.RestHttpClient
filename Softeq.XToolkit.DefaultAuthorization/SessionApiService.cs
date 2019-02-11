@@ -13,7 +13,7 @@ using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
 namespace Softeq.XToolkit.DefaultAuthorization
 {
     [SuppressMessage("ReSharper", "RedundantAnonymousTypePropertyName")]
-    public class SessionApiService
+    public class SessionApiService : ISessionApiService
     {
         private const string GrantTypeKey = "grant_type";
         private const string PasswordKey = "password";

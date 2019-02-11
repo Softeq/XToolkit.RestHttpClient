@@ -2,7 +2,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Softeq.XToolkit.CrossCutting;
 
-namespace Softeq.XToolkit.DefaultAuthorization.Infrastructure.Interfaces
+namespace Softeq.XToolkit.DefaultAuthorization.Abstract
 {
     public interface ISecuredHttpServiceGate
     {

@@ -6,7 +6,6 @@ using Softeq.XToolkit.CrossCutting.Exceptions;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
-using Softeq.XToolkit.DefaultAuthorization.Infrastructure.Interfaces;
 using Softeq.XToolkit.HttpClient.Infrastructure;
 using Softeq.XToolkit.HttpClient.Network;
 
