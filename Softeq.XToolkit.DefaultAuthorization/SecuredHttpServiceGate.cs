@@ -14,11 +14,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
     public class SecuredHttpServiceGate : ISecuredHttpServiceGate
     {
         private readonly ISecuredTokenManager _tokenManager;
-        private readonly SessionApiService _sessionApiService;
+        private readonly ISessionApiService _sessionApiService;
         private ForegroundTaskDeferral _sessionRetrievalDeferral;
         private readonly IHttpClient _client;
 
-        public SecuredHttpServiceGate(SessionApiService sessionApiService, HttpServiceGateConfig httpConfig,
+        public SecuredHttpServiceGate(ISessionApiService sessionApiService, HttpServiceGateConfig httpConfig,
             ISecuredTokenManager tokenManager)
         {
             _tokenManager = tokenManager;
