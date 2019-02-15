@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace Softeq.XToolkit.CrossCutting
 {
@@ -96,6 +97,11 @@ namespace Softeq.XToolkit.CrossCutting
             Data = data;
 
             return this;
+        }
+
+        public HttpRequest WithJsonData(object data)
+        {
+            return WithData(JsonConvert.SerializeObject(data));
         }
 
         public HttpRequest WithFormData(MultipartFormDataContent data)
