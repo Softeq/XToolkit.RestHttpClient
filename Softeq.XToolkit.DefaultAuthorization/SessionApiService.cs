@@ -140,9 +140,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
-        public async Task<bool> IsAccountAlreadyRegistered(string email)
+        public async Task<CheckRegistrationStatus> IsAccountAlreadyRegistered(string email)
         {
-            var result = false;
+            var result = CheckRegistrationStatus.Undefined;
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
@@ -153,10 +153,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
                         ignoreErrorCodes: HttpStatusCode.Conflict)
                     .ConfigureAwait(false);
 
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    result = true;
-                }
+                result = response.StatusCode == HttpStatusCode.OK
+                    ? CheckRegistrationStatus.Free
+                    : CheckRegistrationStatus.EmailAlreadyTaken;
             }, 3);
 
             return result;
