@@ -13,11 +13,11 @@ namespace Softeq.XToolkit.CrossCutting
             _fromTypeToTypeMappings = new Dictionary<Type, Dictionary<Type, Func<object, object>>>();
         }
 
-        public TTarget Map<TTarget>(object source) where TTarget : class
+        public TTarget Map<TTarget>(object source)
         {
             if (source == null)
             {
-                return null;
+                return default(TTarget);
             }
 
             var typeFrom = source.GetType();
@@ -25,12 +25,10 @@ namespace Softeq.XToolkit.CrossCutting
 
             EnsureMappingExists(typeFrom, typeTo);
 
-            return _fromTypeToTypeMappings[typeFrom][typeTo].Invoke(source) as TTarget;
+            return (TTarget)_fromTypeToTypeMappings[typeFrom][typeTo].Invoke(source);
         }
 
         public IReadOnlyList<TTarget> MapCollection<TSource, TTarget>(IEnumerable<TSource> source)
-            where TTarget : class
-            where TSource : class
         {
             if (source == null)
             {
@@ -42,10 +40,10 @@ namespace Softeq.XToolkit.CrossCutting
 
             EnsureMappingExists(typeFrom, typeTo);
 
-            return source.Select(item => _fromTypeToTypeMappings[typeFrom][typeTo].Invoke(item) as TTarget).ToList();
+            return source.Select(item => (TTarget)_fromTypeToTypeMappings[typeFrom][typeTo].Invoke(item)).ToList();
         }
 
-        public void RegisterMapping<TFrom, TTo>(Func<TFrom, TTo> mapper) where TFrom : class
+        public void RegisterMapping<TFrom, TTo>(Func<TFrom, TTo> mapper)
         {
             var fromType = typeof(TFrom);
             var toType = typeof(TTo);
@@ -60,7 +58,7 @@ namespace Softeq.XToolkit.CrossCutting
                 _fromTypeToTypeMappings[fromType].Add(toType, null);
             }
 
-            _fromTypeToTypeMappings[fromType][toType] = data => mapper.Invoke(data as TFrom);
+            _fromTypeToTypeMappings[fromType][toType] = data => mapper.Invoke((TFrom)data);
         }
 
         private void EnsureMappingExists(Type typeFrom, Type typeTo)
