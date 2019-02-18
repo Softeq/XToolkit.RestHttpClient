@@ -16,7 +16,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private readonly ISecuredTokenManager _tokenManager;
         private readonly ISessionApiService _sessionApiService;
         private ForegroundTaskDeferral _sessionRetrievalDeferral;
-        private readonly IHttpClient _client;
+        private IHttpClient _client;
 
         public SecuredHttpServiceGate(ISessionApiService sessionApiService, HttpServiceGateConfig httpConfig,
             ISecuredTokenManager tokenManager)
@@ -24,7 +24,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
             _tokenManager = tokenManager;
             _sessionApiService = sessionApiService;
             _sessionRetrievalDeferral = new ForegroundTaskDeferral();
-            _client = new ModifiedHttpClient(new HttpRequestsScheduler(httpConfig));
+            SetHttpConfig(httpConfig);
         }
 
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequest request,
@@ -88,6 +88,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     includeDefaultCredentials: includeDefaultCredentials).ConfigureAwait(false);
 
             return response.ParseContentAsJson<T>();
+        }
+
+        public void SetHttpConfig(HttpServiceGateConfig httpConfig)
+        {
+            _client = new ModifiedHttpClient(new HttpRequestsScheduler(httpConfig));
         }
 
         private bool ValidateResponse(HttpResponse response, bool shouldCheckIfForbidden = false,
