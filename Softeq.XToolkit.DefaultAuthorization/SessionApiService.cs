@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -26,17 +25,22 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private const int RetryNumber = 3;
 
         private readonly AuthConfig _authConfig;
-        private readonly HttpServiceGate _httpClient;
         private readonly ISecuredTokenManager _tokenService;
         private readonly ApiEndpoints _apiEndpoints;
+        private HttpServiceGate _httpClient;
 
         public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig,
             ISecuredTokenManager tokenService)
         {
             _authConfig = authConfig;
-            _httpClient = new HttpServiceGate(httpConfig);
             _tokenService = tokenService;
             _apiEndpoints = new ApiEndpoints(authConfig.BaseUrl);
+            SetHttpConfig(httpConfig);
+        }
+
+        public void SetHttpConfig(HttpServiceGateConfig httpConfig)
+        {
+            _httpClient = new HttpServiceGate(httpConfig);
         }
 
         public async Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password)
@@ -55,7 +59,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 request.ContentType = ApplicationFormContentType;
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
-                        ignoreErrorCodes: new[] {HttpStatusCode.BadRequest, HttpStatusCode.Forbidden})
+                        ignoreErrorCodes: new[] { HttpStatusCode.BadRequest, HttpStatusCode.Forbidden })
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
@@ -140,23 +144,22 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
-        public async Task<bool> IsAccountAlreadyRegistered(string email)
+        public async Task<CheckRegistrationStatus> IsAccountAlreadyRegistered(string email)
         {
-            var result = false;
+            var result = CheckRegistrationStatus.Undefined;
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
-                    .SetUri(_apiEndpoints.IsAccountFreeToUse(new {email = email}))
+                    .SetUri(_apiEndpoints.IsAccountFreeToUse(new { email = email }))
                     .SetMethod(HttpMethods.Get);
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
                         ignoreErrorCodes: HttpStatusCode.Conflict)
                     .ConfigureAwait(false);
 
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    result = true;
-                }
+                result = response.StatusCode == HttpStatusCode.OK
+                    ? CheckRegistrationStatus.Free
+                    : CheckRegistrationStatus.EmailAlreadyTaken;
             }, 3);
 
             return result;
@@ -189,7 +192,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                 var response = await _httpClient
                     .ExecuteApiCallAsync(HttpRequestPriority.High, request,
-                        ignoreErrorCodes: new[] {HttpStatusCode.Conflict})
+                        ignoreErrorCodes: new[] { HttpStatusCode.Conflict })
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
@@ -214,10 +217,10 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.ForgotPassword())
-                    .WithData(JsonConverter.Serialize(new {email = login}));
+                    .WithData(JsonConverter.Serialize(new { email = login }));
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
-                        ignoreErrorCodes: new[] {HttpStatusCode.Conflict, HttpStatusCode.NotFound})
+                        ignoreErrorCodes: new[] { HttpStatusCode.Conflict, HttpStatusCode.NotFound })
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
