@@ -34,4 +34,11 @@ namespace Softeq.XToolkit.DefaultAuthorization.Infrastructure
         UserNotFound,
         Undefined
     }
+    
+    public enum CheckRegistrationStatus
+    {
+        Undefined,
+        Free,
+        EmailAlreadyTaken
+    }
 }
