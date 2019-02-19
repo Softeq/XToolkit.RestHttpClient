@@ -19,21 +19,21 @@ namespace Softeq.XToolkit.HttpClient.Network
             _httpRequestsScheduler = httpRequestsScheduler;
         }
 
-        public async Task<HttpResponse> ExecuteAsStringResponseAsync(HttpRequest request,
+        public Task<HttpResponse> ExecuteAsStringResponseAsync(HttpRequest request,
             HttpRequestPriority priority = HttpRequestPriority.Normal,
             int timeout = 0)
         {
-            return await ExecuteHttpRequestInternal(priority, request, timeout: timeout).ConfigureAwait(false);
+            return ExecuteHttpRequestInternal(priority, request, timeout: timeout);
         }
 
-        public async Task<HttpResponse> ExecuteAsBinaryResponseAsync(HttpRequest request,
+        public Task<HttpResponse> ExecuteAsBinaryResponseAsync(HttpRequest request,
             HttpRequestPriority priority = HttpRequestPriority.Normal,
             int timeout = 0)
         {
-            return await ExecuteHttpRequestInternal(priority, request, true, timeout).ConfigureAwait(false);
+            return ExecuteHttpRequestInternal(priority, request, true, timeout);
         }
 
-        private async Task<HttpResponse> ExecuteHttpRequestInternal(
+        private Task<HttpResponse> ExecuteHttpRequestInternal(
             HttpRequestPriority priority,
             HttpRequest request,
             bool isBinaryContent = false,
@@ -61,11 +61,11 @@ namespace Softeq.XToolkit.HttpClient.Network
                 message.Content = request.FormDataContent;
             }
 
-            return await _httpRequestsScheduler.ExecuteAsync(
+            return _httpRequestsScheduler.ExecuteAsync(
                 priority,
                 message,
                 timeout,
-                isBinaryContent).ConfigureAwait(false);
+                isBinaryContent);
         }
 
         public async Task<string> GetRedirectedUrlAsync(string urlWithRedirect,
@@ -80,7 +80,7 @@ namespace Softeq.XToolkit.HttpClient.Network
             switch (header.Key)
             {
                 case HttpRequestHeader.IfModifiedSince:
-                    message.Headers.IfModifiedSince = (DateTime) header.Value;
+                    message.Headers.IfModifiedSince = (DateTime)header.Value;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(header),
