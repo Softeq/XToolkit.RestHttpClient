@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,7 +59,8 @@ namespace Softeq.XToolkit.HttpClient.Network
         {
             _taskIdToTaskMap = new ConcurrentDictionary<Guid, HttpRequestScheduledTaskBase>();
 
-            _perPriorityQueue = new Dictionary<HttpRequestPriority, SimplePriorityQueue<HttpRequestScheduledTaskBase>>();
+            _perPriorityQueue =
+                new Dictionary<HttpRequestPriority, SimplePriorityQueue<HttpRequestScheduledTaskBase>>();
 
             _priorityToTasksCountMap = new ConcurrentDictionary<HttpRequestPriority, int>();
 
@@ -227,10 +229,15 @@ namespace Softeq.XToolkit.HttpClient.Network
         private void StartTasksExecutionWorker(int workerIndex, CancellationToken cancellationToken)
         {
             Executor.InBackgroundThread(
-                async () => { await PerformTaskExecutionWorkerIterationAsync(workerIndex, cancellationToken).ConfigureAwait(false); });
+                async () =>
+                {
+                    await PerformTaskExecutionWorkerIterationAsync(workerIndex, cancellationToken)
+                        .ConfigureAwait(false);
+                });
         }
 
-        private async Task PerformTaskExecutionWorkerIterationAsync(int workerIndex, CancellationToken cancellationToken)
+        private async Task PerformTaskExecutionWorkerIterationAsync(int workerIndex,
+            CancellationToken cancellationToken)
         {
             while (_tasksQueue.Count > 0)
             {
@@ -329,26 +336,31 @@ namespace Softeq.XToolkit.HttpClient.Network
             {
                 var client = GetSimpleHttpClient();
 
-                var serverResponse = await client.SendAsync(task.Request, HttpCompletionOption.ResponseContentRead,
-                    new CancellationTokenSource(task.Timeout).Token).ConfigureAwait(false);
+                using (task.Request)
+                using (task.Request.Content)
+                {
+                    var serverResponse = await client.SendAsync(task.Request, HttpCompletionOption.ResponseContentRead,
+                        new CancellationTokenSource(task.Timeout).Token).ConfigureAwait(false);
 
-                task.Response = new HttpResponse
-                {
-                    StatusCode = GetStatusCode(serverResponse.StatusCode),
-                    IsSuccessful = serverResponse.IsSuccessStatusCode,
-                    ResponseUri = serverResponse.RequestMessage?.RequestUri,
-                    Headers = serverResponse.Headers,
-                    ContentHeaders = serverResponse.Content?.Headers,
-                    Expires = serverResponse.Content?.Headers.Expires
-                };
+                    task.Response = new HttpResponse
+                    {
+                        StatusCode = GetStatusCode(serverResponse.StatusCode),
+                        IsSuccessful = serverResponse.IsSuccessStatusCode,
+                        ResponseUri = serverResponse.RequestMessage?.RequestUri,
+                        Headers = serverResponse.Headers,
+                        ContentHeaders = serverResponse.Content?.Headers,
+                        Expires = serverResponse.Content?.Headers.Expires
+                    };
 
-                if (task.IsBinaryContent)
-                {
-                    task.Response.BinaryContent = await GetBinaryContent(serverResponse.Content).ConfigureAwait(false);
-                }
-                else
-                {
-                    task.Response.Content = await GetStringContent(serverResponse.Content).ConfigureAwait(false);
+                    if (task.IsBinaryContent)
+                    {
+                        task.Response.BinaryContent =
+                            await GetBinaryContent(serverResponse.Content).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        task.Response.Content = await GetStringContent(serverResponse.Content).ConfigureAwait(false);
+                    }
                 }
             }
             catch (TaskCanceledException)
@@ -368,7 +380,8 @@ namespace Softeq.XToolkit.HttpClient.Network
                 {
                     var client = GetSimpleHttpClient();
 
-                    var response = await client.GetAsync(new Uri(task.RequestUrl), HttpCompletionOption.ResponseHeadersRead,
+                    var response = await client.GetAsync(new Uri(task.RequestUrl),
+                        HttpCompletionOption.ResponseHeadersRead,
                         new CancellationTokenSource(task.Timeout).Token);
 
                     task.ResponseRedirectUrl = response.RequestMessage.RequestUri.ToString();
@@ -377,14 +390,13 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         private System.Net.Http.HttpClient GetSimpleHttpClient()
         {
-            return _simpleHttpClient ?? (_simpleHttpClient = new System.Net.Http.HttpClient(
-                       new HttpClientHandler
-                       {
-                           AllowAutoRedirect = false,
-                           AutomaticDecompression = DecompressionMethods.GZip,
-                           Proxy = _config.Proxy,
-                           UseProxy = _config.Proxy != null
-                       }));
+            if (_simpleHttpClient == null)
+            {
+                _simpleHttpClient = new System.Net.Http.HttpClient();
+                _simpleHttpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+            }
+
+            return _simpleHttpClient;
         }
 
         private async Task<byte[]> GetBinaryContent(HttpContent httpContent)
