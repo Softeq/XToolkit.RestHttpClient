@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Softeq.XToolkit.CrossCutting
 {
@@ -26,13 +27,13 @@ namespace Softeq.XToolkit.CrossCutting
 
         public static string Serialize(object obj, bool shouldIgnoreNullValue = false)
         {
-            return JsonConvert.SerializeObject(
-                obj,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = shouldIgnoreNullValue ? NullValueHandling.Ignore : NullValueHandling.Include
-                });
+            var parsingSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = shouldIgnoreNullValue ? NullValueHandling.Ignore : NullValueHandling.Include,
+                ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            };
+            return JsonConvert.SerializeObject(obj, Formatting.None, parsingSettings);
         }
     }
 }

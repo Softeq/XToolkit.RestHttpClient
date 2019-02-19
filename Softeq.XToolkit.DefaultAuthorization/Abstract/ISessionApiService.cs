@@ -2,6 +2,7 @@
 // Corporation http://www.softeq.com
 
 using System.Threading.Tasks;
+using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
 
@@ -16,5 +17,6 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
         Task LogoutAsync();
         Task<ExecutionResult<RegistrationStatus>> RegisterAccountAsync(string login, string password);
         Task<ExecutionResult<ForgotPasswordStatus>> ForgotPasswordAsync(string login);
+        void SetHttpConfig(HttpServiceGateConfig httpConfig);
     }
 }
