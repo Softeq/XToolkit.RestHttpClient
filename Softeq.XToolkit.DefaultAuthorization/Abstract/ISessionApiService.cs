@@ -17,6 +17,5 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
         Task LogoutAsync();
         Task<ExecutionResult<RegistrationStatus>> RegisterAccountAsync(string login, string password);
         Task<ExecutionResult<ForgotPasswordStatus>> ForgotPasswordAsync(string login);
-        void SetHttpConfig(HttpServiceGateConfig httpConfig);
     }
 }

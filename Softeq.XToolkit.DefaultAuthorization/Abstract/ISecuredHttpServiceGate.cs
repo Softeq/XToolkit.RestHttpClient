@@ -13,6 +13,5 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
 
         Task<T> ExecuteApiCallAndParseAsync<T>(HttpRequest request,
             HttpRequestPriority priority = HttpRequestPriority.Normal, bool includeDefaultCredentials = true);
-        void SetHttpConfig(HttpServiceGateConfig httpConfig);
     }
 }

@@ -27,7 +27,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private readonly AuthConfig _authConfig;
         private readonly ISecuredTokenManager _tokenService;
         private readonly ApiEndpoints _apiEndpoints;
-        private HttpServiceGate _httpClient;
+        private readonly HttpServiceGate _httpClient;
 
         public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig,
             ISecuredTokenManager tokenService)
@@ -35,11 +35,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
             _authConfig = authConfig;
             _tokenService = tokenService;
             _apiEndpoints = new ApiEndpoints(authConfig.BaseUrl);
-            SetHttpConfig(httpConfig);
-        }
-
-        public void SetHttpConfig(HttpServiceGateConfig httpConfig)
-        {
             _httpClient = new HttpServiceGate(httpConfig);
         }
 
