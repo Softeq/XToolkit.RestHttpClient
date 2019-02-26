@@ -10,7 +10,7 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
 {
     public interface ISessionApiService
     {
-        Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password);
+        Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password, int retryNumber = 3);
         Task<ExecutionStatus> RefreshTokenAsync();
         Task<ExecutionResult<ResendEmailStatus>> ResendConfirmationAsync(string email);
         Task<CheckRegistrationStatus> IsAccountAlreadyRegistered(string email);
