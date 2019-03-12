@@ -61,6 +61,7 @@ namespace Softeq.XToolkit.CrossCutting.Executor
             }
             catch (Exception exception)
             {
+                LogError(exception);
                 exceptionCallback?.Invoke(exception);
             }
         }
@@ -174,6 +175,8 @@ namespace Softeq.XToolkit.CrossCutting.Executor
             }
             catch (Exception exception)
             {
+                LogError(exception);
+
                 workflow.Context.Status = ExecutionContextStatus.Failed;
 
                 if (workflow.Context.ExecutionsCount >= workflow.AllowedAttempts)
@@ -189,6 +192,13 @@ namespace Softeq.XToolkit.CrossCutting.Executor
             workflow.Context.Status = ExecutionContextStatus.Completed;
 
             return null;
+        }
+
+        private static void LogError(Exception ex)
+        {
+            //TODO use logger instead of this, write in console if DEBUG
+            System.Diagnostics.Debug.WriteLine($"Exception: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
         }
     }
 }
