@@ -145,6 +145,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         private bool IsSessionValid(HttpResponse response)
         {
+            if (response == null)
+            {
+                return false;
+            }
+
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 return false;
