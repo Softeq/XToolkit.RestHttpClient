@@ -87,7 +87,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 await ExecuteApiCallAsync(request, priority: priority,
                     includeDefaultCredentials: includeDefaultCredentials).ConfigureAwait(false);
 
-            return response.ParseContentAsJson<T>();
+            response.TryParseContentAsJson<T>(out T result);
+            return result;
         }
 
         private bool ValidateResponse(HttpResponse response, bool shouldCheckIfForbidden = false,
@@ -99,6 +100,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
             }
 
             if (shouldCheckIfForbidden && !IsSessionValid(response))
+            {
+                return false;
+            }
+
+            if (response.IsPoorConnection)
             {
                 return false;
             }
