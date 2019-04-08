@@ -104,7 +104,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 return false;
             }
 
-            if (response.IsPoorConnection)
+            if (response.IsNoInternet)
             {
                 return false;
             }

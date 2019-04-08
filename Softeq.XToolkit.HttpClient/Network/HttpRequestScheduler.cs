@@ -378,9 +378,13 @@ namespace Softeq.XToolkit.HttpClient.Network
                 {
                     task.Response = new HttpResponse
                     {
-                        IsPoorConnection = true,
+                        IsNoInternet = true,
                         IsSuccessful = false
                     };
+                }
+                else
+                {
+                    throw;
                 }
             }
         }
