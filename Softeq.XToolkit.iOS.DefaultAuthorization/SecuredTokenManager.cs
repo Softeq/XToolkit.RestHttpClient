@@ -53,11 +53,8 @@ namespace Softeq.iOS.DefaultAuthorization
 
         private void UpdateTokens(string token, string refreshToken)
         {
-            DispatchQueue.MainQueue.DispatchAsync(() =>
-            {
-                Token = token;
-                RefreshToken = refreshToken;
-            });
+            Token = token;
+            RefreshToken = refreshToken;
         }
     }
 }
