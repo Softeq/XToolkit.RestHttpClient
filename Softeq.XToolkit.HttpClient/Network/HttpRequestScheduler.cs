@@ -377,7 +377,8 @@ namespace Softeq.XToolkit.HttpClient.Network
                     task.Response = new HttpResponse
                     {
                         IsNoInternet = true,
-                        IsSuccessful = false
+                        IsSuccessful = false,
+                        StatusCode = HttpStatusCode.RequestTimeout
                     };
                 }
                 else
