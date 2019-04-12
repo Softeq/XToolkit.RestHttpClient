@@ -160,9 +160,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
-        public Task LogoutAsync()
+        public Task LogoutAsync(bool shouldDeleteTokensPermanently)
         {
-            _tokenService.ResetTokensAsync();
+            _tokenService.ResetTokensAsync(shouldDeleteTokensPermanently);
             return Task.CompletedTask;
         }
 

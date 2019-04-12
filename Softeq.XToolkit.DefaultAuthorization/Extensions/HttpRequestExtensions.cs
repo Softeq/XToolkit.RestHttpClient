@@ -8,14 +8,19 @@ namespace Softeq.XToolkit.DefaultAuthorization.Extensions
         private const string AuthorizationKey = "Authorization";
         private const string BearerKey = "Bearer";
 
-        public static HttpRequest WithCredentials(this HttpRequest target, ISecuredTokenManager tokenManager)
+        public static HttpRequest WithCredentials(this HttpRequest target,
+                                                  ISecuredTokenManager tokenManager,
+                                                  bool canUseLoggedOutCredentials)
         {
             if (target.CustomHeaders.ContainsKey(AuthorizationKey))
             {
                 target.CustomHeaders.Remove(AuthorizationKey);
             }
 
-            target.CustomHeaders.Add(AuthorizationKey, $"{BearerKey} {tokenManager.Token}");
+            if (!tokenManager.AreTokensMarkedForDeletion || canUseLoggedOutCredentials)
+            {
+                target.CustomHeaders.Add(AuthorizationKey, $"{BearerKey} {tokenManager.Token}");
+            }
             return target;
         }
     }
