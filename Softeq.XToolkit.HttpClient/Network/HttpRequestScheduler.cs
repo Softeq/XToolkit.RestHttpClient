@@ -21,8 +21,8 @@ namespace Softeq.XToolkit.HttpClient.Network
     public class HttpRequestsScheduler : IHttpRequestsScheduler
     {
         private const int PriorityRange = 100000;
-        private const int WorkerTaskExecutionIterationDelayInMilliseconds = 2000;
-        private const int HighPriorityWorkerTaskExecutionIterationDelayInMilliseconds = 1000;
+        private const int WorkerTaskExecutionIterationDelayInMilliseconds = 200;
+        private const int HighPriorityWorkerTaskExecutionIterationDelayInMilliseconds = 100;
         private const int ErrorStatusCodeRangeMax = 599;
 
         private readonly ImmutableHashSet<int> _supportedStatusCodes;
@@ -239,24 +239,33 @@ namespace Softeq.XToolkit.HttpClient.Network
         private async Task PerformTaskExecutionWorkerIterationAsync(int workerIndex,
             CancellationToken cancellationToken)
         {
-            while (_tasksQueue.Count > 0)
+            Task WaitIfNeededAsync()
             {
-                if (cancellationToken.IsCancellationRequested)
+                if (_tasksQueue.Count == 0)
                 {
-                    return;
+                    return Task.Delay(
+                        IsHighPriorityOnlyWorker(workerIndex)
+                            ? HighPriorityWorkerTaskExecutionIterationDelayInMilliseconds
+                            : WorkerTaskExecutionIterationDelayInMilliseconds, cancellationToken);
                 }
 
+                return Task.CompletedTask;
+            }
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
                 if (IsHighPriorityOnlyWorker(workerIndex))
                 {
                     _tasksQueue.TryFirst(out var possibleTask);
 
                     if (possibleTask == null || possibleTask.Priority != _highestPriority)
                     {
-                        break;
+                        await WaitIfNeededAsync().ConfigureAwait(false);
+                        continue;
                     }
                 }
 
-                HttpRequestScheduledTaskBase task = null;
+                HttpRequestScheduledTaskBase task;
 
                 lock (_perPriorityQueue)
                 {
@@ -270,10 +279,11 @@ namespace Softeq.XToolkit.HttpClient.Network
 
                 if (task == null)
                 {
-                    break;
+                    await WaitIfNeededAsync().ConfigureAwait(false);
+                    continue;
                 }
 
-                _taskIdToTaskMap.TryRemove(task.Id, out var _);
+                _taskIdToTaskMap.TryRemove(task.Id, out _);
 
                 _priorityToTasksCountMap.AddOrUpdate(task.Priority, 0, (key, value) => value - 1);
 
@@ -291,21 +301,9 @@ namespace Softeq.XToolkit.HttpClient.Network
                     }).ConfigureAwait(false);
 
                 task.Deferral.CompleteIfInProgress();
+
+                await WaitIfNeededAsync().ConfigureAwait(false);
             }
-
-            await Task.Delay(
-                IsHighPriorityOnlyWorker(workerIndex)
-                    ? HighPriorityWorkerTaskExecutionIterationDelayInMilliseconds
-                    : WorkerTaskExecutionIterationDelayInMilliseconds).ConfigureAwait(false);
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            PerformTaskExecutionWorkerIterationAsync(workerIndex, cancellationToken);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private bool IsHighPriorityOnlyWorker(int workerIndex)
@@ -317,7 +315,7 @@ namespace Softeq.XToolkit.HttpClient.Network
         {
             _priorityToTasksCountMap.TryGetValue(priority, out var tasksCountWithTargetPriority);
 
-            return (int) priority * PriorityRange + tasksCountWithTargetPriority;
+            return (int)priority * PriorityRange + tasksCountWithTargetPriority;
         }
 
         private async Task ExecuteAsync(CompleteHttpRequestScheduledTask task)
@@ -449,7 +447,7 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         private HttpStatusCode GetStatusCode(HttpStatusCode httpStatusCode)
         {
-            var code = (int) httpStatusCode;
+            var code = (int)httpStatusCode;
 
             if (code > ErrorStatusCodeRangeMax)
             {
@@ -461,7 +459,7 @@ namespace Softeq.XToolkit.HttpClient.Network
                 code = code / 100;
             }
 
-            return (HttpStatusCode) code;
+            return (HttpStatusCode)code;
         }
     }
 }
