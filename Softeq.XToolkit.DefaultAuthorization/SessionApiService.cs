@@ -106,17 +106,12 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             var result = new ExecutionResult<ResendEmailStatus>();
 
-            await _tokenService.ResetTokensAsync();
-
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.ResendConfirmationEmail())
-                    .WithData(JsonConverter.Serialize(new
-                    {
-                        email = email
-                    }));
+                    .WithData(JsonConverter.Serialize(new { email }));
 
                 request.ContentType = ApplicationJsonContentType;
 
@@ -145,7 +140,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
-                    .SetUri(_apiEndpoints.IsAccountFreeToUse(new {email = email}))
+                    .SetUri(_apiEndpoints.IsAccountFreeToUse(new { email }))
                     .SetMethod(HttpMethods.Get);
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
