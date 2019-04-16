@@ -30,13 +30,12 @@ namespace Softeq.XToolkit.DefaultAuthorization
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequest request,
             int timeout = 0, HttpRequestPriority priority = HttpRequestPriority.Normal,
             bool includeDefaultCredentials = true,
-            bool canUseLoggedOutCredentials = false,
             params HttpStatusCode[] ignoreErrorCodes)
         {
             if (includeDefaultCredentials)
             {
                 //add credentials to every request using this approach
-                request.WithCredentials(_tokenManager, canUseLoggedOutCredentials);
+                request.WithCredentials(_tokenManager);
             }
 
             var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
@@ -58,13 +57,13 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                     if (executionStatus == ExecutionStatus.Completed)
                     {
-                        request.WithCredentials(_tokenManager, canUseLoggedOutCredentials);
+                        request.WithCredentials(_tokenManager);
                         response = await _client.ExecuteAsStringResponseAsync(request, priority).ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    request.WithCredentials(_tokenManager, canUseLoggedOutCredentials);
+                    request.WithCredentials(_tokenManager);
 
                     response = await _client.ExecuteAsStringResponseAsync(request, priority).ConfigureAwait(false);
                 }

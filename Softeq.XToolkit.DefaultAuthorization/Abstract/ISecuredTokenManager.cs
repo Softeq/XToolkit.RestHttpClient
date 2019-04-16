@@ -6,8 +6,7 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
     {
         string Token { get; }
         string RefreshToken { get; }
-        bool AreTokensMarkedForDeletion { get; }
         Task SaveTokensAsync(string token, string refreshToken);
-        Task ResetTokensAsync(bool shouldDeleteTokensPermanently = true);
+        Task ResetTokensAsync();
     }
 }

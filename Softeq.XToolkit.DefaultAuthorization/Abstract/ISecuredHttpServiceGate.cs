@@ -9,7 +9,6 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
         Task<HttpResponse> ExecuteApiCallAsync(HttpRequest request,
             int timeout = 0, HttpRequestPriority priority = HttpRequestPriority.Normal,
             bool includeDefaultCredentials = true,
-            bool canUseLoggedOutCredentials = false,
             params HttpStatusCode[] ignoreErrorCodes);
 
         Task<T> ExecuteApiCallAndParseAsync<T>(HttpRequest request,
