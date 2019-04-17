@@ -26,9 +26,14 @@ namespace Softeq.XToolkit.HttpClient.Extensions
             return new StreamContent(photoCopyStream);
         }
 
-        public static HttpContent StreamContentWithType(Stream stream, string type)
+        public static HttpContent StreamContentWithType(this Stream stream, string type)
         {
             return CreateStreamContent(stream).SetContentType(type);
+        }
+
+        public static HttpContent StreamContentWithType(this byte[] byteArray, string type)
+        {
+            return StreamContentWithType(new MemoryStream(byteArray), type);
         }
     }
 }
