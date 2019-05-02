@@ -75,8 +75,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 }
             }
 
-            ValidateResponse(response, ignoreErrorCodes: ignoreErrorCodes);
-
             return response;
         }
 
@@ -100,11 +98,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
             }
 
             if (shouldCheckIfForbidden && !IsSessionValid(response))
-            {
-                return false;
-            }
-
-            if (response.IsNoInternet)
             {
                 return false;
             }
