@@ -3,21 +3,22 @@ using System.Net;
 using System.Threading.Tasks;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Exceptions;
+using Softeq.XToolkit.HttpClient.Abstract;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.HttpClient
 {
-    public class HttpServiceGate
+    public class HttpServiceGate : IHttpServiceGate
     {
         private const int DeadRequestTimeoutInMilliseconds = 10000;
 
-        private readonly Network.ModifiedHttpClient _client;
+        private readonly ModifiedHttpClient _client;
 
         public HttpServiceGate(HttpServiceGateConfig config)
         {
             var httpRequestsScheduler = new HttpRequestsScheduler(config);
 
-            _client = new Network.ModifiedHttpClient(httpRequestsScheduler);
+            _client = new ModifiedHttpClient(httpRequestsScheduler);
         }
 
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority, HttpRequest request,
