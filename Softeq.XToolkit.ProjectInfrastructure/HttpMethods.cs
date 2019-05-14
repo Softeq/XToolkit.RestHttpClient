@@ -7,6 +7,8 @@ namespace Softeq.XToolkit.CrossCutting
         Post,
         Put,
         Delete,
-        Head
+        Head,
+        Options,
+        Trace
     }
 }
