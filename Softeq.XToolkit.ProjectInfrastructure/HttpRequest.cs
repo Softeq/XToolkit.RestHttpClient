@@ -15,7 +15,7 @@ namespace Softeq.XToolkit.CrossCutting
         public string Data { get; set; }
         public Dictionary<string, object> CustomHeaders { get; }
         public Dictionary<HttpRequestHeader, object> Headers { get; }
-        public string Method { get; set; }
+        public HttpMethod Method { get; set; }
         public Uri Uri { get; set; }
         public MultipartFormDataContent FormDataContent { get; set; }
 
@@ -28,12 +28,12 @@ namespace Softeq.XToolkit.CrossCutting
         public HttpRequest(Uri uri) : this()
         {
             Uri = uri;
-            Method = HttpMethods.Get.ToString();
+            SetMethod(HttpMethods.Get);
         }
 
         public HttpRequest(Uri uri, HttpMethods method) : this(uri)
         {
-            Method = method.ToString();
+            SetMethod(method);
         }
 
         public HttpRequest(Uri uri,
@@ -64,8 +64,30 @@ namespace Softeq.XToolkit.CrossCutting
 
         public HttpRequest SetMethod(HttpMethods newMethod)
         {
-            Method = newMethod.ToString();
-
+            switch (newMethod)
+            {
+                case HttpMethods.Get:
+                    Method = HttpMethod.Get;
+                    break;
+                case HttpMethods.Post:
+                    Method = HttpMethod.Post;
+                    break;
+                case HttpMethods.Put:
+                    Method = HttpMethod.Put;
+                    break;
+                case HttpMethods.Delete:
+                    Method = HttpMethod.Delete;
+                    break;
+                case HttpMethods.Head:
+                    Method = HttpMethod.Head;
+                    break;
+                case HttpMethods.Options:
+                    Method = HttpMethod.Options;
+                    break;
+                case HttpMethods.Trace:
+                    Method = HttpMethod.Trace;
+                    break;
+            }
             return this;
         }
 

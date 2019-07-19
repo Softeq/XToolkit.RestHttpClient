@@ -39,7 +39,7 @@ namespace Softeq.XToolkit.HttpClient.Network
             bool isBinaryContent = false,
             int timeout = 0)
         {
-            var message = new HttpRequestMessage(new HttpMethod(request.Method), request.Uri);
+            var message = new HttpRequestMessage(request.Method, request.Uri);
 
             foreach (var header in request.Headers)
             {
@@ -80,7 +80,7 @@ namespace Softeq.XToolkit.HttpClient.Network
             switch (header.Key)
             {
                 case HttpRequestHeader.IfModifiedSince:
-                    message.Headers.IfModifiedSince = (DateTime)header.Value;
+                    message.Headers.IfModifiedSince = (DateTime) header.Value;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(header),
