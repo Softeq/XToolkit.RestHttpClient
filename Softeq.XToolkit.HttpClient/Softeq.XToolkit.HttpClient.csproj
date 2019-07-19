@@ -3,12 +3,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Abstract\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Infrastructure\" />
-    <Folder Include="Network\" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
     <PackageReference Include="OptimizedPriorityQueue" Version="4.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

@@ -14,11 +14,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Folder Include="Abstract\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Infrastructure\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj" />
     <ProjectReference Include="..\Softeq.XToolkit.ProjectInfrastructure\Softeq.XToolkit.CrossCutting.csproj" />
   </ItemGroup>
