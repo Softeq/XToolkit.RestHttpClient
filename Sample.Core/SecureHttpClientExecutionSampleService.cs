@@ -4,8 +4,6 @@ using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
-using Softeq.XToolkit.DefaultAuthorization.Extensions;
-using Softeq.XToolkit.DefaultAuthorization.Infrastructure.Interfaces;
 
 namespace Sample.Core
 {
@@ -17,10 +15,11 @@ namespace Sample.Core
 
         public SecureHttpClientExecutionSampleService(ISecuredTokenManager manager)
         {
-            var testAuthConfig =
-                new AuthConfig("registration uri", "client", "secret");
+            var testAuthConfig = new AuthConfig("registration uri", "client", "secret");
             var httpConfig = new HttpServiceGateConfig
-                {Proxy = new System.Net.WebProxy("127.0.0.1", 8888), DeadRequestTimeoutInMilliseconds = 1000000000};
+            {
+                DeadRequestTimeoutInMilliseconds = 1000000000
+            };
             _tokenManager = manager;
             _sessionApiService = new SessionApiService(testAuthConfig, httpConfig, _tokenManager);
             _http = new SecuredHttpServiceGate(_sessionApiService, httpConfig, _tokenManager);
