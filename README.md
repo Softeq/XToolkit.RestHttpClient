@@ -1,12 +1,14 @@
 
 ![alt text](https://github.com/Softeq/Softeq.XToolkit.RestHttpClient/blob/master/clientServer.png?raw=true)
 
-An easy to use library providing some advanced api to use http client and some extensions for your mobile projects.
+[![Build status](https://dev.azure.com/SofteqDevelopment/XToolkit.RestHttpClient/_apis/build/status/Master%20build)](https://dev.azure.com/SofteqDevelopment/XToolkit.RestHttpClient/_build/latest?definitionId=56)
+
+An easy to use library providing some advanced API to use HTTP client and some extensions for your mobile projects.
 
 ## Table of Contents
 
 - [Getting Started](#getting-started)
-  - [Components](#components)
+- [Components](#components)
     - [Executor](#executor)
     - [Mapper](#mapper)
     - [Uri Builder](#uri-builder)
@@ -18,31 +20,33 @@ An easy to use library providing some advanced api to use http client and some e
 
 ## Getting Started
 
-If you want to work with library you can add it to your project as a nuget package.
+If you want to work with library you can add it to your project as a NuGet package:
 
 ```
 Install-Package Softeq.XToolkit.DefaultAuthorization
 Install-Package Softeq.XToolkit.HttpClient
 ```
 
-Also you can manually download nugets
+Also you can manually download NuGets:
 
-[HttpClient](https://www.nuget.org/packages/Softeq.XToolkit.HttpClient/)
+Package | &nbsp;
+--------|-------
+Softeq.XToolkit.HttpClient | [![Softeq.XToolkit.HttpClient](https://img.shields.io/nuget/v/Softeq.XToolkit.HttpClient.svg)](https://www.nuget.org/packages/Softeq.XToolkit.HttpClient/)
+Softeq.XToolkit.DefaultAuthorization | [![Softeq.XToolkit.DefaultAuthorization](https://img.shields.io/nuget/v/Softeq.XToolkit.DefaultAuthorization.svg)](https://www.nuget.org/packages/Softeq.XToolkit.DefaultAuthorization/)
 
-[DefaultAuthorization](https://www.nuget.org/packages/Softeq.XToolkit.DefaultAuthorization/)
+## Components
 
-#### Components
+The library supports a bunch of components out of the box:
 
-Library supports a bunch of Components out of the box:
-
-- `Executor`: is special wrapper wich can be used to wrap async action and execute it multiply times if it fails.
-- `Mapper` : is helper which register your own mapping and then can be used to map one object to another. Also support Collection mapping.
-- `UriBuilder` : is helper which can be used to build your api url's
-- `JsonConverter` : basic json converter. This is wrpapper on NewtonSoft Json Converter.
-- `HttpClient` : is base implementation of http client which every mobile project has. We trying to incapsulate base logic to one http client to cover most popular cases of usings.
+- `Executor`: is a special wrapper which can be used to wrap async action and execute it multiple times if it fails;
+- `Mapper` : is helper which register your own mapping and then can be used to map one object to another. Also, support collections mapping;
+- `UriBuilder` : is helper which can be used to build your API URLs;
+- `JsonConverter` : basic JSON converter. This is a wrapper on NewtonSoft Json Converter;
+- `HttpClient` : is base implementation of HTTP client for every mobile project has. We trying to encapsulate base logic to one HTTP client to cover the most popular cases of usings.
 
 ### Executor
-You can register class as singlton and then use it as following example:
+
+You can register class as a singleton and then use it like the following example:
 
 Usage:
 
@@ -57,47 +61,44 @@ await Executor.ExecuteWithRetryAsync(async executionContext =>
 
 Also support next methods:
 
-`Task ExecuteSilentlyAsync(Func<Task> asyncAction, Action<Exception> exceptionCallback = null)`
+- `Task ExecuteSilentlyAsync(Func<Task> asyncAction, Action<Exception> exceptionCallback = null)`
+- `void InBackgroundThread(Func<Task> asyncAction);`
+- `void InBackgroundThread(Action action);`
+- `Task ExecuteActionAsync(OncePerIntervalAction oncePerIntervalAction);`
 
-`void InBackgroundThread(Func<Task> asyncAction);`
+### Mapper
 
-`void InBackgroundThread(Action action);`
-
-`Task ExecuteActionAsync(OncePerIntervalAction oncePerIntervalAction);`
-
-#### Mapper
 Helps to map data models to application models.
 
 Usage:
 
 ```csharp
-
-//Data transfer model
+// Data transfer model
 public class SettingsData
 {
     public string MyCustomToken { get; set; }
 }
 
-//our application model
+// our application model
 public class SettingsModel
 {
     public string AccessToken { get; set; }
 }
 
-//Method that map data transfer model to application model
+// Method that map data transfer model to application model
 public SettingsModel Map(SettingsData data)
 {
     return data == null ? null : new SettingsModel{AccessToken = data.MyCustomToken}
 }
 
-//create and register mapping
+// create and register mapping
 var mapper = new Mapper();
 mapper.RegisterMapping<SettingsData, SettingsModel>(Map);
 
-//create dto(or recieve it from http request)
+// create dto(or recieve it from http request)
 var data = new SettingsData { MyCustomToken = "test" };
 
-//get application model
+// get application model
 var settingsModel = mapper.Map<SettingsModel>(data);
 ```
 ### Uri Builder
@@ -135,7 +136,7 @@ var removeItemUri = SaveItem(new ItemQueryParams { ItemId = "myItemId" });
 
 ### Json Converter
 
-Current implementation acceptable for most mobile clients. Also used to serialize data. You can register it as singlton and then reuse in application.
+Current implementation is acceptable for most mobile clients. Also used to serialize data. You can register it as a singleton and then reuse in an application.
 
 ```csharp
 public static class JsonConverter
@@ -174,27 +175,14 @@ public static class JsonConverter
 
 ### Http Client
 
-Http client used to make http requests. Http client has few configuration properties.
+Http client used to make HTTP requests. Http client has few configuration properties.
 
-To create HttpClient you need to provide:
-
-```csharp
-    public class HttpServiceGateConfig
-    {
-        public int MaxHttpLoadThreads { get; set; } = 5;
-        public int HighPriorityHttpLoadThreads { get; set; } = 2;
-        public int HttpRequestPerPriorityLimit { get; set; } = 350;
-        public int DeadRequestTimeoutInMilliseconds { get; set; } = 10000; // use it to define when request should be canceled, default value is 10 seconds
-        public WebProxy Proxy { get; set; } = null; //use it to configure proxy to handle requests(via charles on OS X as example)
-    }
-```
-
-To create http client use next line:
+To create HttpClient you need to provide `HttpServiceGateConfig`:
 
 ```csharp
 var httpConfig = new HttpServiceGateConfig
 {
-    Proxy = new WebProxy("10.55.1.191", 8888),
+    // use it to define when request should be canceled, default value is 10 seconds
     DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
 };
 
@@ -205,9 +193,9 @@ Then you are ready to make http requests:
 
 ```csharp
 var request = new HttpRequest()
-              .SetUri(new Uri("example.com"))
-              .SetMethod(HttpMethods.Post)
-              .WithData(JsonConverter.Serialize(new { Id = "MyId" }));
+                .SetUri(new Uri("example.com"))
+                .SetMethod(HttpMethods.Post)
+                .WithData(JsonConverter.Serialize(new { Id = "MyId" }));
 
 var response = await httpServiceGate.ExecuteApiCallAsync(HttpRequestPriority.Normal, request);
 
@@ -217,14 +205,13 @@ if (response.IsSuccessful)
 }
 ```
 
-As you can see, we can configure http request. First of all you can specify Uri, then you should set request type(Get, Post, Put and etc), also you can send data with requests, specify content type and headers.
+As you can see, we can configure the http request. First of all, you can specify Uri, then you should set request type(Get, Post, Put and etc), also you can send data with requests, specify content type and headers.
 
-Full example with http request:
+Full example with an http request:
 
 ```csharp
 var httpConfig = new HttpServiceGateConfig
 {
-    Proxy = new WebProxy(yourIpAdress, yourPort),
     DeadRequestTimeoutInMilliseconds = (int)TimeSpan.FromSeconds(100).TotalMilliseconds
 };
 var httpServiceGate = new HttpServiceGate(httpConfig);
@@ -232,20 +219,20 @@ var httpServiceGate = new HttpServiceGate(httpConfig);
 var executionResult = new ExecutionResult<string>();
 
 await Executor.ExecuteWithRetryAsync(
-     async executionContext =>
-     {
-         var request = new HttpRequest()
-             .SetUri(new Uri("example.com"))
-             .SetMethod(HttpMethods.Post)
-             .WithData(JsonConverter.Serialize(new { Id = "MyId" }));
+    async executionContext =>
+    {
+        var request = new HttpRequest()
+            .SetUri(new Uri("example.com"))
+            .SetMethod(HttpMethods.Post)
+            .WithData(JsonConverter.Serialize(new { Id = "MyId" }));
 
-         var response = await executionResult.ExecuteApiCallAsync(HttpRequestPriority.High, request);
+        var response = await executionResult.ExecuteApiCallAsync(HttpRequestPriority.High, request);
 
-         if (response.IsSuccessful)
-         {
-             executionResult.Report(response.Content, ExecutionStatus.Completed);
-         }
-     });
+        if (response.IsSuccessful)
+        {
+            executionResult.Report(response.Content, ExecutionStatus.Completed);
+        }
+    });
 
 if (executionResult.Status == ExecutionStatus.NotCompleted)
 {
@@ -262,7 +249,7 @@ This is type based message hub.
 ```csharp
 public class MyMessage
 {
-    public string Name {get;} = "Kain";
+    public string Name { get; } = "Kain";
 }
 
 public class MyClass : IMessageHandler<MyMessage>
