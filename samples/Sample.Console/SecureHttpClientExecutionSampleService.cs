@@ -5,45 +5,27 @@ using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
-using Softeq.XToolkit.DefaultAuthorization.Infrastructure.Interfaces;
 
-namespace Sample.Core
+namespace Sample.Console
 {
     public class SecureHttpClientExecutionSampleService
     {
         private readonly ISecuredTokenManager _tokenManager;
         private readonly SessionApiService _sessionApiService;
-        private readonly ISecuredHttpServiceGate _http;
+        private readonly SecuredHttpServiceGate _http;
 
-        public SecureHttpClientExecutionSampleService(ISecuredTokenManager manager)
+        public SecureHttpClientExecutionSampleService()
         {
-            var testAuthConfig =
-                new AuthConfig("registration uri", "client", "secret");
-            var httpConfig = new HttpServiceGateConfig
-                {Proxy = new System.Net.WebProxy("127.0.0.1", 8888), DeadRequestTimeoutInMilliseconds = 1000000000};
-            _tokenManager = manager;
+            var testAuthConfig = new AuthConfig("http://qwerty.azurewebsites.net", "ro.client", "secret");
+            var httpConfig = new HttpServiceGateConfig();
+            _tokenManager = new ConsoleSecuredTokenManager();
             _sessionApiService = new SessionApiService(testAuthConfig, httpConfig, _tokenManager);
             _http = new SecuredHttpServiceGate(_sessionApiService, httpConfig, _tokenManager);
         }
 
-        internal async Task ResendConfirmationAsync()
-        {
-            var result = await _sessionApiService.ResendConfirmationAsync("test@gmail.com");
-        }
-
         public async Task LoginAsync()
         {
-            var result = await _sessionApiService.LoginAsync("test@gmail.com", "Test");
-        }
-
-        public async Task RegisterAsync()
-        {
-            var result = await _sessionApiService.RegisterAccountAsync("test@gmail.com", "A1B2C#asd");
-        }
-
-        public async Task ForgotPasswordAsync()
-        {
-            var result = await _sessionApiService.ForgotPasswordAsync("test@gmail.com");
+            await _sessionApiService.LoginAsync("login", "pass");
         }
 
         public async Task<ExecutionResult<string>> MakeRequestWithCredentials()
@@ -54,10 +36,11 @@ namespace Sample.Core
                 async executionContext =>
                 {
                     var request = new HttpRequest()
-                        .SetUri(new Uri("registration uri"))
-                        .SetMethod(HttpMethods.Get);
+                    .SetUri(new Uri("provide your url"))
+                    .SetMethod(HttpMethods.Get)
+                    .WithCredentials(_tokenManager);
 
-                    var response = await _http.ExecuteApiCallAsync(request);
+                    var response = await _http.ExecuteApiCallAsync(request, priority: HttpRequestPriority.High);
 
                     if (response.IsSuccessful)
                     {

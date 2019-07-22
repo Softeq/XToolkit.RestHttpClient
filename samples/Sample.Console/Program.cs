@@ -1,18 +1,17 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Softeq.Sample
+namespace Sample.Console
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var root = new Program();
 
-            root.UseSecureHttpClient();
-            root.UseSimpleHttpClient();
+            await root.UseSecureHttpClient();
+            await root.UseSimpleHttpClient();
 
-            Console.ReadLine();
+            System.Console.ReadLine();
         }
 
         public async Task UseSecureHttpClient()

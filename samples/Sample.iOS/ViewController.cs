@@ -7,8 +7,6 @@ namespace Sample.iOS
 {
     public partial class ViewController : UIViewController
     {
-        int count = 1;
-
         public ViewController(IntPtr handle) : base(handle)
         {
         }
@@ -17,20 +15,8 @@ namespace Sample.iOS
         {
             base.ViewDidLoad();
 
-            Button.AccessibilityIdentifier = "myButton";
-            Button.TouchUpInside += delegate
-            {
-                var title = string.Format("{0} clicks!", count++);
-                Button.SetTitle(title, UIControlState.Normal);
-            };
-
             var testClass = new TestClass();
             await testClass.StartAsync(new SecuredTokenManager());
-        }
-
-        public override void DidReceiveMemoryWarning()
-        {
-            base.DidReceiveMemoryWarning();
         }
     }
 }

@@ -73,7 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Softeq.XToolkit.DefaultAuthorization\Softeq.XToolkit.DefaultAuthorization.csproj">
-      <Project>{4AEC9EAA-3956-413A-A7C4-EDFEBEA6E980}</Project>
+      <Project>{F433FCF9-1E55-42AD-A5FA-08CF9265B481}</Project>
       <Name>Softeq.XToolkit.DefaultAuthorization</Name>
     </ProjectReference>
   </ItemGroup>
