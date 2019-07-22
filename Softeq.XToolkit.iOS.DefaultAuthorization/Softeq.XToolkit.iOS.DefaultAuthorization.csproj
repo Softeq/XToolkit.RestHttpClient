@@ -9,18 +9,8 @@
     <RootNamespace>Softeq.iOS.DefaultAuthorization</RootNamespace>
     <AssemblyName>Softeq.XToolkit.iOS.DefaultAuthorization</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <PackageId>Softeq.XToolkit.iOS.DefaultAuthorization</PackageId>
-    <PackageVersion>1.1</PackageVersion>
-    <Authors>Softeq</Authors>
-    <Owners>Softeq Development Corp</Owners>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NeutralLanguage>en</NeutralLanguage>
-    <PackageLicenseUrl>https://github.com/Softeq/XToolkit.RestHttpClient/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Softeq/XToolkit.RestHttpClient</PackageProjectUrl>
-    <PackageReleaseNotes>Added security support</PackageReleaseNotes>
-    <PackageTags>Softeq httpclient client http </PackageTags>
-    <Title>Default authorization for Softeq</Title>
-    <Description>Library which provides methods to make work default authorization in Softeq</Description>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -76,9 +66,6 @@
       <Project>{F433FCF9-1E55-42AD-A5FA-08CF9265B481}</Project>
       <Name>Softeq.XToolkit.DefaultAuthorization</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Softeq.XToolkit.iOS.DefaultAuthorization.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

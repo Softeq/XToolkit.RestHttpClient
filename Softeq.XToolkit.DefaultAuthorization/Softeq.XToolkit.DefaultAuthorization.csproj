@@ -1,18 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Softeq.XToolkit.DefaultAuthorization</PackageId>
-    <PackageVersion>1.1</PackageVersion>
-    <Authors>Softeq Development Corp.</Authors>
-    <PackageLicenseUrl>https://github.com/Softeq/XToolkit.RestHttpClient/blob/master/LICENSE</PackageLicenseUrl>
-    <Owners>Softeq Development Corp.</Owners>
-    <PackageProjectUrl>https://github.com/Softeq/XToolkit.RestHttpClient</PackageProjectUrl>
-    <PackageTags>http client softeq xtoolkit XToolkit</PackageTags>
-    <Title>Custom Http client</Title>
-    <Description>Http infrastructure for mobile applications</Description>
   </PropertyGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj" />
     <ProjectReference Include="..\Softeq.XToolkit.ProjectInfrastructure\Softeq.XToolkit.CrossCutting.csproj" />
