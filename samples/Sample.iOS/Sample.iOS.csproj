@@ -127,6 +127,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Softeq.XToolkit.DefaultAuthorization.iOS\Softeq.XToolkit.DefaultAuthorization.iOS.csproj">
+      <Project>{e01dde75-0f45-4047-81cb-4b4d07080e16}</Project>
+      <Name>Softeq.XToolkit.DefaultAuthorization.iOS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sample.Core\Sample.Core.csproj">
       <Project>{6E02C921-1CA7-45B0-B4D4-D2D8F871A8C7}</Project>
       <Name>Sample.Core</Name>
@@ -135,11 +139,6 @@
       <Project>{f433fcf9-1e55-42ad-a5fa-08cf9265b481}</Project>
       <Name>Softeq.XToolkit.DefaultAuthorization</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Softeq.XToolkit.iOS.DefaultAuthorization\Softeq.XToolkit.iOS.DefaultAuthorization.csproj">
-      <Project>{e01dde75-0f45-4047-81cb-4b4d07080e16}</Project>
-      <Name>Softeq.XToolkit.iOS.DefaultAuthorization</Name>
-    </ProjectReference>
   </ItemGroup>
-
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

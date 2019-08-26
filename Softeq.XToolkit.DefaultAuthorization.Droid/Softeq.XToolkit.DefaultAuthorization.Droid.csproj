@@ -6,8 +6,8 @@
     <ProjectGuid>{302C4F40-006C-412B-9181-CA755E97EDA0}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>Softeq.XToolkit.Droid.DefaultAuthorization</RootNamespace>
-    <AssemblyName>Softeq.XToolkit.Droid.DefaultAuthorization</AssemblyName>
+    <RootNamespace>Softeq.XToolkit.DefaultAuthorization.Droid</RootNamespace>
+    <AssemblyName>Softeq.XToolkit.DefaultAuthorization.Droid</AssemblyName>
     <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
@@ -52,7 +52,7 @@
     <Compile Include="SecuredTokenManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Softeq.XToolkit.Droid.DefaultAuthorization.nuspec" />
+    <None Include="Softeq.XToolkit.DefaultAuthorization.Droid.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Softeq.XToolkit.DefaultAuthorization\Softeq.XToolkit.DefaultAuthorization.csproj">

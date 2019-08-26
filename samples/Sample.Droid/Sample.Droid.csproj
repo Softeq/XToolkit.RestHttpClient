@@ -25,7 +25,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
-    <JavaMaximumHeapSize></JavaMaximumHeapSize>
+    <JavaMaximumHeapSize>
+    </JavaMaximumHeapSize>
     <AndroidSupportedAbis>x86_64;arm64-v8a;armeabi-v7a;x86</AndroidSupportedAbis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -37,7 +38,8 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
-    <JavaMaximumHeapSize></JavaMaximumHeapSize>
+    <JavaMaximumHeapSize>
+    </JavaMaximumHeapSize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -76,6 +78,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Softeq.XToolkit.DefaultAuthorization.Droid\Softeq.XToolkit.DefaultAuthorization.Droid.csproj">
+      <Project>{302c4f40-006c-412b-9181-ca755e97eda0}</Project>
+      <Name>Softeq.XToolkit.DefaultAuthorization.Droid</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sample.Core\Sample.Core.csproj">
       <Project>{6E02C921-1CA7-45B0-B4D4-D2D8F871A8C7}</Project>
       <Name>Sample.Core</Name>
@@ -83,10 +89,6 @@
     <ProjectReference Include="..\..\Softeq.XToolkit.DefaultAuthorization\Softeq.XToolkit.DefaultAuthorization.csproj">
       <Project>{F433FCF9-1E55-42AD-A5FA-08CF9265B481}</Project>
       <Name>Softeq.XToolkit.DefaultAuthorization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Softeq.XToolkit.Droid.DefaultAuthorization\Softeq.XToolkit.Droid.DefaultAuthorization.csproj">
-      <Project>{302C4F40-006C-412B-9181-CA755E97EDA0}</Project>
-      <Name>Softeq.XToolkit.Droid.DefaultAuthorization</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

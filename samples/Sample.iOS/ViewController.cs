@@ -1,6 +1,6 @@
 ﻿using System;
 using Sample.Core;
-using Softeq.iOS.DefaultAuthorization;
+using Softeq.XToolkit.DefaultAuthorization.iOS;
 using UIKit;
 
 namespace Sample.iOS
