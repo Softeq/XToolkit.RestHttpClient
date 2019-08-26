@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CoreFoundation;
 using Plugin.SecureStorage;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
-namespace Softeq.iOS.DefaultAuthorization
+namespace Softeq.XToolkit.DefaultAuthorization.Droid
 {
     public class SecuredTokenManager : ISecuredTokenManager
     {
@@ -21,7 +20,8 @@ namespace Softeq.iOS.DefaultAuthorization
 
         public Task ResetTokensAsync()
         {
-            UpdateTokens(null, null);
+            Token = null;
+            RefreshToken = null;
 
             CrossSecureStorage.Current.DeleteKey(SESSION_TOKEN_KEY);
             CrossSecureStorage.Current.DeleteKey(REFRESH_TOKEN_KEY);
@@ -36,25 +36,21 @@ namespace Softeq.iOS.DefaultAuthorization
 
             if (!tokenSavingResult || !refreshTokenSavingResult)
             {
-                throw new Exception(
-                    "Please check iOS settings by the following link: https://github.com/sameerkapps/SecureStorage/issues/31#issuecomment-366205742");
+                throw new Exception("Something go wrong, please recheck project settings");
             }
 
-            UpdateTokens(token, refreshToken);
+            Token = token;
+            RefreshToken = refreshToken;
 
             return Task.CompletedTask;
         }
 
-        private void RestoreTokens()
+        public Task RestoreTokens()
         {
-            UpdateTokens(CrossSecureStorage.Current.GetValue(SESSION_TOKEN_KEY),
-                CrossSecureStorage.Current.GetValue(REFRESH_TOKEN_KEY));
-        }
+            Token = CrossSecureStorage.Current.GetValue(SESSION_TOKEN_KEY);
+            RefreshToken = CrossSecureStorage.Current.GetValue(REFRESH_TOKEN_KEY);
 
-        private void UpdateTokens(string token, string refreshToken)
-        {
-            Token = token;
-            RefreshToken = refreshToken;
+            return Task.CompletedTask;
         }
     }
 }

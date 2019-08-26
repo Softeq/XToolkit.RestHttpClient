@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.OS;
 using Sample.Core;
-using Softeq.XToolkit.Droid.DefaultAuthorization;
+using Softeq.XToolkit.DefaultAuthorization.Droid;
 
 namespace Sample.Droid
 {
