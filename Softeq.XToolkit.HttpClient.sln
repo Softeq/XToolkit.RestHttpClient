@@ -7,13 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.iOS", "samples\Sampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.DefaultAuthorization", "Softeq.XToolkit.DefaultAuthorization\Softeq.XToolkit.DefaultAuthorization.csproj", "{F433FCF9-1E55-42AD-A5FA-08CF9265B481}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.iOS.DefaultAuthorization", "Softeq.XToolkit.iOS.DefaultAuthorization\Softeq.XToolkit.iOS.DefaultAuthorization.csproj", "{E01DDE75-0F45-4047-81CB-4B4D07080E16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.DefaultAuthorization.iOS", "Softeq.XToolkit.DefaultAuthorization.iOS\Softeq.XToolkit.DefaultAuthorization.iOS.csproj", "{E01DDE75-0F45-4047-81CB-4B4D07080E16}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Core", "samples\Sample.Core\Sample.Core.csproj", "{6E02C921-1CA7-45B0-B4D4-D2D8F871A8C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.HttpClient", "Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj", "{3B6AF318-9982-4892-A251-578E7F526F79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.Droid.DefaultAuthorization", "Softeq.XToolkit.Droid.DefaultAuthorization\Softeq.XToolkit.Droid.DefaultAuthorization.csproj", "{302C4F40-006C-412B-9181-CA755E97EDA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.DefaultAuthorization.Droid", "Softeq.XToolkit.DefaultAuthorization.Droid\Softeq.XToolkit.DefaultAuthorization.Droid.csproj", "{302C4F40-006C-412B-9181-CA755E97EDA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Softeq.XToolkit.CrossCutting", "Softeq.XToolkit.ProjectInfrastructure\Softeq.XToolkit.CrossCutting.csproj", "{AB52ADC3-3B2B-4A26-AD20-0A004B5CC6FB}"
 EndProject

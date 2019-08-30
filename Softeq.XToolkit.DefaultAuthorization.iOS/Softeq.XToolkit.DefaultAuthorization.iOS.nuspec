@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
     <metadata>
-    <id>Softeq.XToolkit.iOS.DefaultAuthorization</id>
+    <id>Softeq.XToolkit.DefaultAuthorization.iOS</id>
     <version>1.1.4</version>
     <title>Custom Http client</title>
     <authors>Softeq Development Corp.</authors>
