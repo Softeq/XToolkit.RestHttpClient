@@ -2,7 +2,7 @@
 <package >
     <metadata>
     <id>Softeq.XToolkit.DefaultAuthorization.iOS</id>
-    <version>1.1.4</version>
+    <version>1.1.5-beta1</version>
     <title>Custom Http client</title>
     <authors>Softeq Development Corp.</authors>
     <owners>Softeq Development Corp.</owners>
@@ -11,13 +11,14 @@
     <copyright>Copyright 2019 (c) Softeq Development Corp. Corporation. All rights reserved.</copyright>
     <licenseUrl>https://github.com/Softeq/XToolkit.RestHttpClient/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/Softeq/XToolkit.RestHttpClient</projectUrl>
-    <tags>http client softeq xtoolkit XToolkit</tags>
+    <tags>http client softeq xtoolkit XToolkit auth</tags>
     <dependencies>
         <dependency id="System.Collections.Immutable" version="1.5.0" />
         <dependency id="OptimizedPriorityQueue" version="4.2.0" />
         <dependency id="Newtonsoft.Json" version="12.0.2" />
         <dependency id="sameerIOTApps.Plugin.SecureStorage" version="2.5.0" />
-        <dependency id="Softeq.XToolkit.CrossCutting" version="1.1.4" />
+        <!-- <dependency id="Softeq.XToolkit.CrossCutting" version="1.1.5" /> -->
+        <dependency id="Softeq.XToolkit.DefaultAuthorization" version="1.1.5" />
     </dependencies>
     </metadata>
 </package>
