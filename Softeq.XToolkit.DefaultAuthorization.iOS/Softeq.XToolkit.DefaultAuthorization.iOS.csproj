@@ -9,18 +9,8 @@
     <RootNamespace>Softeq.XToolkit.DefaultAuthorization.iOS</RootNamespace>
     <AssemblyName>Softeq.XToolkit.DefaultAuthorization.iOS</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <PackageId>Softeq.XToolkit.DefaultAuthorization.iOS</PackageId>
-    <PackageVersion>1.1</PackageVersion>
-    <Authors>Softeq</Authors>
-    <Owners>Softeq Development Corp</Owners>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NeutralLanguage>en</NeutralLanguage>
-    <PackageLicenseUrl>https://github.com/Softeq/XToolkit.RestHttpClient/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/Softeq/XToolkit.RestHttpClient</PackageProjectUrl>
-    <PackageReleaseNotes>Added security support</PackageReleaseNotes>
-    <PackageTags>Softeq httpclient client http </PackageTags>
-    <Title>Default authorization for Softeq</Title>
-    <Description>Library which provides methods to make work default authorization in Softeq</Description>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
