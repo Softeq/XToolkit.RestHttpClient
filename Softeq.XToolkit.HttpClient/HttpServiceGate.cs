@@ -33,7 +33,7 @@ namespace Softeq.XToolkit.HttpClient
 
             if (HttpStatusCodes.IsErrorStatus(response.StatusCode))
             {
-                throw new HttpException("Error status code received", response);
+                throw new HttpException($"Error status code received {response.StatusCode}", response);
             }
 
             return response;
