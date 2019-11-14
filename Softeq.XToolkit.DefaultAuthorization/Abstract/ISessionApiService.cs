@@ -2,7 +2,6 @@
 // Corporation http://www.softeq.com
 
 using System.Threading.Tasks;
-using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
 
