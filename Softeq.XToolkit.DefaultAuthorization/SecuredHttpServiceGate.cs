@@ -89,6 +89,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
+        protected virtual void HandleInvalidResponse(HttpResponse response)
+        {
+            if (HttpStatusCodes.IsErrorStatus(response.StatusCode))
+            {
+                throw new HttpException($"Error status code received {response.StatusCode}", response);
+            }
+        }
+
         private bool ValidateResponse(HttpResponse response, bool shouldCheckIfForbidden = false,
             params HttpStatusCode[] ignoreErrorCodes)
         {
@@ -102,11 +110,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 return false;
             }
 
-            if (HttpStatusCodes.IsErrorStatus(response.StatusCode))
-            {
-                throw new HttpException($"Error status code received {response.StatusCode}", response);
-            }
-
+            HandleInvalidResponse(response);
             return true;
         }
 

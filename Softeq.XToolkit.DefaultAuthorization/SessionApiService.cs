@@ -38,7 +38,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
             _httpClient = new HttpServiceGate(httpConfig);
         }
 
-        public async Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password, int retryNumber = 3)
+        public async Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password)
         {
             var result = new ExecutionResult<LoginStatus>();
 
@@ -69,7 +69,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     result.Report(HandleLoginError(response.Content), ExecutionStatus.Failed);
                 }
-            }, retryNumber);
+            }, RetryNumber);
 
             return result;
         }

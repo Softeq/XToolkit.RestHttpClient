@@ -22,7 +22,10 @@ namespace Softeq.XToolkit.CrossCutting.Executor
         /// <param name="allowedAttempts">Show how many times action will be executed again in case of exception</param>
         /// <param name="executionGroup">Indicates the group of actions to which current execution belongs. If something fails in group then notification will appear only once for all actions in group. Use null if action is group independent</param>
         /// <returns></returns>
-        public static async Task ExecuteWithRetryAsync(Func<IAsyncExecutionContext, Task> asyncAction, int allowedAttempts = 1, string executionGroup = null)
+        public static async Task ExecuteWithRetryAsync(Func<IAsyncExecutionContext, Task> asyncAction,
+            int allowedAttempts = 1,
+            string executionGroup = null,
+            Action<Exception> exceptionHandler = null)
         {
             if (allowedAttempts < 1)
             {
@@ -50,7 +53,7 @@ namespace Softeq.XToolkit.CrossCutting.Executor
                 _groupedAsyncExecutions[executionGroup].Workflows.AddOrUpdate(workflow.Id, workflow, (key, value) => value);
             }
 
-            await PerformExecutionWorkflowAsync(workflow).ConfigureAwait(false);
+            await PerformExecutionWorkflowAsync(workflow, exceptionHandler).ConfigureAwait(false);
         }
 
         public static async Task ExecuteSilentlyAsync(Func<Task> asyncAction, Action<Exception> exceptionCallback = null)
@@ -104,41 +107,22 @@ namespace Softeq.XToolkit.CrossCutting.Executor
             }
         }
 
-        private static async Task PerformExecutionWorkflowAsync(WorkflowWrappedExecutionContext workflow)
+        private static async Task PerformExecutionWorkflowAsync(WorkflowWrappedExecutionContext workflow, Action<Exception> exceptionHandler = null)
         {
             workflow.Context.ExecutionsCount = 0;
 
             var exception = await ExecuteMultipleTimesAsync(workflow).ConfigureAwait(false);
-
-            if (exception == null)
+            if (exception != null)
             {
-                DeleteContextFromGroupIfExists(workflow);
+                exceptionHandler?.Invoke(exception);
+            }
 
+            var group = GetGroupForContext(workflow);
+
+            if (group == null)
+            {
                 return;
             }
-
-            var group = GetGroupForContext(workflow);
-
-            DeleteContextFromGroupIfExists(workflow);
-        }
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        private static async Task PerformExecutionWorkflowAsync(ExecutionGroup<WorkflowWrappedExecutionContext> group)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
-            foreach (var context in group.Workflows.Values.Where(cnt => cnt.Context.Status != ExecutionContextStatus.Running))
-            {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                PerformExecutionWorkflowAsync(context);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            }
-        }
-
-        private static void DeleteContextFromGroupIfExists(WorkflowWrappedExecutionContext workflow)
-        {
-            var group = GetGroupForContext(workflow);
-
-            if (group == null) return;
 
             if (group.Workflows.ContainsKey(workflow.Id))
             {
