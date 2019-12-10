@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.HttpClient;
 using System.Net;
+using System.Linq;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
@@ -87,7 +88,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                 request.ContentType = ApplicationFormContentType;
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
+                var noInternetCodes = new[] { HttpStatusCode.BadRequest, HttpStatusCode.GatewayTimeout, HttpStatusCode.RequestTimeout, HttpStatusCode.BadGateway };
+                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request, 0, noInternetCodes)
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful && response.Content != null)
@@ -96,6 +98,10 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                     await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
                     result = ExecutionStatus.Completed;
+                }
+                else if (noInternetCodes.Contains(response.StatusCode))
+                {
+                    result = ExecutionStatus.NotCompleted;
                 }
             }, RetryNumber);
 

@@ -15,7 +15,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
     {
         private readonly ISecuredTokenManager _tokenManager;
         private readonly ISessionApiService _sessionApiService;
-        private ForegroundTaskDeferral _sessionRetrievalDeferral;
+        private ForegroundTaskDeferral<ExecutionStatus> _sessionRetrievalDeferral;
         private IHttpClient _client;
 
         public SecuredHttpServiceGate(ISessionApiService sessionApiService, HttpServiceGateConfig httpConfig,
@@ -23,7 +23,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             _tokenManager = tokenManager;
             _sessionApiService = sessionApiService;
-            _sessionRetrievalDeferral = new ForegroundTaskDeferral();
+            _sessionRetrievalDeferral = new ForegroundTaskDeferral<ExecutionStatus>();
             _client = new ModifiedHttpClient(new HttpRequestsScheduler(httpConfig));
         }
 
@@ -40,7 +40,12 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
             var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
 
-            if (ValidateResponse(response, true, ignoreErrorCodes))
+            if (response == null)
+            {
+                HandleInvalidResponse(response);
+                return response;
+            }
+            if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
             {
                 return response;
             }
@@ -49,30 +54,25 @@ namespace Softeq.XToolkit.DefaultAuthorization
             if (!IsSessionValid(response))
             {
                 //if session request is already in progress, then await it
-                var shouldRetrieveSession = await EnsureNoSessionRetrievalIsRunningAsync().ConfigureAwait(false);
+                var sessionRetrievalResult = await EnsureNoSessionRetrievalIsRunningAsync().ConfigureAwait(false);
 
-                if (shouldRetrieveSession)
+                if (!sessionRetrievalResult.HasValue)
                 {
-                    var executionStatus = await RetrieveSessionAsync().ConfigureAwait(false);
-
-                    if (executionStatus == ExecutionStatus.Completed)
-                    {
-                        request.WithCredentials(_tokenManager);
-                        response = await _client.ExecuteAsStringResponseAsync(request, priority).ConfigureAwait(false);
-                    }
+                    sessionRetrievalResult = await RetrieveSessionAsync().ConfigureAwait(false);
                 }
-                else
+                if (sessionRetrievalResult == ExecutionStatus.Completed)
                 {
                     request.WithCredentials(_tokenManager);
-
                     response = await _client.ExecuteAsStringResponseAsync(request, priority).ConfigureAwait(false);
                 }
-
-                //if session issue is still not resolved, redirect to first install login screen, because we can't perform activities without session
-                if (!IsSessionValid(response))
+                else if (sessionRetrievalResult != ExecutionStatus.NotCompleted)
                 {
-                    return response;
+                    //TODO PL: force log out
                 }
+            }
+            else
+            {
+                HandleInvalidResponse(response);
             }
 
             return response;
@@ -91,27 +91,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         protected virtual void HandleInvalidResponse(HttpResponse response)
         {
+            if (response == null)
+            {
+                throw new HttpException("Response is null!");
+            }
             if (HttpStatusCodes.IsErrorStatus(response.StatusCode))
             {
                 throw new HttpException($"Error status code received {response.StatusCode}", response);
             }
-        }
-
-        private bool ValidateResponse(HttpResponse response, bool shouldCheckIfForbidden = false,
-            params HttpStatusCode[] ignoreErrorCodes)
-        {
-            if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
-            {
-                return true;
-            }
-
-            if (shouldCheckIfForbidden && !IsSessionValid(response))
-            {
-                return false;
-            }
-
-            HandleInvalidResponse(response);
-            return true;
         }
 
         private async Task<ExecutionStatus> RetrieveSessionAsync()
@@ -122,48 +109,31 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
             var result = await _sessionApiService.RefreshTokenAsync().ConfigureAwait(false);
 
-            deferral.Complete();
+            deferral.Complete(result);
 
             return result;
         }
 
-        private ForegroundTaskDeferral CreateSessionRetrievalDeferral()
+        private ForegroundTaskDeferral<ExecutionStatus> CreateSessionRetrievalDeferral()
         {
-            _sessionRetrievalDeferral = new ForegroundTaskDeferral();
+            _sessionRetrievalDeferral = new ForegroundTaskDeferral<ExecutionStatus>();
 
             return _sessionRetrievalDeferral;
         }
 
-        private async Task<bool> EnsureNoSessionRetrievalIsRunningAsync()
+        private async Task<ExecutionStatus?> EnsureNoSessionRetrievalIsRunningAsync()
         {
             if (!_sessionRetrievalDeferral.IsInProgress)
             {
-                return true;
+                return null;
             }
 
-            await _sessionRetrievalDeferral.WaitForCompletionAsync();
-
-            return false;
+            return await _sessionRetrievalDeferral.WaitForCompletionAsync();
         }
 
-        private bool IsSessionValid(HttpResponse response)
+        private static bool IsSessionValid(HttpResponse response)
         {
-            if (response == null)
-            {
-                return false;
-            }
-
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                return false;
-            }
-
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                return false;
-            }
-
-            return true;
+            return response.StatusCode != HttpStatusCode.Unauthorized;
         }
     }
 }

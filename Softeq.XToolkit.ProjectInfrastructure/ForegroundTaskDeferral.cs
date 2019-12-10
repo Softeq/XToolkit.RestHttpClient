@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Softeq.XToolkit.CrossCutting
 {
-    public class ForegroundTaskDeferral
+    public class ForegroundTaskDeferral<T>
     {
-        private readonly TaskCompletionSource<bool> _taskCompletition;
+        private readonly TaskCompletionSource<T> _taskCompletition;
 
         private readonly ThreadSafe<bool> _isCancelRequested;
         private readonly ThreadSafe<bool> _isInProgress;
@@ -26,7 +26,7 @@ namespace Softeq.XToolkit.CrossCutting
             _isCancelRequested = new ThreadSafe<bool>(false);
             _isInProgress = new ThreadSafe<bool>(false);
 
-            _taskCompletition = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _taskCompletition = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _cancellationToken = new CancellationTokenSource();
         }
@@ -50,7 +50,7 @@ namespace Softeq.XToolkit.CrossCutting
             _isInProgress.Set(true);
         }
 
-        public void Complete()
+        public void Complete(T result)
         {
             if (!_isStarted.Get() || !_isInProgress.Get())
             {
@@ -59,20 +59,23 @@ namespace Softeq.XToolkit.CrossCutting
 
             _isInProgress.Set(false);
 
-            _taskCompletition.SetResult(true);
+            _taskCompletition.SetResult(result);
         }
 
+        public Task<T> WaitForCompletionAsync()
+        {
+            return _taskCompletition.Task;
+        }
+    }
+
+    public class ForegroundTaskDeferral : ForegroundTaskDeferral<bool>
+    {
         public void CompleteIfInProgress()
         {
-            if (_isInProgress.Get())
+            if (IsInProgress)
             {
-                Complete();
+                Complete(true);
             }
-        }
-
-        public async Task WaitForCompletionAsync()
-        {
-            await _taskCompletition.Task.ConfigureAwait(false);
         }
     }
 }
