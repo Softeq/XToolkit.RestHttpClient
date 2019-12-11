@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.HttpClient;
 using System.Net;
+using System.Linq;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
+using Softeq.XToolkit.HttpClient.Abstract;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
@@ -27,18 +29,19 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private readonly AuthConfig _authConfig;
         private readonly ISecuredTokenManager _tokenService;
         private readonly ApiEndpoints _apiEndpoints;
-        private readonly HttpServiceGate _httpClient;
+        private readonly IHttpServiceGate _httpClient;
 
-        public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig,
+        public SessionApiService(AuthConfig authConfig, IHttpServiceGate httpClient,
             ISecuredTokenManager tokenService)
         {
             _authConfig = authConfig;
+            _httpClient = httpClient;
             _tokenService = tokenService;
+
             _apiEndpoints = new ApiEndpoints(authConfig.BaseUrl);
-            _httpClient = new HttpServiceGate(httpConfig);
         }
 
-        public async Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password, int retryNumber = 3)
+        public async Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password)
         {
             var result = new ExecutionResult<LoginStatus>();
 
@@ -69,7 +72,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     result.Report(HandleLoginError(response.Content), ExecutionStatus.Failed);
                 }
-            }, retryNumber);
+            }, RetryNumber);
 
             return result;
         }
@@ -87,7 +90,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                 request.ContentType = ApplicationFormContentType;
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request)
+                var noInternetCodes = new[] { HttpStatusCode.BadRequest, HttpStatusCode.GatewayTimeout, HttpStatusCode.RequestTimeout, HttpStatusCode.BadGateway };
+                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request, 0, noInternetCodes)
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful && response.Content != null)
@@ -96,6 +100,10 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                     await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
                     result = ExecutionStatus.Completed;
+                }
+                else if (noInternetCodes.Contains(response.StatusCode))
+                {
+                    result = ExecutionStatus.NotCompleted;
                 }
             }, RetryNumber);
 

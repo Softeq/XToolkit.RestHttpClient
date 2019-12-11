@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Softeq.XToolkit.CrossCutting
 {
-    public class ForegroundTaskDeferral
+    public abstract class ForegroundTaskDeferralBase<T>
     {
-        private readonly TaskCompletionSource<bool> _taskCompletition;
+        private readonly TaskCompletionSource<T> _taskCompletition;
 
         private readonly ThreadSafe<bool> _isCancelRequested;
         private readonly ThreadSafe<bool> _isInProgress;
@@ -20,13 +20,13 @@ namespace Softeq.XToolkit.CrossCutting
         public EventHandler TaskCancelationRequested;
         public CancellationToken Token => _cancellationToken.Token;
 
-        public ForegroundTaskDeferral()
+        protected ForegroundTaskDeferralBase()
         {
             _isStarted = new ThreadSafe<bool>(false);
             _isCancelRequested = new ThreadSafe<bool>(false);
             _isInProgress = new ThreadSafe<bool>(false);
 
-            _taskCompletition = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _taskCompletition = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _cancellationToken = new CancellationTokenSource();
         }
@@ -50,7 +50,7 @@ namespace Softeq.XToolkit.CrossCutting
             _isInProgress.Set(true);
         }
 
-        public void Complete()
+        protected void DoComplete(T result)
         {
             if (!_isStarted.Get() || !_isInProgress.Get())
             {
@@ -59,20 +59,46 @@ namespace Softeq.XToolkit.CrossCutting
 
             _isInProgress.Set(false);
 
-            _taskCompletition.SetResult(true);
+            _taskCompletition.SetResult(result);
         }
 
+        protected Task<T> DoWaitForCompletionAsync()
+        {
+            return _taskCompletition.Task;
+        }
+    }
+
+    public class ForegroundTaskDeferral<T> : ForegroundTaskDeferralBase<T>
+    {
+        public Task<T> WaitForCompletionAsync()
+        {
+            return DoWaitForCompletionAsync();
+        }
+
+        public void Complete(T result)
+        {
+            DoComplete(result);
+        }
+    }
+
+    public class ForegroundTaskDeferral : ForegroundTaskDeferralBase<bool>
+    {
         public void CompleteIfInProgress()
         {
-            if (_isInProgress.Get())
+            if (IsInProgress)
             {
-                Complete();
+                DoComplete(true);
             }
         }
 
-        public async Task WaitForCompletionAsync()
+        public void Complete()
         {
-            await _taskCompletition.Task.ConfigureAwait(false);
+            DoComplete(true);
+        }
+
+        public Task WaitForCompletionAsync()
+        {
+            return DoWaitForCompletionAsync();
         }
     }
 }
