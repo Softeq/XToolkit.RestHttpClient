@@ -9,6 +9,7 @@ using System.Linq;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
+using Softeq.XToolkit.HttpClient.Abstract;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
@@ -28,15 +29,16 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private readonly AuthConfig _authConfig;
         private readonly ISecuredTokenManager _tokenService;
         private readonly ApiEndpoints _apiEndpoints;
-        private readonly HttpServiceGate _httpClient;
+        private readonly IHttpServiceGate _httpClient;
 
-        public SessionApiService(AuthConfig authConfig, HttpServiceGateConfig httpConfig,
+        public SessionApiService(AuthConfig authConfig, IHttpServiceGate httpClient,
             ISecuredTokenManager tokenService)
         {
             _authConfig = authConfig;
+            _httpClient = httpClient;
             _tokenService = tokenService;
+
             _apiEndpoints = new ApiEndpoints(authConfig.BaseUrl);
-            _httpClient = new HttpServiceGate(httpConfig);
         }
 
         public async Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password)
