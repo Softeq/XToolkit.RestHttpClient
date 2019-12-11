@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Softeq.XToolkit.CrossCutting
 {
-    public class ForegroundTaskDeferral<T>
+    public abstract class ForegroundTaskDeferralBase<T>
     {
         private readonly TaskCompletionSource<T> _taskCompletition;
 
@@ -20,7 +20,7 @@ namespace Softeq.XToolkit.CrossCutting
         public EventHandler TaskCancelationRequested;
         public CancellationToken Token => _cancellationToken.Token;
 
-        public ForegroundTaskDeferral()
+        protected ForegroundTaskDeferralBase()
         {
             _isStarted = new ThreadSafe<bool>(false);
             _isCancelRequested = new ThreadSafe<bool>(false);
@@ -50,7 +50,7 @@ namespace Softeq.XToolkit.CrossCutting
             _isInProgress.Set(true);
         }
 
-        public void Complete(T result)
+        protected void DoComplete(T result)
         {
             if (!_isStarted.Get() || !_isInProgress.Get())
             {
@@ -62,20 +62,43 @@ namespace Softeq.XToolkit.CrossCutting
             _taskCompletition.SetResult(result);
         }
 
-        public Task<T> WaitForCompletionAsync()
+        protected Task<T> DoWaitForCompletionAsync()
         {
             return _taskCompletition.Task;
         }
     }
 
-    public class ForegroundTaskDeferral : ForegroundTaskDeferral<bool>
+    public class ForegroundTaskDeferral<T> : ForegroundTaskDeferralBase<T>
+    {
+        public Task<T> WaitForCompletionAsync()
+        {
+            return DoWaitForCompletionAsync();
+        }
+
+        public void Complete(T result)
+        {
+            DoComplete(result);
+        }
+    }
+
+    public class ForegroundTaskDeferral : ForegroundTaskDeferralBase<bool>
     {
         public void CompleteIfInProgress()
         {
             if (IsInProgress)
             {
-                Complete(true);
+                DoComplete(true);
             }
+        }
+
+        public void Complete()
+        {
+            DoComplete(true);
+        }
+
+        public Task WaitForCompletionAsync()
+        {
+            return DoWaitForCompletionAsync();
         }
     }
 }
