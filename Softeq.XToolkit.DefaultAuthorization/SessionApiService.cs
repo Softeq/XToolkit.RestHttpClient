@@ -90,7 +90,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                 request.ContentType = ApplicationFormContentType;
 
-                var noInternetCodes = new[] { HttpStatusCode.BadRequest, HttpStatusCode.GatewayTimeout, HttpStatusCode.RequestTimeout, HttpStatusCode.BadGateway };
+                var noInternetCodes = new[] { HttpStatusCode.GatewayTimeout, HttpStatusCode.RequestTimeout, HttpStatusCode.BadGateway };
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request, 0, noInternetCodes)
                     .ConfigureAwait(false);
 
