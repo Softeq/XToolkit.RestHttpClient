@@ -64,10 +64,18 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     request.WithCredentials(_tokenManager);
                     response = await _client.ExecuteAsStringResponseAsync(request, priority).ConfigureAwait(false);
+                    if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        throw new InvalidSessionException("Got 401 status even after refreshing access token");
+                    }
                 }
                 else if (sessionRetrievalResult != ExecutionStatus.NotCompleted)
                 {
-                    //TODO PL: force log out
+                    throw new InvalidSessionException("Unable to refresh access token, probably session is expired", response);
+                }
+                else
+                {
+                    throw new PoorInternetException("Refreshing access token failed because of connection issues");
                 }
             }
             else
