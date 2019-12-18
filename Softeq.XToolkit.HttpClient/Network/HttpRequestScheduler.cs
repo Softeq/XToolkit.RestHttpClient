@@ -369,23 +369,30 @@ namespace Softeq.XToolkit.HttpClient.Network
                     IsSuccessful = false
                 };
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
-                //TODO PL: add handling on Android
-                if (ex.Message.ToLower().Contains("the internet connection appears to be offline"))
-                {
-                    task.Response = new HttpResponse
-                    {
-                        IsNoInternet = true,
-                        IsSuccessful = false,
-                        StatusCode = HttpStatusCode.RequestTimeout
-                    };
-                }
-                else
+                if (!TryHandleNoInternet(ex, task))
                 {
                     throw;
                 }
             }
+        }
+
+        private bool TryHandleNoInternet(Exception ex, CompleteHttpRequestScheduledTask task)
+        {
+            //TODO PL: add handling on Android
+            if (ex?.Message != null &&
+                ex.Message.ToLower().Contains("the internet connection appears to be offline"))
+            {
+                task.Response = new HttpResponse
+                {
+                    IsNoInternet = true,
+                    IsSuccessful = false,
+                    StatusCode = HttpStatusCode.RequestTimeout
+                };
+                return true;
+            }
+            return false;
         }
 
         private async Task ExecuteAsync(RedirectHttpRequestScheduledTask task)

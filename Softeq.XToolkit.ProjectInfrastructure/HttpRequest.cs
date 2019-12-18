@@ -50,7 +50,7 @@ namespace Softeq.XToolkit.CrossCutting
 
         public HttpRequest WithHeader(string name, object value)
         {
-            CustomHeaders.Add(name, value);
+            CustomHeaders[name] = value;
 
             return this;
         }
