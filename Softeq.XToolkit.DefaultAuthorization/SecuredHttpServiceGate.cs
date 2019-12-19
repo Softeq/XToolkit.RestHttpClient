@@ -68,6 +68,10 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     {
                         throw new InvalidSessionException("Got 401 status even after refreshing access token");
                     }
+                    if (response == null || !response.IsSuccessful && !ignoreErrorCodes.Contains(response.StatusCode))
+                    {
+                        HandleInvalidResponse(response);
+                    }
                 }
                 else if (sessionRetrievalResult != ExecutionStatus.NotCompleted)
                 {
