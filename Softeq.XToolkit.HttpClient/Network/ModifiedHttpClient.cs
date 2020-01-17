@@ -56,9 +56,9 @@ namespace Softeq.XToolkit.HttpClient.Network
                 message.Content = new StringContent(request.Data ?? string.Empty);
                 message.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
             }
-            else if (request.FormDataContent != null)
+            else if (request.FormDataProvider != null)
             {
-                message.Content = request.FormDataContent;
+                message.Content = request.FormDataProvider.GetContent();
             }
 
             return _httpRequestsScheduler.ExecuteAsync(

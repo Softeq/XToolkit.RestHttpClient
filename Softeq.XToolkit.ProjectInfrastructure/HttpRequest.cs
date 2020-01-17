@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Softeq.XToolkit.CrossCutting.Content;
 
 namespace Softeq.XToolkit.CrossCutting
 {
@@ -17,7 +18,7 @@ namespace Softeq.XToolkit.CrossCutting
         public Dictionary<HttpRequestHeader, object> Headers { get; }
         public HttpMethod Method { get; set; }
         public Uri Uri { get; set; }
-        public MultipartFormDataContent FormDataContent { get; set; }
+        public IHttpContentProvider FormDataProvider { get; set; }
 
         public HttpRequest()
         {
@@ -126,11 +127,11 @@ namespace Softeq.XToolkit.CrossCutting
             return WithData(JsonConvert.SerializeObject(data));
         }
 
-        public HttpRequest WithFormData(MultipartFormDataContent data)
+        public HttpRequest WithFormDataProvider(IHttpContentProvider httpContentProvider)
         {
             ContentType = FormDataContentType;
 
-            FormDataContent = data;
+            FormDataProvider = httpContentProvider;
 
             return this;
         }
