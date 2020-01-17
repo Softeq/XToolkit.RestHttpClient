@@ -335,7 +335,6 @@ namespace Softeq.XToolkit.HttpClient.Network
                 var client = GetSimpleHttpClient();
 
                 using (task.Request)
-                using (task.Request.Content)
                 {
                     var serverResponse = await client.SendAsync(task.Request, HttpCompletionOption.ResponseContentRead,
                         new CancellationTokenSource(task.Timeout).Token).ConfigureAwait(false);
