@@ -57,7 +57,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 request.ContentType = ApplicationFormContentType;
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
-                        ignoreErrorCodes: new[] {HttpStatusCode.BadRequest, HttpStatusCode.Forbidden})
+                        ignoreErrorCodes: new[] {HttpStatusCode.BadRequest, HttpStatusCode.Forbidden, HttpStatusCode.NotFound})
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
@@ -308,6 +308,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
             if (errorData.ErrorCode == ErrorCodes.EmailIsNotConfirmed)
             {
                 return LoginStatus.EmailNotConfirmed;
+            }
+
+            if (errorData.ErrorCode == ErrorCodes.UserNotFound)
+            {
+                return LoginStatus.UserNotFound;
             }
 
             return LoginStatus.Failed;

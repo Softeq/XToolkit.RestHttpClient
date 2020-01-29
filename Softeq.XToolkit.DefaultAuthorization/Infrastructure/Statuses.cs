@@ -23,6 +23,7 @@ namespace Softeq.XToolkit.DefaultAuthorization.Infrastructure
         Successful,
         EmailOrPasswordIncorrect,
         EmailNotConfirmed,
+        UserNotFound,
         Undefined,
     }
 
