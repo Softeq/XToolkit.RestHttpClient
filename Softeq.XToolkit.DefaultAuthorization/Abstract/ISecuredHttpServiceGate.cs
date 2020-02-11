@@ -10,8 +10,5 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
             int timeout = 0, HttpRequestPriority priority = HttpRequestPriority.Normal,
             bool includeDefaultCredentials = true,
             params HttpStatusCode[] ignoreErrorCodes);
-
-        Task<T> ExecuteApiCallAndParseAsync<T>(HttpRequest request,
-            HttpRequestPriority priority = HttpRequestPriority.Normal, bool includeDefaultCredentials = true);
     }
 }
