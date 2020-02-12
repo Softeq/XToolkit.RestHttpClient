@@ -1,7 +1,4 @@
-﻿// Developed for PAWS-HALO by Softeq Development Corporation
-// http://www.softeq.com
-
-namespace Softeq.XToolkit.CrossCutting.Exceptions
+﻿namespace Softeq.XToolkit.CrossCutting.Exceptions
 {
     public class PoorInternetException : HttpException
     {
@@ -12,7 +9,6 @@ namespace Softeq.XToolkit.CrossCutting.Exceptions
         public PoorInternetException(string message, HttpResponse response)
             : base(message, response)
         {
-
         }
     }
 }

@@ -90,17 +90,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return response;
         }
 
-        public async Task<T> ExecuteApiCallAndParseAsync<T>(HttpRequest request,
-            HttpRequestPriority priority = HttpRequestPriority.Normal, bool includeDefaultCredentials = true)
-        {
-            var response =
-                await ExecuteApiCallAsync(request, priority: priority,
-                    includeDefaultCredentials: includeDefaultCredentials).ConfigureAwait(false);
-
-            response.TryParseContentAsJson<T>(out T result);
-            return result;
-        }
-
         protected virtual void HandleInvalidResponse(HttpResponse response)
         {
             if (response == null)
