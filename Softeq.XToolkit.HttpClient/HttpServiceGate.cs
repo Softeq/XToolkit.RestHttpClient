@@ -10,8 +10,6 @@ namespace Softeq.XToolkit.HttpClient
 {
     public class HttpServiceGate : IHttpServiceGate
     {
-        private const int DeadRequestTimeoutInMilliseconds = 10000;
-
         private readonly ModifiedHttpClient _client;
 
         public HttpServiceGate(HttpServiceGateConfig config)
@@ -37,13 +35,6 @@ namespace Softeq.XToolkit.HttpClient
             }
 
             return response;
-        }
-
-        public async Task<T> ExecuteApiCallAndParseAsync<T>(HttpRequestPriority priority, HttpRequest request)
-        {
-            var response = await ExecuteApiCallAsync(priority, request).ConfigureAwait(false);
-
-            return response.ParseContentAsJson<T>();
         }
     }
 }
