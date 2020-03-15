@@ -38,21 +38,21 @@ namespace Softeq.XToolkit.CrossCutting
 
             return JsonConvert.SerializeObject(obj, Formatting.None, parsingSettings);
         }
+    }
 
-        public class SecurityContractResolver : DefaultContractResolver
+    public class SecurityContractResolver : DefaultContractResolver
+    {
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            var property = base.CreateProperty(member, memberSerialization);
+
+            if (property.AttributeProvider.GetAttributes(typeof(SecurityAttribute), false).Any())
             {
-                var property = base.CreateProperty(member, memberSerialization);
-
-                if (property.AttributeProvider.GetAttributes(typeof(SecurityAttribute), false).Any())
-                {
-                    property.ShouldSerialize =
-                        instance => false;
-                }
-
-                return property;
+                property.ShouldSerialize =
+                    instance => false;
             }
+
+            return property;
         }
     }
 }
