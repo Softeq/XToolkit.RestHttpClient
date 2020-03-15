@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -30,10 +32,27 @@ namespace Softeq.XToolkit.CrossCutting
             var parsingSettings = new JsonSerializerSettings
             {
                 NullValueHandling = shouldIgnoreNullValue ? NullValueHandling.Ignore : NullValueHandling.Include,
-                ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
-                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
             };
+
             return JsonConvert.SerializeObject(obj, Formatting.None, parsingSettings);
+        }
+
+        public class SecurityContractResolver : DefaultContractResolver
+        {
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            {
+                var property = base.CreateProperty(member, memberSerialization);
+
+                if (property.AttributeProvider.GetAttributes(typeof(SecurityAttribute), false).Any())
+                {
+                    property.ShouldSerialize =
+                        instance => false;
+                }
+
+                return property;
+            }
         }
     }
 }

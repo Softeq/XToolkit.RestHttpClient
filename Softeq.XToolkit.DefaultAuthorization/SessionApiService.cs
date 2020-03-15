@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Softeq.XToolkit.DefaultAuthorization.Abstract;
-using Softeq.XToolkit.HttpClient;
-using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
+using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
 using Softeq.XToolkit.HttpClient.Abstract;
 
@@ -16,14 +13,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
     [SuppressMessage("ReSharper", "RedundantAnonymousTypePropertyName")]
     public class SessionApiService : ISessionApiService
     {
-        private const string GrantTypeKey = "grant_type";
-        private const string PasswordKey = "password";
-        private const string ClientIdKey = "client_id";
-        private const string ClientSecretKey = "client_secret";
-        private const string UsernameKey = "username";
-        private const string RefreshTokenKey = "refresh_token";
-        private const string ApplicationFormContentType = "application/x-www-form-urlencoded";
-        private const string ApplicationJsonContentType = "application/json";
         private const int RetryNumber = 3;
 
         private readonly AuthConfig _authConfig;
@@ -52,9 +41,13 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.Login())
-                    .WithData(await GetLogInContentAsync(login, password).ConfigureAwait(false));
-
-                request.ContentType = ApplicationFormContentType;
+                    .WithFormUrlEncodedContent(new LoginDto
+                    {
+                        ClientId = _authConfig.ClientId,
+                        ClientSecret = _authConfig.ClientSecret,
+                        Username = login,
+                        Password = password
+                    });
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
                         ignoreErrorCodes: new[] {HttpStatusCode.BadRequest, HttpStatusCode.Forbidden, HttpStatusCode.NotFound})
@@ -86,9 +79,12 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.RefreshToken())
-                    .WithData(await GetRefreshTokenRequestDataAsync().ConfigureAwait(false));
-
-                request.ContentType = ApplicationFormContentType;
+                    .WithFormUrlEncodedContent(new RefreshTokenDto
+                    {
+                        ClientId = _authConfig.ClientId,
+                        ClientSecret = _authConfig.ClientSecret,
+                        RefreshToken = _tokenService.RefreshToken
+                    });
 
                 var noInternetCodes = new[] { HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout, HttpStatusCode.RequestTimeout, HttpStatusCode.BadGateway };
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request, 0, noInternetCodes)
@@ -119,9 +115,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.ResendConfirmationEmail())
-                    .WithData(JsonConverter.Serialize(new { email }));
-
-                request.ContentType = ApplicationJsonContentType;
+                    .WithJsonData(new { email });
 
                 var response = await _httpClient
                     .ExecuteApiCallAsync(HttpRequestPriority.High, request,
@@ -179,14 +173,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.Register())
                     .DisableCaching()
-                    .WithData(JsonConverter.Serialize(new
+                    .WithJsonData(new RegisterAccountDto
                     {
-                        email = login,
-                        password = password,
-                        isAcceptedTermsOfService = true
-                    }));
-
-                request.ContentType = ApplicationJsonContentType;
+                        Email = login,
+                        Password = password,
+                    });
 
                 var response = await _httpClient
                     .ExecuteApiCallAsync(HttpRequestPriority.High, request,
@@ -215,7 +206,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.ForgotPassword())
-                    .WithData(JsonConverter.Serialize(new {email = login}));
+                    .WithJsonData(new {email = login});
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
                         ignoreErrorCodes: new[] {HttpStatusCode.Conflict, HttpStatusCode.NotFound})
@@ -232,31 +223,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
             }, RetryNumber);
 
             return result;
-        }
-
-        private Task<string> GetLogInContentAsync(string login, string password)
-        {
-            var dict = new Dictionary<string, string>
-            {
-                {GrantTypeKey, PasswordKey},
-                {ClientIdKey, _authConfig.ClientId},
-                {ClientSecretKey, _authConfig.ClientSecret},
-                {UsernameKey, login},
-                {PasswordKey, password}
-            };
-
-            return new FormUrlEncodedContent(dict).ReadAsStringAsync();
-        }
-
-        private Task<string> GetRefreshTokenRequestDataAsync()
-        {
-            return new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                {ClientIdKey, _authConfig.ClientId},
-                {RefreshTokenKey, _tokenService.RefreshToken},
-                {ClientSecretKey, _authConfig.ClientSecret},
-                {GrantTypeKey, RefreshTokenKey}
-            }).ReadAsStringAsync();
         }
 
         private ResendEmailStatus HandleResendConfirmationError(string content)
