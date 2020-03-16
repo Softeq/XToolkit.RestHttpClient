@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using Newtonsoft.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Softeq.XToolkit.CrossCutting.Content;
 
 namespace Softeq.XToolkit.CrossCutting
 {
     public class HttpRequest
     {
+        public const string FormUrlEncodedContentType = "application/x-www-form-urlencoded";
         public const string ContentTypeJson = "application/json";
         public const string FormDataContentType = "multipart/form-data";
 
-        public string ContentType { get; set; }
-        public string Data { get; set; }
+        private string _serializedData;
+        private object _data;
+        private SemaphoreSlim _serializeDataLock = new SemaphoreSlim(1);
         public Dictionary<string, object> CustomHeaders { get; }
         public Dictionary<HttpRequestHeader, object> Headers { get; }
         public HttpMethod Method { get; set; }
@@ -39,7 +43,7 @@ namespace Softeq.XToolkit.CrossCutting
 
         public HttpRequest(Uri uri,
             HttpMethods method,
-            string data = null,
+            object data = null,
             string contentType = ContentTypeJson,
             IDictionary<string, object> headers = null)
             : this(uri, method)
@@ -47,6 +51,43 @@ namespace Softeq.XToolkit.CrossCutting
             Data = data;
             ContentType = contentType;
             CustomHeaders = new Dictionary<string, object>(headers ?? new Dictionary<string, object>());
+        }
+
+        public object Data
+        {
+            get => _data;
+            private set
+            {
+                _serializeDataLock.Wait();
+
+                _data = value;
+                _serializedData = null;
+
+                _serializeDataLock.Release();
+            }
+        }
+
+        public string ContentType { get; private set; }
+
+        public async Task<string> GetSerializedDataAsync()
+        {
+            await _serializeDataLock.WaitAsync()
+                .ConfigureAwait(false);
+
+            try
+            {
+                if (_serializedData == null)
+                {
+                    _serializedData = await SerializeDataAsync(this)
+                        .ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                _serializeDataLock.Release();
+            }
+
+            return _serializedData;
         }
 
         public HttpRequest WithHeader(string name, object value)
@@ -113,9 +154,9 @@ namespace Softeq.XToolkit.CrossCutting
             return this;
         }
 
-        public HttpRequest WithData(string data)
+        public HttpRequest WithFormUrlEncodedContent(object data)
         {
-            ContentType = ContentTypeJson;
+            ContentType = FormUrlEncodedContentType;
 
             Data = data;
 
@@ -124,7 +165,11 @@ namespace Softeq.XToolkit.CrossCutting
 
         public HttpRequest WithJsonData(object data)
         {
-            return WithData(JsonConvert.SerializeObject(data));
+            ContentType = ContentTypeJson;
+
+            Data = data;
+
+            return this;
         }
 
         public HttpRequest WithFormDataProvider(IHttpContentProvider httpContentProvider)
@@ -134,6 +179,30 @@ namespace Softeq.XToolkit.CrossCutting
             FormDataProvider = httpContentProvider;
 
             return this;
+        }
+
+        private async Task<string> SerializeDataAsync(HttpRequest request)
+        {
+            if (request.ContentType == ContentTypeJson)
+            {
+                return JsonConverter.Serialize(Data) ?? string.Empty;
+            }
+            else if (request.ContentType == FormUrlEncodedContentType)
+            {
+                var dict = Data.GetType()
+                    .GetProperties()
+                    .Select(x => new KeyValuePair<string, string>(ToUnderscoreCase(x.Name), x.GetValue(Data).ToString()));
+
+                return await new FormUrlEncodedContent(dict).ReadAsStringAsync()
+                    .ConfigureAwait(false);
+            }
+
+            throw new ArgumentOutOfRangeException();
+        }
+
+        private string ToUnderscoreCase(string str)
+        {
+            return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
         }
     }
 }
