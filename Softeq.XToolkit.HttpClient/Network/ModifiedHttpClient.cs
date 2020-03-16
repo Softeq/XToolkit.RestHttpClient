@@ -33,7 +33,7 @@ namespace Softeq.XToolkit.HttpClient.Network
             return ExecuteHttpRequestInternal(priority, request, true, timeout);
         }
 
-        private Task<HttpResponse> ExecuteHttpRequestInternal(
+        private async Task<HttpResponse> ExecuteHttpRequestInternal(
             HttpRequestPriority priority,
             HttpRequest request,
             bool isBinaryContent = false,
@@ -51,9 +51,10 @@ namespace Softeq.XToolkit.HttpClient.Network
                 message.Headers.Add(header.Key, header.Value.ToString());
             }
 
-            if (!string.IsNullOrEmpty(request.Data) && !string.IsNullOrEmpty(request.ContentType))
+            if (request.Data != null && !string.IsNullOrEmpty(request.ContentType))
             {
-                message.Content = new StringContent(request.Data ?? string.Empty);
+                var data = await request.GetSerializedDataAsync().ConfigureAwait(false);
+                message.Content = new StringContent(data);
                 message.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
             }
             else if (request.FormDataProvider != null)
@@ -61,11 +62,11 @@ namespace Softeq.XToolkit.HttpClient.Network
                 message.Content = request.FormDataProvider.GetContent();
             }
 
-            return _httpRequestsScheduler.ExecuteAsync(
+            return await _httpRequestsScheduler.ExecuteAsync(
                 priority,
                 message,
                 timeout,
-                isBinaryContent);
+                isBinaryContent).ConfigureAwait(false);
         }
 
         public async Task<string> GetRedirectedUrlAsync(string urlWithRedirect,
