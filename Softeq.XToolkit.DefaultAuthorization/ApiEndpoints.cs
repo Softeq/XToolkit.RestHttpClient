@@ -4,7 +4,7 @@ using Api = Softeq.XToolkit.DefaultAuthorization.Defines.Api;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
-    internal class ApiEndpoints
+    public class ApiEndpoints
     {
         private readonly string _baseUrl;
         private readonly UriMaker _uriMaker;
