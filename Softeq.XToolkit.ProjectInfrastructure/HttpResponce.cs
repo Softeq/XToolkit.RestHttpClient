@@ -19,18 +19,7 @@ namespace Softeq.XToolkit.CrossCutting
 
         public object Clone()
         {
-            return new HttpResponse
-            {
-                Content = this.Content,
-                BinaryContent = this.BinaryContent?.Clone() as byte[],
-                IsSuccessful = this.IsSuccessful,
-                StatusCode = this.StatusCode,
-                IsNoInternet = this.IsNoInternet,
-                ResponseUri = this.ResponseUri,
-                Headers = this.Headers?.ToList(),
-                ContentHeaders = this.ContentHeaders?.ToList(),
-                Expires = this.Expires
-            };
+            return this.MemberwiseClone();
         }
 
         public T ParseContentAsJson<T>()
