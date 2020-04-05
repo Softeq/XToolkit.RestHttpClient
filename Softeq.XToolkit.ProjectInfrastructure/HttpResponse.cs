@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 
 namespace Softeq.XToolkit.CrossCutting
@@ -19,7 +18,7 @@ namespace Softeq.XToolkit.CrossCutting
 
         public object Clone()
         {
-            return this.MemberwiseClone();
+            return MemberwiseClone();
         }
 
         public T ParseContentAsJson<T>()
