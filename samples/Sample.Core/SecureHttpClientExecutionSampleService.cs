@@ -4,6 +4,7 @@ using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
+using Softeq.XToolkit.HttpClient;
 
 namespace Sample.Core
 {
@@ -20,8 +21,9 @@ namespace Sample.Core
             {
                 DeadRequestTimeoutInMilliseconds = 1000000000
             };
+            var httpClient = new HttpServiceGate(httpConfig);
             _tokenManager = manager;
-            _sessionApiService = new SessionApiService(testAuthConfig, httpConfig, _tokenManager);
+            _sessionApiService = new SessionApiService(testAuthConfig, httpClient, _tokenManager);
             _http = new SecuredHttpServiceGate(_sessionApiService, httpConfig, _tokenManager);
         }
 
