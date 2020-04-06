@@ -5,6 +5,7 @@ using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.DefaultAuthorization.Extensions;
+using Softeq.XToolkit.HttpClient;
 
 namespace Sample.Console
 {
@@ -18,8 +19,9 @@ namespace Sample.Console
         {
             var testAuthConfig = new AuthConfig("http://qwerty.azurewebsites.net", "ro.client", "secret");
             var httpConfig = new HttpServiceGateConfig();
+            var httpClient = new HttpServiceGate(httpConfig);
             _tokenManager = new ConsoleSecuredTokenManager();
-            _sessionApiService = new SessionApiService(testAuthConfig, httpConfig, _tokenManager);
+            _sessionApiService = new SessionApiService(testAuthConfig, httpClient, _tokenManager);
             _http = new SecuredHttpServiceGate(_sessionApiService, httpConfig, _tokenManager);
         }
 
