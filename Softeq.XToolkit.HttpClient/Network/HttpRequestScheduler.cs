@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +31,8 @@ namespace Softeq.XToolkit.HttpClient.Network
         private readonly HttpRequestPriority _highestPriority;
         private readonly HttpServiceGateConfig _config;
 
+        private readonly IHttpClientProvider _httpClientProvider;
+
         private System.Net.Http.HttpClient _simpleHttpClient;
 
         private CancellationTokenSource _tasksExecutionCancellation;
@@ -40,8 +41,9 @@ namespace Softeq.XToolkit.HttpClient.Network
         private ConcurrentDictionary<Guid, HttpRequestScheduledTaskBase> _taskIdToTaskMap;
         private Dictionary<HttpRequestPriority, SimplePriorityQueue<HttpRequestScheduledTaskBase>> _perPriorityQueue;
 
-        public HttpRequestsScheduler(HttpServiceGateConfig config)
+        public HttpRequestsScheduler(IHttpClientProvider httpClientProvider, HttpServiceGateConfig config)
         {
+            _httpClientProvider = httpClientProvider;
             _config = config;
 
             _supportedStatusCodes = Enum.GetValues(typeof(HttpStatusCode)).Cast<int>().ToImmutableHashSet();
@@ -413,8 +415,7 @@ namespace Softeq.XToolkit.HttpClient.Network
         {
             if (_simpleHttpClient == null)
             {
-                _simpleHttpClient = new System.Net.Http.HttpClient();
-                _simpleHttpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                _simpleHttpClient = _httpClientProvider.CreateHttpClient();
             }
 
             return _simpleHttpClient;
