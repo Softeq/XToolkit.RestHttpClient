@@ -1,22 +1,23 @@
 using System.Net.Http.Headers;
+using SystemHttpClient = System.Net.Http.HttpClient;
 
 namespace Softeq.XToolkit.HttpClient.Infrastructure
 {
     public class DefaultHttpClientProvider : IHttpClientProvider
     {
-        public System.Net.Http.HttpClient CreateHttpClient()
+        public SystemHttpClient CreateHttpClient()
         {
             var httpClient = DoCreateHttpClientInstance();
             DoConfigureHttpClientInstance(httpClient);
             return httpClient;
         }
 
-        protected virtual System.Net.Http.HttpClient DoCreateHttpClientInstance()
+        protected virtual SystemHttpClient DoCreateHttpClientInstance()
         {
-            return new System.Net.Http.HttpClient();
+            return new SystemHttpClient();
         }
 
-        protected virtual void DoConfigureHttpClientInstance(System.Net.Http.HttpClient httpClient)
+        protected virtual void DoConfigureHttpClientInstance(SystemHttpClient httpClient)
         {
             httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
         }
