@@ -18,13 +18,16 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private ForegroundTaskDeferral<ExecutionStatus> _sessionRetrievalDeferral;
         private IHttpClient _client;
 
-        public SecuredHttpServiceGate(ISessionApiService sessionApiService, HttpServiceGateConfig httpConfig,
-            ISecuredTokenManager tokenManager)
+        public SecuredHttpServiceGate(
+            ISessionApiService sessionApiService, 
+            HttpServiceGateConfig httpConfig,
+            ISecuredTokenManager tokenManager,
+            IHttpClientProvider httpClientProvider)
         {
             _tokenManager = tokenManager;
             _sessionApiService = sessionApiService;
             _sessionRetrievalDeferral = new ForegroundTaskDeferral<ExecutionStatus>();
-            _client = new ModifiedHttpClient(new HttpRequestsScheduler(httpConfig));
+            _client = new ModifiedHttpClient(new HttpRequestsScheduler(httpClientProvider, httpConfig));
         }
 
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequest request,

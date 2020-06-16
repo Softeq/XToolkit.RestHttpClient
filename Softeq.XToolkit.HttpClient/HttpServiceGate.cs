@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Exceptions;
 using Softeq.XToolkit.HttpClient.Abstract;
+using Softeq.XToolkit.HttpClient.Infrastructure;
 using Softeq.XToolkit.HttpClient.Network;
 
 namespace Softeq.XToolkit.HttpClient
@@ -12,9 +13,9 @@ namespace Softeq.XToolkit.HttpClient
     {
         private readonly ModifiedHttpClient _client;
 
-        public HttpServiceGate(HttpServiceGateConfig config)
+        public HttpServiceGate(HttpServiceGateConfig config, IHttpClientProvider httpClientProvider)
         {
-            var httpRequestsScheduler = new HttpRequestsScheduler(config);
+            var httpRequestsScheduler = new HttpRequestsScheduler(httpClientProvider, config);
 
             _client = new ModifiedHttpClient(httpRequestsScheduler);
         }
