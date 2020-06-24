@@ -9,6 +9,9 @@ namespace Softeq.XToolkit.DefaultAuthorization.Infrastructure
 
         [JsonProperty(PropertyName = "error_description")]
         public string ErrorDescription { get; set; }
+        
+        [JsonProperty(PropertyName = "error_code")]
+        public string ErrorCode { get; set; }
     }
 
     public enum CustomLoginErrors
