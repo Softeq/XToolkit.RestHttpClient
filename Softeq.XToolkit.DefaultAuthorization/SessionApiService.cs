@@ -13,6 +13,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
     [SuppressMessage("ReSharper", "RedundantAnonymousTypePropertyName")]
     public class SessionApiService : ISessionApiService
     {
+        private const string AccountNotConfirmedCode = "account_not_confirmed";
         private const int RetryNumber = 3;
 
         private readonly AuthConfig _authConfig;
@@ -265,6 +266,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                 if (loginErrorData.Error == CustomLoginErrors.InvalidGrant)
                 {
+                    if (loginErrorData.ErrorCode == AccountNotConfirmedCode)
+                    {
+                        return LoginStatus.EmailNotConfirmed;
+                    }
+
                     return LoginStatus.EmailOrPasswordIncorrect;
                 }
 
