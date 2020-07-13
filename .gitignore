@@ -57,3 +57,9 @@ Thumbs.db
 .idea/.idea.Softeq.XToolkit.HttpClient/.idea/workspace.xml
 
 \.idea/\.idea\.Softeq\.XToolkit\.HttpClient/
+
+# ignore Xamarin.Android Resource.Designer.cs files
+**/*.Droid/**/[Rr]esource.[Dd]esigner.cs
+**/*.Android/**/[Rr]esource.[Dd]esigner.cs
+**/Android/**/[Rr]esource.[Dd]esigner.cs
+**/Droid/**/[Rr]esource.[Dd]esigner.cs
