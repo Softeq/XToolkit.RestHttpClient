@@ -33,6 +33,13 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         private readonly IHttpClientProvider _httpClientProvider;
 
+        private readonly IReadOnlyList<string> _noInternetMessages = new []
+        {
+            "the internet connection appears to be offline",
+            "unable to resolve host",
+            "socket closed"
+        };
+
         private System.Net.Http.HttpClient _simpleHttpClient;
 
         private CancellationTokenSource _tasksExecutionCancellation;
@@ -381,9 +388,7 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         private bool TryHandleNoInternet(Exception ex, CompleteHttpRequestScheduledTask task)
         {
-            //TODO PL: add handling on Android
-            if (ex?.Message != null &&
-                ex.Message.ToLower().Contains("the internet connection appears to be offline"))
+            if (ex?.Message != null && DetectNoInternetMessage(ex.Message))
             {
                 task.Response = new HttpResponse
                 {
@@ -394,6 +399,12 @@ namespace Softeq.XToolkit.HttpClient.Network
                 return true;
             }
             return false;
+        }
+
+        private bool DetectNoInternetMessage(string message)
+        {
+            var lowerCaseMessage = message.ToLower();
+            return _noInternetMessages.Any(x => lowerCaseMessage.Contains(x));
         }
 
         private async Task ExecuteAsync(RedirectHttpRequestScheduledTask task)
@@ -430,7 +441,7 @@ namespace Softeq.XToolkit.HttpClient.Network
 
         private async Task<string> GetStringContent(HttpContent httpContent)
         {
-            var result = String.Empty;
+            var result = string.Empty;
 
             await Executor.ExecuteWithRetryAsync(
                 async executionContext =>
@@ -441,7 +452,7 @@ namespace Softeq.XToolkit.HttpClient.Network
                     }
                     else
                     {
-                        var encoding = String.IsNullOrEmpty(httpContent.Headers.ContentType.CharSet)
+                        var encoding = string.IsNullOrEmpty(httpContent.Headers.ContentType.CharSet)
                             ? Encoding.UTF8
                             : Encoding.GetEncoding(httpContent.Headers.ContentType.CharSet);
 
