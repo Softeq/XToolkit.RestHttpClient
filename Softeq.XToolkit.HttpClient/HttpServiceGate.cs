@@ -13,9 +13,12 @@ namespace Softeq.XToolkit.HttpClient
     {
         private readonly ModifiedHttpClient _client;
 
-        public HttpServiceGate(HttpServiceGateConfig config, IHttpClientProvider httpClientProvider)
+        public HttpServiceGate(
+            HttpServiceGateConfig config, 
+            IHttpClientProvider httpClientProvider, 
+            IHttpClientErrorHandler httpClientErrorHandler)
         {
-            var httpRequestsScheduler = new HttpRequestsScheduler(httpClientProvider, config);
+            var httpRequestsScheduler = new HttpRequestsScheduler(httpClientProvider, httpClientErrorHandler, config);
 
             _client = new ModifiedHttpClient(httpRequestsScheduler);
         }

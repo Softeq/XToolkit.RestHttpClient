@@ -22,12 +22,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
             ISessionApiService sessionApiService, 
             HttpServiceGateConfig httpConfig,
             ISecuredTokenManager tokenManager,
-            IHttpClientProvider httpClientProvider)
+            IHttpClientProvider httpClientProvider,
+            IHttpClientErrorHandler httpClientErrorHandler)
         {
             _tokenManager = tokenManager;
             _sessionApiService = sessionApiService;
             _sessionRetrievalDeferral = new ForegroundTaskDeferral<ExecutionStatus>();
-            _client = new ModifiedHttpClient(new HttpRequestsScheduler(httpClientProvider, httpConfig));
+            _client = new ModifiedHttpClient(
+                new HttpRequestsScheduler(httpClientProvider, httpClientErrorHandler, httpConfig));
         }
 
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequest request,
