@@ -32,13 +32,7 @@ namespace Softeq.XToolkit.HttpClient.Network
         private readonly HttpServiceGateConfig _config;
 
         private readonly IHttpClientProvider _httpClientProvider;
-
-        private readonly IReadOnlyList<string> _noInternetMessages = new []
-        {
-            "the internet connection appears to be offline",
-            "unable to resolve host",
-            "socket closed"
-        };
+        private readonly IHttpClientErrorHandler _httpClientErrorHandler;
 
         private System.Net.Http.HttpClient _simpleHttpClient;
 
@@ -48,16 +42,20 @@ namespace Softeq.XToolkit.HttpClient.Network
         private ConcurrentDictionary<Guid, HttpRequestScheduledTaskBase> _taskIdToTaskMap;
         private Dictionary<HttpRequestPriority, SimplePriorityQueue<HttpRequestScheduledTaskBase>> _perPriorityQueue;
 
-        public HttpRequestsScheduler(IHttpClientProvider httpClientProvider, HttpServiceGateConfig config)
+        public HttpRequestsScheduler(
+            IHttpClientProvider httpClientProvider, 
+            IHttpClientErrorHandler httpClientErrorHandler, 
+            HttpServiceGateConfig config)
         {
             _httpClientProvider = httpClientProvider;
             _config = config;
+            _httpClientErrorHandler = httpClientErrorHandler;
 
             _supportedStatusCodes = Enum.GetValues(typeof(HttpStatusCode)).Cast<int>().ToImmutableHashSet();
             _tasksQueue = new SimplePriorityQueue<HttpRequestScheduledTaskBase>();
             _highestPriority = EnumExtensions.GetValues<HttpRequestPriority>().First();
 
-            _queueSyncLock = new Object();
+            _queueSyncLock = new object();
 
             InitializeMaps();
 
@@ -379,32 +377,8 @@ namespace Softeq.XToolkit.HttpClient.Network
             }
             catch (Exception ex)
             {
-                if (!TryHandleNoInternet(ex, task))
-                {
-                    throw;
-                }
+                task.Response = _httpClientErrorHandler.FromException(ex);
             }
-        }
-
-        private bool TryHandleNoInternet(Exception ex, CompleteHttpRequestScheduledTask task)
-        {
-            if (ex?.Message != null && DetectNoInternetMessage(ex.Message))
-            {
-                task.Response = new HttpResponse
-                {
-                    IsNoInternet = true,
-                    IsSuccessful = false,
-                    StatusCode = HttpStatusCode.RequestTimeout
-                };
-                return true;
-            }
-            return false;
-        }
-
-        private bool DetectNoInternetMessage(string message)
-        {
-            var lowerCaseMessage = message.ToLower();
-            return _noInternetMessages.Any(x => lowerCaseMessage.Contains(x));
         }
 
         private async Task ExecuteAsync(RedirectHttpRequestScheduledTask task)
