@@ -8,7 +8,7 @@ namespace Softeq.XToolkit.HttpClient.Infrastructure
 {
     public class HttpClientNoInternetHandler : IHttpClientErrorHandler
     {
-        public virtual HttpResponse HandleException(Exception e)
+        public virtual HttpResponse FromException(Exception e)
         {
             return new HttpResponse
             {

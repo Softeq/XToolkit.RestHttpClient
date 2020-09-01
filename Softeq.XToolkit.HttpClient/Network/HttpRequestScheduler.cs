@@ -377,7 +377,7 @@ namespace Softeq.XToolkit.HttpClient.Network
             }
             catch (Exception ex)
             {
-                task.Response = _httpClientErrorHandler.HandleException(ex);
+                task.Response = _httpClientErrorHandler.FromException(ex);
             }
         }
 

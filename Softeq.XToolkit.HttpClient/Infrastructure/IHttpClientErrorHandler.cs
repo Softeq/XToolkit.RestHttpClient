@@ -8,6 +8,6 @@ namespace Softeq.XToolkit.HttpClient.Infrastructure
 {
     public interface IHttpClientErrorHandler
     {
-        HttpResponse HandleException(Exception e);
+        HttpResponse FromException(Exception e);
     }
 }
