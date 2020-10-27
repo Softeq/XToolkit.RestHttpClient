@@ -150,9 +150,16 @@ namespace Softeq.XToolkit.DefaultAuthorization
                         ignoreErrorCodes: HttpStatusCode.Conflict)
                     .ConfigureAwait(false);
 
-                result = response.StatusCode == HttpStatusCode.OK
-                    ? CheckRegistrationStatus.Free
-                    : CheckRegistrationStatus.EmailAlreadyTaken;
+                if (response.IsNoInternet)
+                {
+                    result = CheckRegistrationStatus.Undefined;
+                }
+                else
+                {
+                    result = response.StatusCode == HttpStatusCode.OK
+                        ? CheckRegistrationStatus.Free
+                        : CheckRegistrationStatus.EmailAlreadyTaken;
+                }
             }, 3);
 
             return result;
