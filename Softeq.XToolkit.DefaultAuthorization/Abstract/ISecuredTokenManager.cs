@@ -7,6 +7,6 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
         string Token { get; }
         string RefreshToken { get; }
         Task SaveTokensAsync(string token, string refreshToken);
-        Task ResetTokensAsync();
+        void ResetTokens();
     }
 }
