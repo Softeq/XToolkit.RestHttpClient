@@ -58,7 +58,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
+                    _tokenService.SaveTokens(tokens.AccessToken,
+                        tokens.RefreshToken,
+                        tokens.AccessTokenExpirationTimespanInSeconds);
 
                     result.Report(LoginStatus.Successful, ExecutionStatus.Completed);
                 }
@@ -95,7 +97,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
+                    _tokenService.SaveTokens(tokens.AccessToken,
+                        tokens.RefreshToken,
+                        tokens.AccessTokenExpirationTimespanInSeconds);
                     result = ExecutionStatus.Completed;
                 }
                 else if (noInternetCodes.Contains(response.StatusCode))

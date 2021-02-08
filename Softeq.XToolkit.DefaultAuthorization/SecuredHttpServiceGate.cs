@@ -15,11 +15,12 @@ namespace Softeq.XToolkit.DefaultAuthorization
     {
         private readonly ISecuredTokenManager _tokenManager;
         private readonly ISessionApiService _sessionApiService;
-        private ForegroundTaskDeferral<ExecutionStatus> _sessionRetrievalDeferral;
-        private IHttpClient _client;
+        private readonly IHttpClient _client;
+
+        private Task<ExecutionStatus> _refreshingTokenTask;
 
         public SecuredHttpServiceGate(
-            ISessionApiService sessionApiService, 
+            ISessionApiService sessionApiService,
             HttpServiceGateConfig httpConfig,
             ISecuredTokenManager tokenManager,
             IHttpClientProvider httpClientProvider,
@@ -27,72 +28,52 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             _tokenManager = tokenManager;
             _sessionApiService = sessionApiService;
-            _sessionRetrievalDeferral = new ForegroundTaskDeferral<ExecutionStatus>();
             _client = new ModifiedHttpClient(
                 new HttpRequestsScheduler(httpClientProvider, httpClientErrorHandler, httpConfig));
         }
 
-        public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequest request,
-            int timeout = 0, HttpRequestPriority priority = HttpRequestPriority.Normal,
+        public async Task<HttpResponse> ExecuteApiCallAsync(
+            HttpRequest request,
+            int timeout = 0,
+            HttpRequestPriority priority = HttpRequestPriority.Normal,
             bool includeDefaultCredentials = true,
             params HttpStatusCode[] ignoreErrorCodes)
         {
+            if (_tokenManager.IsTokenExpired)
+            {
+                /// Backwards compatibility: in case we don't have tokens and all, we don't even try to refresh the token.
+                /// Refreshing will fail anyway, but there is a chance that the endpoint won't require authentication.
+                if (!string.IsNullOrEmpty(_tokenManager.Token))
+                {
+                    return await RefreshTokenAndExecuteAsync(request, timeout, priority, ignoreErrorCodes)
+                        .ConfigureAwait(false);
+                }
+            }
+
             if (includeDefaultCredentials)
             {
-                //add credentials to every request using this approach
                 request.WithCredentials(_tokenManager);
             }
 
             var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
-
             if (response == null)
             {
                 HandleInvalidResponse(response);
                 return response;
             }
-            if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
+            else if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
             {
                 return response;
             }
-
-            //try to retrieve session again if token is not valid
-            if (!IsSessionValid(response))
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                //if session request is already in progress, then await it
-                var sessionRetrievalResult = await EnsureNoSessionRetrievalIsRunningAsync().ConfigureAwait(false);
-
-                if (!sessionRetrievalResult.HasValue)
-                {
-                    sessionRetrievalResult = await RetrieveSessionAsync().ConfigureAwait(false);
-                }
-                if (sessionRetrievalResult == ExecutionStatus.Completed)
-                {
-                    request.WithCredentials(_tokenManager);
-                    response = await _client.ExecuteAsStringResponseAsync(request, priority).ConfigureAwait(false);
-                    if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        throw new InvalidSessionException("Got 401 status even after refreshing access token");
-                    }
-                    if (response == null || !response.IsSuccessful && !ignoreErrorCodes.Contains(response.StatusCode))
-                    {
-                        HandleInvalidResponse(response);
-                    }
-                }
-                else if (sessionRetrievalResult != ExecutionStatus.NotCompleted)
-                {
-                    throw new InvalidSessionException("Unable to refresh access token, probably session is expired", response);
-                }
-                else
-                {
-                    throw new PoorInternetException("Refreshing access token failed because of connection issues");
-                }
+                return await RefreshTokenAndExecuteAsync(request, timeout, priority, ignoreErrorCodes).ConfigureAwait(false);
             }
             else
             {
                 HandleInvalidResponse(response);
+                return response;
             }
-
-            return response;
         }
 
         protected virtual void HandleInvalidResponse(HttpResponse response)
@@ -107,39 +88,51 @@ namespace Softeq.XToolkit.DefaultAuthorization
             }
         }
 
-        private async Task<ExecutionStatus> RetrieveSessionAsync()
+        private async Task<HttpResponse> RefreshTokenAndExecuteAsync(
+            HttpRequest request,
+            int timeout,
+            HttpRequestPriority priority,
+            params HttpStatusCode[] ignoreErrorCodes)
         {
-            var deferral = CreateSessionRetrievalDeferral();
+            await RefreshTokenAsync().ConfigureAwait(false);
 
-            deferral.Begin();
-
-            var result = await _sessionApiService.RefreshTokenAsync().ConfigureAwait(false);
-
-            deferral.Complete(result);
-
-            return result;
-        }
-
-        private ForegroundTaskDeferral<ExecutionStatus> CreateSessionRetrievalDeferral()
-        {
-            _sessionRetrievalDeferral = new ForegroundTaskDeferral<ExecutionStatus>();
-
-            return _sessionRetrievalDeferral;
-        }
-
-        private async Task<ExecutionStatus?> EnsureNoSessionRetrievalIsRunningAsync()
-        {
-            if (!_sessionRetrievalDeferral.IsInProgress)
+            request.WithCredentials(_tokenManager);
+            var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
+            if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                return null;
+                throw new InvalidSessionException("Got 401 status even after refreshing access token");
             }
 
-            return await _sessionRetrievalDeferral.WaitForCompletionAsync();
+            if (response == null || !response.IsSuccessful && !ignoreErrorCodes.Contains(response.StatusCode))
+            {
+                HandleInvalidResponse(response);
+            }
+
+            return response;
         }
 
-        private static bool IsSessionValid(HttpResponse response)
+        private async Task RefreshTokenAsync()
         {
-            return response.StatusCode != HttpStatusCode.Unauthorized;
+            ExecutionStatus refreshingTokenResult;
+            if (_refreshingTokenTask == null)
+            {
+                _refreshingTokenTask = _sessionApiService.RefreshTokenAsync();
+                refreshingTokenResult = await _refreshingTokenTask.ConfigureAwait(false);
+                _refreshingTokenTask = null;
+            }
+            else
+            {
+                refreshingTokenResult = await _refreshingTokenTask.ConfigureAwait(false);
+            }
+
+            if (refreshingTokenResult == ExecutionStatus.NotCompleted)
+            {
+                throw new PoorInternetException("Refreshing access token failed because of connection issues");
+            }
+            else if (refreshingTokenResult != ExecutionStatus.Completed)
+            {
+                throw new InvalidSessionException("Unable to refresh access token, probably session is expired");
+            }
         }
     }
 }

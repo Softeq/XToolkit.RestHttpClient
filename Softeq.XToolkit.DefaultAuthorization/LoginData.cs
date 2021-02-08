@@ -8,6 +8,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
         [DataMember(Name = "access_token")]
         public string AccessToken { get; set; }
 
+        [DataMember(Name = "expires_in")]
+        public int AccessTokenExpirationTimespanInSeconds { get; set; }
+
         [DataMember(Name = "refresh_token")]
         public string RefreshToken { get; set; }
     }
