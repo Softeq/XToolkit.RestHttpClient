@@ -9,7 +9,10 @@ namespace Softeq.XToolkit.HttpClient.Extensions
         public static async Task<T> ExecuteApiCallAndParseAsync<T>(this IHttpServiceGate httpServiceGate,
             HttpRequestPriority priority, HttpRequest request)
         {
-            var response = await httpServiceGate.ExecuteApiCallAsync(priority, request).ConfigureAwait(false);
+            var response = await httpServiceGate
+                .ExecuteApiCallAsync(request, priority: priority)
+                .ConfigureAwait(false);
+
             return response.ParseContentAsJson<T>();
         }
     }

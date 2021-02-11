@@ -26,10 +26,14 @@ namespace Softeq.XToolkit.DefaultAuthorization.Extensions
             HttpRequestPriority priority = HttpRequestPriority.Normal,
             bool includeDefaultCredentials = true)
         {
-            var response = await securedHttpServiceGate.ExecuteApiCallAsync(request, priority: priority,
-                    includeDefaultCredentials: includeDefaultCredentials).ConfigureAwait(false);
-
+            var response = await securedHttpServiceGate
+                .ExecuteApiCallAsync(
+                    request,
+                    priority: priority,
+                    includeDefaultCredentials: includeDefaultCredentials)
+                .ConfigureAwait(false);
             response.TryParseContentAsJson<T>(out var result);
+
             return result;
         }
     }

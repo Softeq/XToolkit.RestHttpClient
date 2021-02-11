@@ -20,11 +20,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private Task<ExecutionStatus> _refreshingTokenTask;
 
         public SecuredHttpServiceGate(
-            ISessionApiService sessionApiService,
-            HttpServiceGateConfig httpConfig,
             ISecuredTokenManager tokenManager,
+            ISessionApiService sessionApiService,
             IHttpClientProvider httpClientProvider,
-            IHttpClientErrorHandler httpClientErrorHandler)
+            IHttpClientErrorHandler httpClientErrorHandler,
+            HttpServiceGateConfig httpConfig)
         {
             _tokenManager = tokenManager;
             _sessionApiService = sessionApiService;
@@ -32,22 +32,17 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 new HttpRequestsScheduler(httpClientProvider, httpClientErrorHandler, httpConfig));
         }
 
-        public async Task<HttpResponse> ExecuteApiCallAsync(
+        async Task<HttpResponse> ISecuredHttpServiceGate.ExecuteApiCallAsync(
             HttpRequest request,
-            int timeout = 0,
-            HttpRequestPriority priority = HttpRequestPriority.Normal,
-            bool includeDefaultCredentials = true,
+            int timeout,
+            HttpRequestPriority priority,
+            bool includeDefaultCredentials,
             params HttpStatusCode[] ignoreErrorCodes)
         {
             if (_tokenManager.IsTokenExpired)
             {
-                /// Backwards compatibility: in case we don't have tokens and all, we don't even try to refresh the token.
-                /// Refreshing will fail anyway, but there is a chance that the endpoint won't require authentication.
-                if (!string.IsNullOrEmpty(_tokenManager.Token))
-                {
-                    return await RefreshTokenAndExecuteAsync(request, timeout, priority, ignoreErrorCodes)
-                        .ConfigureAwait(false);
-                }
+                return await RefreshTokenAndExecuteAsync(request, timeout, priority, ignoreErrorCodes)
+                    .ConfigureAwait(false);
             }
 
             if (includeDefaultCredentials)
