@@ -18,15 +18,13 @@ namespace Softeq.XToolkit.DefaultAuthorization.Droid
             RestoreTokens();
         }
 
-        public Task ResetTokensAsync()
+        public void ResetTokens()
         {
             Token = null;
             RefreshToken = null;
 
             CrossSecureStorage.Current.DeleteKey(SESSION_TOKEN_KEY);
             CrossSecureStorage.Current.DeleteKey(REFRESH_TOKEN_KEY);
-
-            return Task.CompletedTask;
         }
 
         public Task SaveTokensAsync(string token, string refreshToken)

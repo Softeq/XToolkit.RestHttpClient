@@ -35,7 +35,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             var result = new ExecutionResult<LoginStatus>();
 
-            await _tokenService.ResetTokensAsync();
+            _tokenService.ResetTokens();
 
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
@@ -51,7 +51,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     });
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
-                        ignoreErrorCodes: new[] {HttpStatusCode.BadRequest, HttpStatusCode.Forbidden, HttpStatusCode.NotFound})
+                        ignoreErrorCodes: new[] { HttpStatusCode.BadRequest, HttpStatusCode.Forbidden, HttpStatusCode.NotFound })
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
@@ -165,10 +165,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return result;
         }
 
-        public Task LogoutAsync()
+        public void Logout()
         {
-            _tokenService.ResetTokensAsync();
-            return Task.CompletedTask;
+            _tokenService.ResetTokens();
         }
 
         public async Task<ExecutionResult<RegistrationStatus>> RegisterAccountAsync(string login, string password)
@@ -189,7 +188,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
                 var response = await _httpClient
                     .ExecuteApiCallAsync(HttpRequestPriority.High, request,
-                        ignoreErrorCodes: new[] {HttpStatusCode.Conflict})
+                        ignoreErrorCodes: new[] { HttpStatusCode.Conflict })
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)
@@ -214,10 +213,10 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 var request = new HttpRequest()
                     .SetMethod(HttpMethods.Post)
                     .SetUri(_apiEndpoints.ForgotPassword())
-                    .WithJsonData(new {email = login});
+                    .WithJsonData(new { email = login });
 
                 var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
-                        ignoreErrorCodes: new[] {HttpStatusCode.Conflict, HttpStatusCode.NotFound})
+                        ignoreErrorCodes: new[] { HttpStatusCode.Conflict, HttpStatusCode.NotFound })
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful)

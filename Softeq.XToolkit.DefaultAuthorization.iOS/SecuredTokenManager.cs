@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CoreFoundation;
 using Plugin.SecureStorage;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
@@ -19,14 +18,12 @@ namespace Softeq.XToolkit.DefaultAuthorization.iOS
             RestoreTokens();
         }
 
-        public Task ResetTokensAsync()
+        public void ResetTokens()
         {
             UpdateTokens(null, null);
 
             CrossSecureStorage.Current.DeleteKey(SESSION_TOKEN_KEY);
             CrossSecureStorage.Current.DeleteKey(REFRESH_TOKEN_KEY);
-
-            return Task.CompletedTask;
         }
 
         public Task SaveTokensAsync(string token, string refreshToken)
