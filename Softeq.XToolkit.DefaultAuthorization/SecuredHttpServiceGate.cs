@@ -35,6 +35,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequest request,
             int timeout = 0, HttpRequestPriority priority = HttpRequestPriority.Normal,
             bool includeDefaultCredentials = true,
+            bool isBinaryContent = false,
             params HttpStatusCode[] ignoreErrorCodes)
         {
             if (includeDefaultCredentials)
@@ -43,7 +44,18 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 request.WithCredentials(_tokenManager);
             }
 
-            var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
+            HttpResponse response;
+
+            if (isBinaryContent)
+            {
+                response = await _client.ExecuteAsBinaryResponseAsync(request, priority, timeout)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout)
+                    .ConfigureAwait(false);
+            }
 
             if (response == null)
             {
