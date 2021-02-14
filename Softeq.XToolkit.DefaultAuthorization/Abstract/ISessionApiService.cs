@@ -13,7 +13,7 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
         Task<ExecutionStatus> RefreshTokenAsync();
         Task<ExecutionResult<ResendEmailStatus>> ResendConfirmationAsync(string email);
         Task<CheckRegistrationStatus> IsAccountAlreadyRegistered(string email);
-        Task LogoutAsync();
+        void Logout();
         Task<ExecutionResult<RegistrationStatus>> RegisterAccountAsync(string login, string password);
         Task<ExecutionResult<ForgotPasswordStatus>> ForgotPasswordAsync(string login);
     }
