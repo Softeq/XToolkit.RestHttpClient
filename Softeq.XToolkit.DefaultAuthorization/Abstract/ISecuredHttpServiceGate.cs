@@ -11,6 +11,7 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
             int timeout = 0,
             HttpRequestPriority priority = HttpRequestPriority.Normal,
             bool includeDefaultCredentials = true,
+            bool isBinaryContent = false,
             params HttpStatusCode[] ignoreErrorCodes);
     }
 }

@@ -37,6 +37,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
             int timeout,
             HttpRequestPriority priority,
             bool includeDefaultCredentials,
+            bool isBinaryContent,
             params HttpStatusCode[] ignoreErrorCodes)
         {
             if (_tokenManager.IsTokenExpired)
@@ -50,7 +51,18 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 request.WithCredentials(_tokenManager);
             }
 
-            var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
+            HttpResponse response;
+            if (isBinaryContent)
+            {
+                response = await _client.ExecuteAsBinaryResponseAsync(request, priority, timeout)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout)
+                    .ConfigureAwait(false);
+            }
+
             if (response == null)
             {
                 HandleInvalidResponse(response);

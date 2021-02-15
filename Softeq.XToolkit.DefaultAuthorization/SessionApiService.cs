@@ -91,7 +91,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     });
 
                 var noInternetCodes = new[] { HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout, HttpStatusCode.RequestTimeout, HttpStatusCode.BadGateway };
-                var response = await _httpClient.ExecuteApiCallAsync(request, 0, HttpRequestPriority.High, noInternetCodes)
+                var response = await _httpClient.ExecuteApiCallAsync(request, 0, HttpRequestPriority.High, ignoreErrorCodes: noInternetCodes)
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful && response.Content != null)
