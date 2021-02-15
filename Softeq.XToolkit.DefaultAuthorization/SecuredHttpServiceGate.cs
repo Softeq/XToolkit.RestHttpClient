@@ -17,7 +17,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private readonly ISessionApiService _sessionApiService;
         private readonly IHttpClient _client;
 
-        private Task<ExecutionStatus> _refreshingTokenTask;
+        private ForegroundTaskDeferral<ExecutionStatus> _refreshingTokenDeferral;
 
         public SecuredHttpServiceGate(
             ISecuredTokenManager tokenManager,
@@ -42,7 +42,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             if (_tokenManager.IsTokenExpired)
             {
-                return await RefreshTokenAndExecuteAsync(request, timeout, priority, ignoreErrorCodes)
+                return await RefreshTokenAndExecuteAsync(request, timeout, priority, isBinaryContent, ignoreErrorCodes)
                     .ConfigureAwait(false);
             }
 
@@ -51,17 +51,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 request.WithCredentials(_tokenManager);
             }
 
-            HttpResponse response;
-            if (isBinaryContent)
-            {
-                response = await _client.ExecuteAsBinaryResponseAsync(request, priority, timeout)
-                    .ConfigureAwait(false);
-            }
-            else
-            {
-                response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout)
-                    .ConfigureAwait(false);
-            }
+            var response = await ExecuteAsync(request, timeout, priority, isBinaryContent)
+                .ConfigureAwait(false);
 
             if (response == null)
             {
@@ -74,7 +65,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
             }
             else if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                return await RefreshTokenAndExecuteAsync(request, timeout, priority, ignoreErrorCodes).ConfigureAwait(false);
+                return await RefreshTokenAndExecuteAsync(request, timeout, priority, isBinaryContent, ignoreErrorCodes)
+                    .ConfigureAwait(false);
             }
             else
             {
@@ -99,12 +91,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
             HttpRequest request,
             int timeout,
             HttpRequestPriority priority,
+            bool isBinaryContent,
             params HttpStatusCode[] ignoreErrorCodes)
         {
             await RefreshTokenAsync().ConfigureAwait(false);
 
             request.WithCredentials(_tokenManager);
-            var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
+            var response = await ExecuteAsync(request, timeout, priority, isBinaryContent)
+                .ConfigureAwait(false);
             if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 throw new InvalidSessionException("Got 401 status even after refreshing access token");
@@ -118,18 +112,39 @@ namespace Softeq.XToolkit.DefaultAuthorization
             return response;
         }
 
-        private async Task RefreshTokenAsync()
+        private Task<HttpResponse> ExecuteAsync(
+            HttpRequest request,
+            int timeout,
+            HttpRequestPriority priority,
+            bool isBinaryContent)
         {
-            ExecutionStatus refreshingTokenResult;
-            if (_refreshingTokenTask == null)
+            if (isBinaryContent)
             {
-                _refreshingTokenTask = _sessionApiService.RefreshTokenAsync();
-                refreshingTokenResult = await _refreshingTokenTask.ConfigureAwait(false);
-                _refreshingTokenTask = null;
+                return _client.ExecuteAsBinaryResponseAsync(request, priority, timeout);
             }
             else
             {
-                refreshingTokenResult = await _refreshingTokenTask.ConfigureAwait(false);
+                return _client.ExecuteAsStringResponseAsync(request, priority, timeout);
+            }
+        }
+
+        private async Task RefreshTokenAsync()
+        {
+            ExecutionStatus refreshingTokenResult;
+            if (_refreshingTokenDeferral.IsInProgress)
+            {
+                refreshingTokenResult = await _refreshingTokenDeferral
+                    .WaitForCompletionAsync()
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                _refreshingTokenDeferral = new ForegroundTaskDeferral<ExecutionStatus>();
+                _refreshingTokenDeferral.Begin();
+                refreshingTokenResult = await _sessionApiService
+                    .RefreshTokenAsync()
+                    .ConfigureAwait(false);
+                _refreshingTokenDeferral.Complete(refreshingTokenResult);
             }
 
             if (refreshingTokenResult == ExecutionStatus.NotCompleted)

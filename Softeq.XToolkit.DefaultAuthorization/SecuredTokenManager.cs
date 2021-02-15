@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using Plugin.SecureStorage;
+using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 
 namespace Softeq.XToolkit.DefaultAuthorization
@@ -11,14 +12,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private const string TokenExpirationKey = "SessionTokenExpiresIn";
         private const string RefreshTokenKey = "RefreshToken";
 
-        private static readonly IFormatProvider DateTimeFormatProvider = CultureInfo.InvariantCulture;
 
         private DateTime? _tokenExpirationTime;
 
         protected SecuredTokenManagerBase()
         {
             Token = CrossSecureStorage.Current.GetValue(TokenKey);
-            _tokenExpirationTime = StringToDate(CrossSecureStorage.Current.GetValue(TokenExpirationKey));
+            _tokenExpirationTime = DateTimeToSerializedStringConverter.StringToDate(
+                CrossSecureStorage.Current.GetValue(TokenExpirationKey));
             RefreshToken = CrossSecureStorage.Current.GetValue(RefreshTokenKey);
         }
 
@@ -48,8 +49,13 @@ namespace Softeq.XToolkit.DefaultAuthorization
             var refreshTokenSavingResult = CrossSecureStorage.Current.SetValue(RefreshTokenKey, refreshToken);
 
             var tokenExpirationTime = DateTime.UtcNow.Add(TimeSpan.FromSeconds(tokenExpirationTimespanInSeconds));
+            if (tokenExpirationTimespanInSeconds == 0)
+            {
+                tokenExpirationTime = DateTime.MaxValue;
+            }
+
             var tokenExpirationSavingResult = CrossSecureStorage.Current.SetValue(TokenExpirationKey,
-                DateToString(tokenExpirationTime));
+                DateTimeToSerializedStringConverter.DateToString(tokenExpirationTime));
 
             if (!tokenSavingResult || !refreshTokenSavingResult || !tokenExpirationSavingResult)
             {
@@ -59,21 +65,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
             Token = token;
             _tokenExpirationTime = tokenExpirationTime;
             RefreshToken = refreshToken;
-        }
-
-        private static string DateToString(DateTime dateTime)
-        {
-            return dateTime.ToString("o", DateTimeFormatProvider);
-        }
-
-        private static DateTime? StringToDate(string dateTimeString)
-        {
-            if (string.IsNullOrEmpty(dateTimeString))
-            {
-                return null;
-            }
-
-            return DateTime.Parse(dateTimeString, DateTimeFormatProvider, DateTimeStyles.AdjustToUniversal);
         }
     }
 }
