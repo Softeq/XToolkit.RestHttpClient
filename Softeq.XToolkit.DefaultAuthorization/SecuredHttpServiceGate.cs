@@ -30,6 +30,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
             _sessionApiService = sessionApiService;
             _client = new ModifiedHttpClient(
                 new HttpRequestsScheduler(httpClientProvider, httpClientErrorHandler, httpConfig));
+
+            _refreshingTokenDeferral = new ForegroundTaskDeferral<ExecutionStatus>();
         }
 
         async Task<HttpResponse> ISecuredHttpServiceGate.ExecuteApiCallAsync(
