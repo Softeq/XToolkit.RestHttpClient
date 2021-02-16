@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
-
+﻿
 namespace Softeq.XToolkit.DefaultAuthorization.Abstract
 {
     public interface ISecuredTokenManager
     {
         string Token { get; }
+        bool IsTokenExpired { get; }
         string RefreshToken { get; }
-        Task SaveTokensAsync(string token, string refreshToken);
+        void SaveTokens(string token, string refreshToken, int tokenExpirationTimespanInSeconds);
         void ResetTokens();
     }
 }

@@ -14,19 +14,32 @@ namespace Softeq.XToolkit.HttpClient
         private readonly ModifiedHttpClient _client;
 
         public HttpServiceGate(
-            HttpServiceGateConfig config, 
-            IHttpClientProvider httpClientProvider, 
-            IHttpClientErrorHandler httpClientErrorHandler)
+            IHttpClientProvider httpClientProvider,
+            IHttpClientErrorHandler httpClientErrorHandler,
+            HttpServiceGateConfig httpConfig)
         {
-            var httpRequestsScheduler = new HttpRequestsScheduler(httpClientProvider, httpClientErrorHandler, config);
-
-            _client = new ModifiedHttpClient(httpRequestsScheduler);
+            _client = new ModifiedHttpClient(
+                new HttpRequestsScheduler(httpClientProvider, httpClientErrorHandler, httpConfig));
         }
 
-        public async Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority, HttpRequest request,
-            int timeout = 0, params HttpStatusCode[] ignoreErrorCodes)
+        async Task<HttpResponse> IHttpServiceGate.ExecuteApiCallAsync(
+            HttpRequest request,
+            int timeout,
+            HttpRequestPriority priority,
+            bool isBinaryContent,
+            params HttpStatusCode[] ignoreErrorCodes)
         {
-            var response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout).ConfigureAwait(false);
+            HttpResponse response;
+            if (isBinaryContent)
+            {
+                response = await _client.ExecuteAsBinaryResponseAsync(request, priority, timeout)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                response = await _client.ExecuteAsStringResponseAsync(request, priority, timeout)
+                    .ConfigureAwait(false);
+            }
 
             if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
             {

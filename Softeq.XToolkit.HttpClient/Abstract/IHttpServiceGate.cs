@@ -6,8 +6,11 @@ namespace Softeq.XToolkit.HttpClient.Abstract
 {
     public interface IHttpServiceGate
     {
-        Task<HttpResponse> ExecuteApiCallAsync(HttpRequestPriority priority,
+        Task<HttpResponse> ExecuteApiCallAsync(
             HttpRequest request,
-            int timeout = 0, params HttpStatusCode[] ignoreErrorCodes);
+            int timeout = 0,
+            HttpRequestPriority priority = HttpRequestPriority.Normal,
+            bool isBinaryContent = false,
+            params HttpStatusCode[] ignoreErrorCodes);
     }
 }

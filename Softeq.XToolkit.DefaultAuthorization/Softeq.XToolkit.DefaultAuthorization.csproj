@@ -6,4 +6,7 @@
     <ProjectReference Include="..\Softeq.XToolkit.HttpClient\Softeq.XToolkit.HttpClient.csproj" />
     <ProjectReference Include="..\Softeq.XToolkit.ProjectInfrastructure\Softeq.XToolkit.CrossCutting.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="sameerIOTApps.Plugin.SecureStorage" Version="2.5.0" />
+  </ItemGroup>
 </Project>

@@ -50,7 +50,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
                         Password = password
                     });
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
+                var response = await _httpClient.ExecuteApiCallAsync(request,
+                        priority: HttpRequestPriority.High,
                         ignoreErrorCodes: new[] { HttpStatusCode.BadRequest, HttpStatusCode.Forbidden, HttpStatusCode.NotFound })
                     .ConfigureAwait(false);
 
@@ -58,7 +59,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
                 {
                     var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
+                    _tokenService.SaveTokens(tokens.AccessToken,
+                        tokens.RefreshToken,
+                        tokens.AccessTokenExpirationTimespanInSeconds);
 
                     result.Report(LoginStatus.Successful, ExecutionStatus.Completed);
                 }
@@ -88,14 +91,16 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     });
 
                 var noInternetCodes = new[] { HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout, HttpStatusCode.RequestTimeout, HttpStatusCode.BadGateway };
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request, 0, noInternetCodes)
+                var response = await _httpClient.ExecuteApiCallAsync(request, 0, HttpRequestPriority.High, ignoreErrorCodes: noInternetCodes)
                     .ConfigureAwait(false);
 
                 if (response.IsSuccessful && response.Content != null)
                 {
                     var tokens = JsonConverter.Deserialize<LoginData>(response.Content);
 
-                    await _tokenService.SaveTokensAsync(tokens.AccessToken, tokens.RefreshToken);
+                    _tokenService.SaveTokens(tokens.AccessToken,
+                        tokens.RefreshToken,
+                        tokens.AccessTokenExpirationTimespanInSeconds);
                     result = ExecutionStatus.Completed;
                 }
                 else if (noInternetCodes.Contains(response.StatusCode))
@@ -119,7 +124,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     .WithJsonData(new { email });
 
                 var response = await _httpClient
-                    .ExecuteApiCallAsync(HttpRequestPriority.High, request,
+                    .ExecuteApiCallAsync(request,
+                        priority: HttpRequestPriority.High,
                         ignoreErrorCodes: new[]
                             {HttpStatusCode.NotFound, HttpStatusCode.Conflict})
                     .ConfigureAwait(false);
@@ -146,7 +152,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     .SetUri(_apiEndpoints.IsAccountFreeToUse(new { email }))
                     .SetMethod(HttpMethods.Get);
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
+                var response = await _httpClient
+                    .ExecuteApiCallAsync(request,
+                        priority: HttpRequestPriority.High,
                         ignoreErrorCodes: HttpStatusCode.Conflict)
                     .ConfigureAwait(false);
 
@@ -160,7 +168,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                         ? CheckRegistrationStatus.Free
                         : CheckRegistrationStatus.EmailAlreadyTaken;
                 }
-            }, 3);
+            }, RetryNumber);
 
             return result;
         }
@@ -187,7 +195,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     });
 
                 var response = await _httpClient
-                    .ExecuteApiCallAsync(HttpRequestPriority.High, request,
+                    .ExecuteApiCallAsync(request,
+                        priority: HttpRequestPriority.High,
                         ignoreErrorCodes: new[] { HttpStatusCode.Conflict })
                     .ConfigureAwait(false);
 
@@ -215,7 +224,9 @@ namespace Softeq.XToolkit.DefaultAuthorization
                     .SetUri(_apiEndpoints.ForgotPassword())
                     .WithJsonData(new { email = login });
 
-                var response = await _httpClient.ExecuteApiCallAsync(HttpRequestPriority.High, request,
+                var response = await _httpClient
+                    .ExecuteApiCallAsync(request,
+                        priority: HttpRequestPriority.High,
                         ignoreErrorCodes: new[] { HttpStatusCode.Conflict, HttpStatusCode.NotFound })
                     .ConfigureAwait(false);
 
