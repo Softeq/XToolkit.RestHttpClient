@@ -41,17 +41,32 @@ namespace Softeq.XToolkit.HttpClient
                     .ConfigureAwait(false);
             }
 
-            if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
+            if (response == null)
+            {
+                HandleInvalidResponse(response);
+                return response;
+            }
+            else if (response.IsSuccessful || ignoreErrorCodes.Contains(response.StatusCode))
             {
                 return response;
             }
+            else
+            {
+                HandleInvalidResponse(response);
+                return response;
+            }
+        }
 
+        protected virtual void HandleInvalidResponse(HttpResponse response)
+        {
+            if (response == null)
+            {
+                throw new HttpException("Response is null!");
+            }
             if (HttpStatusCodes.IsErrorStatus(response.StatusCode))
             {
                 throw new HttpException($"Error status code received {response.StatusCode}", response);
             }
-
-            return response;
         }
     }
 }
