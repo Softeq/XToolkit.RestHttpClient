@@ -78,6 +78,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
         {
             var result = ExecutionStatus.Failed;
 
+            if (string.IsNullOrEmpty(_tokenService.RefreshToken))
+            {
+                return result;
+            }
+
             await Executor.ExecuteWithRetryAsync(async executionContext =>
             {
                 var request = new HttpRequest()
@@ -103,7 +108,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
                         tokens.AccessTokenExpirationTimespanInSeconds);
                     result = ExecutionStatus.Completed;
                 }
-                else if (noInternetCodes.Contains(response.StatusCode))
+                else if (response.IsNoInternet || noInternetCodes.Contains(response.StatusCode))
                 {
                     result = ExecutionStatus.NotCompleted;
                 }
