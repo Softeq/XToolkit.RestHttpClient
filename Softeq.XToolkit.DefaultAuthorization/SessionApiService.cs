@@ -29,14 +29,14 @@ namespace Softeq.XToolkit.DefaultAuthorization
             _httpClient = httpClient;
             _tokenService = tokenService;
 
-            ChangeBaseUrl(authConfig.BaseUrl);
+            SetBaseUrl(authConfig.BaseUrl);
         }
 
-        public void ChangeBaseUrl(string baseUrl)
+        public void SetBaseUrl(string baseUrl)
         {
             Logout();
 
-            _authConfig.UpdateBaseUrl(baseUrl);
+            _authConfig.SetBaseUrl(baseUrl);
             _apiEndpoints = new ApiEndpoints(_authConfig.BaseUrl);
         }
 

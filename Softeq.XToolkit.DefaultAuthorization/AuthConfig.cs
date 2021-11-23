@@ -13,7 +13,7 @@
         public string ClientId { get; }
         public string ClientSecret { get; }
 
-        public void UpdateBaseUrl(string baseUrl)
+        public void SetBaseUrl(string baseUrl)
         {
             BaseUrl = baseUrl;
         }

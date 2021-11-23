@@ -9,7 +9,7 @@ namespace Softeq.XToolkit.DefaultAuthorization.Abstract
 {
     public interface ISessionApiService
     {
-        void ChangeBaseUrl(string baseUrl);
+        void SetBaseUrl(string baseUrl);
         Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password);
         Task<ExecutionStatus> RefreshTokenAsync();
         Task<ExecutionResult<ResendEmailStatus>> ResendConfirmationAsync(string email);
