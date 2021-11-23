@@ -16,10 +16,11 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private const string AccountNotConfirmedCode = "account_not_confirmed";
         private const int RetryNumber = 3;
 
-        private readonly AuthConfig _authConfig;
         private readonly ISecuredTokenManager _tokenService;
-        private readonly ApiEndpoints _apiEndpoints;
         private readonly IHttpServiceGate _httpClient;
+
+        private AuthConfig _authConfig;
+        private ApiEndpoints _apiEndpoints;
 
         public SessionApiService(AuthConfig authConfig, IHttpServiceGate httpClient,
             ISecuredTokenManager tokenService)
@@ -28,7 +29,15 @@ namespace Softeq.XToolkit.DefaultAuthorization
             _httpClient = httpClient;
             _tokenService = tokenService;
 
-            _apiEndpoints = new ApiEndpoints(authConfig.BaseUrl);
+            SetBaseUrl(authConfig.BaseUrl);
+        }
+
+        public void SetBaseUrl(string baseUrl)
+        {
+            Logout();
+
+            _authConfig.SetBaseUrl(baseUrl);
+            _apiEndpoints = new ApiEndpoints(_authConfig.BaseUrl);
         }
 
         public async Task<ExecutionResult<LoginStatus>> LoginAsync(string login, string password)

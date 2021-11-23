@@ -9,10 +9,13 @@
             ClientSecret = clientSecret;
         }
 
-        public string BaseUrl { get; }
-
+        public string BaseUrl { get; private set; }
         public string ClientId { get; }
-
         public string ClientSecret { get; }
+
+        public void SetBaseUrl(string baseUrl)
+        {
+            BaseUrl = baseUrl;
+        }
     }
 }
