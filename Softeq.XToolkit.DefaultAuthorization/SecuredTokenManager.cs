@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Plugin.SecureStorage;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;

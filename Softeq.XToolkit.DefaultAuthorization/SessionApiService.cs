@@ -29,7 +29,7 @@ namespace Softeq.XToolkit.DefaultAuthorization
             _httpClient = httpClient;
             _tokenService = tokenService;
 
-            SetBaseUrl(authConfig.BaseUrl);
+            _apiEndpoints = new ApiEndpoints(_authConfig.BaseUrl);
         }
 
         public void SetBaseUrl(string baseUrl)
