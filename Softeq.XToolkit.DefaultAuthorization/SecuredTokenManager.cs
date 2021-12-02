@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Globalization;
 using Plugin.SecureStorage;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
+using Softeq.XToolkit.DefaultAuthorization.Infrastructure;
 
 namespace Softeq.XToolkit.DefaultAuthorization
 {
@@ -12,18 +12,30 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private const string TokenExpirationKey = "SessionTokenExpiresIn";
         private const string RefreshTokenKey = "RefreshToken";
 
+        private readonly ITokenChangeHandler _tokenChangeHandler;
 
         private DateTime? _tokenExpirationTime;
+        private string _token;
 
-        protected SecuredTokenManagerBase()
+        protected SecuredTokenManagerBase(ITokenChangeHandler tokenChangeHandler = null)
         {
+            _tokenChangeHandler = tokenChangeHandler;
+
             Token = CrossSecureStorage.Current.GetValue(TokenKey);
             _tokenExpirationTime = DateTimeToSerializedStringConverter.StringToDate(
                 CrossSecureStorage.Current.GetValue(TokenExpirationKey));
             RefreshToken = CrossSecureStorage.Current.GetValue(RefreshTokenKey);
         }
 
-        public string Token { get; private set; }
+        public string Token
+        {
+            get => _token;
+            private set
+            {
+                _token = value;
+                _tokenChangeHandler?.OnTokenChanged(_token);
+            }
+        }
 
         public bool IsTokenExpired => !_tokenExpirationTime.HasValue ||
             _tokenExpirationTime.Value.CompareTo(DateTime.UtcNow) <= 0;
