@@ -34,8 +34,6 @@ namespace Softeq.XToolkit.DefaultAuthorization
 
         public void SetBaseUrl(string baseUrl)
         {
-            Logout();
-
             _authConfig.SetBaseUrl(baseUrl);
             _apiEndpoints = new ApiEndpoints(_authConfig.BaseUrl);
         }
