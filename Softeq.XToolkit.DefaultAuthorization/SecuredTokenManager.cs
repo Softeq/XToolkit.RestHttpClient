@@ -11,8 +11,8 @@ namespace Softeq.XToolkit.DefaultAuthorization
         private const string TokenExpirationKey = "SessionTokenExpiresIn";
         private const string RefreshTokenKey = "RefreshToken";
 
-
         private DateTime? _tokenExpirationTime;
+        private string _token;
 
         protected SecuredTokenManagerBase()
         {
@@ -22,7 +22,17 @@ namespace Softeq.XToolkit.DefaultAuthorization
             RefreshToken = CrossSecureStorage.Current.GetValue(RefreshTokenKey);
         }
 
-        public string Token { get; private set; }
+        public event EventHandler<string> TokenChanged;
+
+        public string Token
+        {
+            get => _token;
+            private set
+            {
+                _token = value;
+                TokenChanged?.Invoke(this, _token);
+            }
+        }
 
         public bool IsTokenExpired => !_tokenExpirationTime.HasValue ||
             _tokenExpirationTime.Value.CompareTo(DateTime.UtcNow) <= 0;
