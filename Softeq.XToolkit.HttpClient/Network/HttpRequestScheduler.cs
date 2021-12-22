@@ -43,8 +43,8 @@ namespace Softeq.XToolkit.HttpClient.Network
         private Dictionary<HttpRequestPriority, SimplePriorityQueue<HttpRequestScheduledTaskBase>> _perPriorityQueue;
 
         public HttpRequestsScheduler(
-            IHttpClientProvider httpClientProvider, 
-            IHttpClientErrorHandler httpClientErrorHandler, 
+            IHttpClientProvider httpClientProvider,
+            IHttpClientErrorHandler httpClientErrorHandler,
             HttpServiceGateConfig config)
         {
             _httpClientProvider = httpClientProvider;
@@ -337,14 +337,15 @@ namespace Softeq.XToolkit.HttpClient.Network
                 return;
             }
 
+            var timeoutCancellationToken = new CancellationTokenSource(task.Timeout).Token;
             try
             {
                 var client = GetSimpleHttpClient();
 
                 using (task.Request)
                 {
-                    var serverResponse = await client.SendAsync(task.Request, HttpCompletionOption.ResponseContentRead,
-                        new CancellationTokenSource(task.Timeout).Token).ConfigureAwait(false);
+                    var serverResponse = await client.SendAsync(task.Request, HttpCompletionOption.ResponseContentRead, timeoutCancellationToken)
+                        .ConfigureAwait(false);
 
                     task.Response = new HttpResponse
                     {
@@ -367,17 +368,15 @@ namespace Softeq.XToolkit.HttpClient.Network
                     }
                 }
             }
-            catch (TaskCanceledException)
-            {
-                task.Response = new HttpResponse
-                {
-                    StatusCode = HttpStatusCode.RequestTimeout,
-                    IsSuccessful = false
-                };
-            }
             catch (Exception ex)
             {
-                task.Response = _httpClientErrorHandler.FromException(ex);
+                task.Response = timeoutCancellationToken.IsCancellationRequested
+                    ? new HttpResponse
+                    {
+                        StatusCode = HttpStatusCode.RequestTimeout,
+                        IsSuccessful = false
+                    }
+                    : _httpClientErrorHandler.FromException(ex);
             }
         }
 
