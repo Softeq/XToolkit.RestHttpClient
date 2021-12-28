@@ -370,6 +370,9 @@ namespace Softeq.XToolkit.HttpClient.Network
             }
             catch (Exception ex)
             {
+                // KA: Android HttpClient throws native exception instread of TaskCanceledException(https://github.com/xamarin/xamarin-android/issues/3216).
+                // iOS works as expected. Right exception is thrown.
+                // To catch TimeoutException for both platforms cancellation token is checked.
                 task.Response = timeoutCancellationToken.IsCancellationRequested
                     ? new HttpResponse
                     {
