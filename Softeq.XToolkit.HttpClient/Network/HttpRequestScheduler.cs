@@ -172,7 +172,7 @@ namespace Softeq.XToolkit.HttpClient.Network
         {
             _priorityToTasksCountMap.TryGetValue(priority, out var itemsCount);
 
-            if (itemsCount > _config.MaxHttpLoadThreads)
+            if (itemsCount > _config.HttpRequestPerPriorityLimit)
             {
                 RemoveOldestTask(priority);
             }
