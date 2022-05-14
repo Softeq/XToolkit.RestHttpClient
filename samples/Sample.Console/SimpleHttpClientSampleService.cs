@@ -3,16 +3,21 @@ using System.Threading.Tasks;
 using Softeq.XToolkit.CrossCutting;
 using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.HttpClient;
+using Softeq.XToolkit.HttpClient.Abstract;
+using Softeq.XToolkit.HttpClient.Infrastructure;
 
 namespace Sample.Console
 {
     public class SimpleHttpClientSampleService
     {
-        private readonly HttpServiceGate _http;
+        private readonly IHttpServiceGate _http;
 
         public SimpleHttpClientSampleService()
         {
-            _http = new HttpServiceGate(new HttpServiceGateConfig());
+            var httpConfig = new HttpServiceGateConfig();
+            var httpClientProvider = new DefaultHttpClientProvider();
+            var httpClientErrorHandler = new HttpClientNoInternetHandler();
+            _http = new HttpServiceGate(httpClientProvider, httpClientErrorHandler, httpConfig);
         }
 
         public async Task<ExecutionResult<string>> MakeRequest()
@@ -26,7 +31,7 @@ namespace Sample.Console
                     .SetUri(new Uri("https://www.google.com/"))
                     .SetMethod(HttpMethods.Get);
 
-                    var response = await _http.ExecuteApiCallAsync(HttpRequestPriority.High, request).ConfigureAwait(false);
+                    var response = await _http.ExecuteApiCallAsync(request, priority:HttpRequestPriority.High).ConfigureAwait(false);
 
                     if (response.IsSuccessful)
                     {

@@ -5,12 +5,12 @@ using Softeq.XToolkit.CrossCutting.Executor;
 using Softeq.XToolkit.DefaultAuthorization;
 using Softeq.XToolkit.DefaultAuthorization.Abstract;
 using Softeq.XToolkit.HttpClient;
+using Softeq.XToolkit.HttpClient.Infrastructure;
 
 namespace Sample.Core
 {
     public class SecureHttpClientExecutionSampleService
     {
-        private readonly ISecuredTokenManager _tokenManager;
         private readonly SessionApiService _sessionApiService;
         private readonly ISecuredHttpServiceGate _http;
 
@@ -21,10 +21,12 @@ namespace Sample.Core
             {
                 DeadRequestTimeoutInMilliseconds = 1000000000
             };
-            var httpClient = new HttpServiceGate(httpConfig);
-            _tokenManager = manager;
-            _sessionApiService = new SessionApiService(testAuthConfig, httpClient, _tokenManager);
-            _http = new SecuredHttpServiceGate(_sessionApiService, httpConfig, _tokenManager);
+            var httpClientProvider = new DefaultHttpClientProvider();
+            var httpClientErrorHandler = new HttpClientNoInternetHandler();
+            var httpClient = new HttpServiceGate(httpClientProvider, httpClientErrorHandler, httpConfig);
+            
+            _sessionApiService = new SessionApiService(testAuthConfig, httpClient, manager);
+            _http = new SecuredHttpServiceGate(manager, _sessionApiService, httpClientProvider, httpClientErrorHandler, httpConfig);
         }
 
         internal async Task ResendConfirmationAsync()
