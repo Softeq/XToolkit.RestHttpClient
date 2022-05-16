@@ -172,7 +172,7 @@ namespace Softeq.XToolkit.HttpClient.Network
         {
             _priorityToTasksCountMap.TryGetValue(priority, out var itemsCount);
 
-            if (itemsCount > _config.HttpRequestPerPriorityLimit)
+            if (itemsCount > _config.MaxRequestsPerPriority)
             {
                 RemoveOldestTask(priority);
             }
@@ -227,7 +227,7 @@ namespace Softeq.XToolkit.HttpClient.Network
 
             _tasksExecutionCancellation = new CancellationTokenSource();
 
-            for (var workerIndex = 0; workerIndex < _config.MaxHttpLoadThreads; workerIndex++)
+            for (var workerIndex = 0; workerIndex < _config.HttpLoadThreads; workerIndex++)
             {
                 StartTasksExecutionWorker(workerIndex, _tasksExecutionCancellation.Token);
             }
